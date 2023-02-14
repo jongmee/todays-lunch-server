@@ -1,9 +1,13 @@
 package LikeLion.TodaysLunch.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +22,9 @@ public class Member {
     private Long id;
     private String nickname;
     private String password;
+
+    @OneToMany(cascade = CascadeType.REMOVE)
+    private Set<Review> review = new HashSet<>();
 
     public Member(String nickname, String password) {
         this.nickname = nickname;
