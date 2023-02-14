@@ -41,8 +41,9 @@ public class RestaurantController {
    * http://localhost:8080/restaurant?page=1&size=5
    */
   @GetMapping("")
-  public List<Restaurant> allRestaurantList(Pageable pageable){
-    return restaurantService.restaurantList(pageable).getContent();
+  public List<Restaurant> allRestaurantList(@RequestParam int page, @RequestParam int size,
+      @RequestParam String sort, @RequestParam String order){
+    return restaurantService.restaurantList(page, size, sort, order).getContent();
   }
 
   @GetMapping("/{restaurantId}")
@@ -57,28 +58,36 @@ public class RestaurantController {
   }
 
   @GetMapping("/food-category")
-  public List<Restaurant> filterByFoodCategory(@RequestParam String categoryName, Pageable pageable){
+  public List<Restaurant> filterByFoodCategory(@RequestParam String categoryName,
+      @RequestParam int page, @RequestParam int size,
+      @RequestParam String sort, @RequestParam String order){
     FoodCategory foodCategory = foodCategoryService.findFoodCategoryByName(categoryName);
-    return restaurantService.filterByFoodCategory(foodCategory, pageable).getContent();
+    return restaurantService.filterByFoodCategory(foodCategory, page, size, sort, order).getContent();
   }
 
   @GetMapping("/location-category")
-  public List<Restaurant> filterByLocationCategory(@RequestParam String categoryName, Pageable pageable){
+  public List<Restaurant> filterByLocationCategory(@RequestParam String categoryName,
+      @RequestParam int page, @RequestParam int size,
+      @RequestParam String sort, @RequestParam String order){
     LocationCategory locationCategory = locationCategoryService.findLocationCategoryByName(categoryName);
-    return restaurantService.filterByLocationCategory(locationCategory, pageable).getContent();
+    return restaurantService.filterByLocationCategory(locationCategory, page, size, sort, order).getContent();
   }
 
   @GetMapping("/location-tag")
-  public List<Restaurant> filterByLocationTag(@RequestParam String tagName, Pageable pageable){
+  public List<Restaurant> filterByLocationTag(@RequestParam String tagName,
+      @RequestParam int page, @RequestParam int size,
+      @RequestParam String sort, @RequestParam String order){
     LocationTag locationTag = locationTagService.findLocationTagByName(tagName);
-    return restaurantService.filterByLocationTag(locationTag, pageable).getContent();
+    return restaurantService.filterByLocationTag(locationTag, page, size, sort, order).getContent();
   }
 
   @GetMapping("/locationtag-foodcategory")
-  public List<Restaurant> filterByLocationTagAndFoodCategory(@RequestParam String tagName, String categoryName, Pageable pageable){
+  public List<Restaurant> filterByLocationTagAndFoodCategory(@RequestParam String tagName, String categoryName,
+      @RequestParam int page, @RequestParam int size,
+      @RequestParam String sort, @RequestParam String order){
     LocationTag locationTag = locationTagService.findLocationTagByName(tagName);
     FoodCategory foodCategory = foodCategoryService.findFoodCategoryByName(categoryName);
-    return restaurantService.filterByLocationTagAndFoodCategory(locationTag, foodCategory, pageable).getContent();
+    return restaurantService.filterByLocationTagAndFoodCategory(locationTag, foodCategory, page, size, sort, order).getContent();
   }
 
 }
