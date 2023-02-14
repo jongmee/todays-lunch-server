@@ -14,6 +14,7 @@ public class Restaurant {
     this.restaurantDecmd = this.restaurantDecmd == null? 0:this.restaurantDecmd;
     this.rating = this.rating == null? 0:this.rating;
     this.judgement = this.judgement == null? false:this.judgement;
+    this.reviewCount = this.reviewCount == null? 0L:this.reviewCount;
   }
 
   @Id
@@ -47,6 +48,8 @@ public class Restaurant {
   private LocalDateTime endDate;
   private Long agreement;
 
+  private Long reviewCount;
+
   public Long getId() {
     return id;
   }
@@ -66,6 +69,9 @@ public class Restaurant {
   public Double getRating() {
     return rating;
   }
+  public Long getReviewCount() {
+    return reviewCount;
+  }
 
   public void setId(Long id) {
     this.id = id;
@@ -75,4 +81,11 @@ public class Restaurant {
     this.restaurantName = restaurantName;
   }
 
+  public void setRating(Double rating) {
+    this.rating = rating;
+  }
+
+  public void setReviewCount(Long reviewCount) {
+    this.reviewCount = reviewCount;
+  }
 }

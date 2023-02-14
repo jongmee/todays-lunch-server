@@ -34,15 +34,16 @@ public class ReviewController {
     return ResponseEntity.status(HttpStatus.OK).body(reviews);
   }
 
-  @PatchMapping("/reviews/{id}")
-  public  ResponseEntity<Review> updateReview(@PathVariable Long id, @RequestBody ReviewDto dto){
-    Review updatedReview = reviewService.update(id, dto);
+  @PatchMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
+  public  ResponseEntity<Review> updateReview(@PathVariable Long reviewId, @PathVariable Long restaurantId,
+      @RequestBody ReviewDto dto){
+    Review updatedReview = reviewService.update(reviewId, restaurantId, dto);
     return ResponseEntity.status(HttpStatus.OK).body(updatedReview);
   }
 
-  @DeleteMapping("/reviews/{id}")
-  public ResponseEntity<Review> delete(@PathVariable Long id){
-    Review deletedReview = reviewService.delete(id);
+  @DeleteMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
+  public ResponseEntity<Review> delete(@PathVariable Long reviewId, @PathVariable Long restaurantId){
+    Review deletedReview = reviewService.delete(reviewId, restaurantId);
     return ResponseEntity.status(HttpStatus.OK).body(deletedReview);
   }
 
