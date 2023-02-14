@@ -20,6 +20,8 @@ dependencies {
 	implementation 'org.projectlombok:lombok:1.18.22'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	annotationProcessor('org.projectlombok:lombok')
+	testAnnotationProcessor('org.projectlombok:lombok')
 }
 
 tasks.named('test') {
