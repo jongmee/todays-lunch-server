@@ -5,6 +5,7 @@ import LikeLion.TodaysLunch.dto.ReviewDto;
 import LikeLion.TodaysLunch.service.ReviewService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,8 +30,8 @@ public class ReviewController {
   }
 
   @GetMapping("/restaurants/{restaurantId}/reviews")
-  public ResponseEntity<List<Review>> allReviewList(@PathVariable Long restaurantId){
-    List<Review> reviews = reviewService.reviewsList(restaurantId);
+  public ResponseEntity<List<Review>> allReviewList(@PathVariable Long restaurantId, Pageable pageable){
+    List<Review> reviews = reviewService.reviewsList(restaurantId, pageable).getContent();
     return ResponseEntity.status(HttpStatus.OK).body(reviews);
   }
 

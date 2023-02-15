@@ -9,6 +9,10 @@ import LikeLion.TodaysLunch.repository.MenuRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
 import java.util.List;
 import javax.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 
 @Transactional
 public class ReviewService {
@@ -30,7 +34,8 @@ public class ReviewService {
     if(rating.equals(0.0)){
       restaurant.setRating((double)reviewDto.getRating());
     } else {
-      List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
+      Pageable pageable = PageRequest.of(0, (int)reviewRepository.count());
+      List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant, pageable).getContent();
       Double sum = 0.0;
       for(int i = 0; i < reviews.size(); i++){
         sum += reviews.get(i).getRating();
@@ -46,9 +51,9 @@ public class ReviewService {
     return reviewRepository.save(review);
   }
 
-  public List<Review> reviewsList(Long restaurantId){
+  public Page<Review> reviewsList(Long restaurantId, Pageable pageable){
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-    return reviewRepository.findAllByRestaurant(restaurant);
+    return reviewRepository.findAllByRestaurant(restaurant, pageable);
   }
 
   public Review update(Long reviewId, Long restaurantId, ReviewDto reviewDto){
@@ -57,7 +62,8 @@ public class ReviewService {
 
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
     Long count = restaurant.getReviewCount();
-    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
+    Pageable pageable = PageRequest.of(0, (int)reviewRepository.count());
+    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant, pageable).getContent();
     Double sum = 0.0;
     for(int i = 0; i < reviews.size()-1; i++){
       sum += reviews.get(i).getRating();
@@ -79,7 +85,8 @@ public class ReviewService {
     Long count = restaurant.getReviewCount() - 1;
     restaurant.setReviewCount(count);
 
-    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
+    Pageable pageable = PageRequest.of(0, (int)reviewRepository.count());
+    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant, pageable).getContent();
     Double sum = 0.0;
     for(int i = 0; i < reviews.size()-1; i++){
       sum += reviews.get(i).getRating();
