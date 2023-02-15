@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.controller;
 
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +27,20 @@ public class MemberController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<String> create(@RequestParam String nickname, @RequestParam String password) {
+    public ResponseEntity<String> createMember(@RequestParam String nickname, @RequestParam String password) {
         try{
             memberService.signUp(nickname, password);
         } catch(IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok().body("Success");
+    }
+
+    @PutMapping("/user")
+    public void updateMemberCategories
+            (@RequestParam Member member, @RequestParam String locationCategory, @RequestParam String foodCategory){
+        memberService.setLocationCategory(member,locationCategory);
+        memberService.setFoodCategory(member,foodCategory);
     }
 
 }

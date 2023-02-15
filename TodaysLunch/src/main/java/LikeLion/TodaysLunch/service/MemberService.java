@@ -27,4 +27,22 @@ public class MemberService {
                     throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
                 });
     }
+
+    public void setFoodCategory(Member member, String foodCategory) {
+        setCategory(member, foodCategory);
+    }
+
+    public void setLocationCategory(Member member, String locationCategory) {
+        setCategory(member, locationCategory);
+    }
+
+    private void setCategory(Member member, String category) {
+        memberRepository.findByNickname(member.getNickname())
+                .ifPresent(value -> {
+                            value.updateLocationCategory(category);
+                            memberRepository.save(value);
+                        });
+    }
+
+
 }

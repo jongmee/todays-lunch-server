@@ -23,8 +23,8 @@ public class Member {
     private String nickname;
     private String password;
 
-    @OneToMany(cascade = CascadeType.REMOVE)
-    private Set<Review> review = new HashSet<>();
+    private LocationCategory locationCategory;
+    private FoodCategory foodCategory;
 
     public Member(String nickname, String password) {
         this.nickname = nickname;
@@ -37,5 +37,9 @@ public class Member {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public void updateLocationCategory(String locationCategory) {
+        this.locationCategory = new LocationCategory(locationCategory);
     }
 }
