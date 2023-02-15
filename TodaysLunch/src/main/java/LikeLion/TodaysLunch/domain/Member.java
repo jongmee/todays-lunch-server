@@ -1,7 +1,8 @@
 package LikeLion.TodaysLunch.domain;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,6 +32,9 @@ public class Member {
         this.password = password;
     }
 
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "member")
+    private List<Review> review = new ArrayList<>();
+
     public Long getId() {
         return id;
     }
@@ -39,7 +43,13 @@ public class Member {
         return nickname;
     }
 
+    public List<Review> getReview() {
+        return review;
+    }
+
     public void updateLocationCategory(String locationCategory) {
         this.locationCategory = new LocationCategory(locationCategory);
     }
+
+
 }
