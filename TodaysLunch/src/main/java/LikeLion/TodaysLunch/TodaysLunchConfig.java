@@ -1,15 +1,7 @@
 package LikeLion.TodaysLunch;
 
-import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
-import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
-import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
-import LikeLion.TodaysLunch.repository.LocationTagRepository;
-import LikeLion.TodaysLunch.repository.MenuRepository;
-import LikeLion.TodaysLunch.service.FoodCategoryService;
-import LikeLion.TodaysLunch.service.LocationCategoryService;
-import LikeLion.TodaysLunch.service.LocationTagService;
-import LikeLion.TodaysLunch.service.MenuService;
-import LikeLion.TodaysLunch.service.RestaurantService;
+import LikeLion.TodaysLunch.repository.*;
+import LikeLion.TodaysLunch.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,18 +13,21 @@ public class TodaysLunchConfig {
   private final LocationCategoryRepository locationCategoryRepository;
   private final LocationTagRepository locationTagRepository;
   private final MenuRepository menuRepository;
+  private final ReviewRepository reviewRepository;
   @Autowired
   public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
       FoodCategoryRepository foodCategoryRepository,
       LocationCategoryRepository locationCategoryRepository,
       LocationTagRepository locationTagRepository,
-      MenuRepository menuRepository)
+      MenuRepository menuRepository,
+      ReviewRepository reviewRepository)
   {
     this.restaurantRepository = restaurantRepository;
     this.foodCategoryRepository = foodCategoryRepository;
     this.locationCategoryRepository = locationCategoryRepository;
     this.locationTagRepository = locationTagRepository;
     this.menuRepository = menuRepository;
+    this.reviewRepository = reviewRepository;
   }
   @Bean
   public RestaurantService restaurantService(){
@@ -54,5 +49,10 @@ public class TodaysLunchConfig {
   @Bean
   public MenuService menuService(){
     return new MenuService(menuRepository);
+  }
+
+  @Bean
+  public ReviewService reviewService(){
+    return new ReviewService(reviewRepository, restaurantRepository);
   }
 }
