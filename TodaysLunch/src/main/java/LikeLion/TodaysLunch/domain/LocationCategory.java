@@ -9,6 +9,10 @@ public class LocationCategory {
   private Long id;
   private String name;
 
+  public LocationCategory(String name) {
+    this.name = name;
+  }
+
   public Long getId() {
     return id;
   }
