@@ -1,37 +1,30 @@
 package LikeLion.TodaysLunch.controller;
 
-import LikeLion.TodaysLunch.domain.FoodCategory;
-import LikeLion.TodaysLunch.domain.LocationCategory;
-import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
-import LikeLion.TodaysLunch.service.FoodCategoryService;
-import LikeLion.TodaysLunch.service.LocationCategoryService;
-import LikeLion.TodaysLunch.service.LocationTagService;
 import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/restaurants")
 public class RestaurantController {
+  private final String defaultPageValue = "0";
+  private final String defaultPageSize = "100";
+  private final String defaultSortCriteria = "rating";
+  private final String defaultSortOrder = "descending";
+
   private final RestaurantService restaurantService ;
-  private final FoodCategoryService foodCategoryService;
-  private final LocationCategoryService locationCategoryService;
-  private final LocationTagService locationTagService;
   private final MenuService menuService;
   @Autowired
   public RestaurantController(RestaurantService restaurantService,
-      FoodCategoryService foodCategoryService,
-      LocationCategoryService locationCategoryService,
-      LocationTagService locationTagService,
       MenuService menuService){
     this.restaurantService = restaurantService;
-    this.foodCategoryService = foodCategoryService;
-    this.locationCategoryService = locationCategoryService;
-    this.locationTagService = locationTagService;
     this.menuService = menuService;
   }
 
@@ -40,53 +33,71 @@ public class RestaurantController {
    * http://localhost:8080/restaurant?page=1&size=5
    */
   @GetMapping("")
-  public List<Restaurant> allRestaurantList(@RequestParam int page, @RequestParam int size,
-      @RequestParam String sort, @RequestParam String order){
-    return restaurantService.restaurantList(page, size, sort, order).getContent();
+  public ResponseEntity<List<Restaurant>> allRestaurantList(@RequestParam(defaultValue = defaultPageValue) int page,
+      @RequestParam(defaultValue = defaultPageSize) int size,
+      @RequestParam(defaultValue = defaultSortCriteria) String sort,
+      @RequestParam(defaultValue = defaultSortOrder) String order) {
+    List<Restaurant> restaurants = restaurantService.restaurantList(page, size, sort, order).getContent();
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 
   @GetMapping("/{restaurantId}")
-  public Restaurant detail(@PathVariable Long restaurantId){
-    return restaurantService.restaurantDetail(restaurantId);
+  public ResponseEntity<Restaurant> detail(@PathVariable Long restaurantId){
+    Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
   @GetMapping("/{restaurantId}/menus")
-  public List<Menu> menuList(@PathVariable Long restaurantId){
+  public ResponseEntity<List<Menu>> menuList(@PathVariable Long restaurantId){
     Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
-    return menuService.findMenuByRestaurant(restaurant);
+    List<Menu> menus = menuService.findMenuByRestaurant(restaurant);
+    return ResponseEntity.status(HttpStatus.OK).body(menus);
   }
 
   @GetMapping("/food-category")
-  public List<Restaurant> filterByFoodCategory(@RequestParam String categoryName,
-      @RequestParam int page, @RequestParam int size,
-      @RequestParam String sort, @RequestParam String order){
-    FoodCategory foodCategory = foodCategoryService.findFoodCategoryByName(categoryName);
-    return restaurantService.filterByFoodCategory(foodCategory, page, size, sort, order).getContent();
+  public ResponseEntity<List<Restaurant>> filterByFoodCategory(@RequestParam String categoryName,
+      @RequestParam(defaultValue = defaultPageValue) int page,
+      @RequestParam(defaultValue = defaultPageSize) int size,
+      @RequestParam(defaultValue = defaultSortCriteria) String sort,
+      @RequestParam(defaultValue = defaultSortOrder) String order){
+    List<Restaurant> restaurants = restaurantService.filterByFoodCategory(categoryName, page, size, sort, order).getContent();
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 
   @GetMapping("/location-category")
-  public List<Restaurant> filterByLocationCategory(@RequestParam String categoryName,
-      @RequestParam int page, @RequestParam int size,
-      @RequestParam String sort, @RequestParam String order){
-    LocationCategory locationCategory = locationCategoryService.findLocationCategoryByName(categoryName);
-    return restaurantService.filterByLocationCategory(locationCategory, page, size, sort, order).getContent();
+  public ResponseEntity<List<Restaurant>> filterByLocationCategory(@RequestParam String categoryName,
+      @RequestParam(defaultValue = defaultPageValue) int page,
+      @RequestParam(defaultValue = defaultPageSize) int size,
+      @RequestParam(defaultValue = defaultSortCriteria) String sort,
+      @RequestParam(defaultValue = defaultSortOrder) String order){
+    List<Restaurant> restaurants = restaurantService.filterByLocationCategory(categoryName, page, size, sort, order).getContent();
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 
   @GetMapping("/location-tag")
-  public List<Restaurant> filterByLocationTag(@RequestParam String tagName,
-      @RequestParam int page, @RequestParam int size,
-      @RequestParam String sort, @RequestParam String order){
-    LocationTag locationTag = locationTagService.findLocationTagByName(tagName);
-    return restaurantService.filterByLocationTag(locationTag, page, size, sort, order).getContent();
+  public ResponseEntity<List<Restaurant>> filterByLocationTag(@RequestParam String tagName,
+      @RequestParam(defaultValue = defaultPageValue) int page,
+      @RequestParam(defaultValue = defaultPageSize) int size,
+      @RequestParam(defaultValue = defaultSortCriteria) String sort,
+      @RequestParam(defaultValue = defaultSortOrder) String order){
+    List<Restaurant> restaurants = restaurantService.filterByLocationTag(tagName, page, size, sort, order).getContent();
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 
   @GetMapping("/locationtag-foodcategory")
-  public List<Restaurant> filterByLocationTagAndFoodCategory(@RequestParam String tagName, String categoryName,
-      @RequestParam int page, @RequestParam int size,
-      @RequestParam String sort, @RequestParam String order){
-    LocationTag locationTag = locationTagService.findLocationTagByName(tagName);
-    FoodCategory foodCategory = foodCategoryService.findFoodCategoryByName(categoryName);
-    return restaurantService.filterByLocationTagAndFoodCategory(locationTag, foodCategory, page, size, sort, order).getContent();
+  public ResponseEntity<List<Restaurant>> filterByLocationTagAndFoodCategory(@RequestParam String tagName, String categoryName,
+      @RequestParam(defaultValue = defaultPageValue) int page,
+      @RequestParam(defaultValue = defaultPageSize) int size,
+      @RequestParam(defaultValue = defaultSortCriteria) String sort,
+      @RequestParam(defaultValue = defaultSortOrder) String order){
+    List<Restaurant> restaurants = restaurantService.filterByLocationTagAndFoodCategory(tagName, categoryName, page, size, sort, order).getContent();
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
+  }
+
+  @GetMapping("/search/restaurant-name")
+  public ResponseEntity<List<Restaurant>> searchRestaurantName(@RequestParam String keyword, Pageable pageable){
+    List<Restaurant> restaurants= restaurantService.searchRestaurantName(keyword, pageable).getContent();
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 
 }

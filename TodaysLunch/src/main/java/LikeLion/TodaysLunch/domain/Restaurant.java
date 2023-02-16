@@ -5,14 +5,14 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-
+@Getter
 @Entity
 public class Restaurant {
   @PrePersist
   public void prePersist() {
     this.restaurantRecmd = this.restaurantRecmd == null? 0:this.restaurantRecmd;
     this.restaurantDecmd = this.restaurantDecmd == null? 0:this.restaurantDecmd;
-    this.rating = this.rating == null? 0:this.rating;
+    this.rating = this.rating == null? 0.0:this.rating;
     this.judgement = this.judgement == null? false:this.judgement;
     this.reviewCount = this.reviewCount == null? 0L:this.reviewCount;
   }
@@ -49,30 +49,6 @@ public class Restaurant {
   private Long agreement;
 
   private Long reviewCount;
-
-  public Long getId() {
-    return id;
-  }
-
-  public String getRestaurantName() {
-    return restaurantName;
-  }
-
-  public Long getRestaurantRecmd() {
-    return restaurantRecmd;
-  }
-
-  public Boolean getJudgement() {
-    return judgement;
-  }
-
-  public Double getRating() {
-    return rating;
-  }
-  public Long getReviewCount() {
-    return reviewCount;
-  }
-
   public void setId(Long id) {
     this.id = id;
   }
