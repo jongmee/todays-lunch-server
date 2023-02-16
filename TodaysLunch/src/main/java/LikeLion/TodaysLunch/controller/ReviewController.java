@@ -25,6 +25,9 @@ public class ReviewController {
   }
   @PostMapping("/restaurants/{restaurantId}/reviews")
   public ResponseEntity<Review> createReview(@RequestBody ReviewDto reviewDto, @PathVariable Long restaurantId){
+    if(reviewDto.getReviewContent() == null || reviewDto.getRating() == null){
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Review());
+    }
     Review review = reviewService.create(restaurantId, reviewDto);
     return ResponseEntity.status(HttpStatus.OK).body(review);
   }
