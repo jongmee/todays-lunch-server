@@ -35,8 +35,8 @@ public class Member {
         this.password = password;
     }
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "member")
-    private List<Review> review = new ArrayList<>();
+//    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "member")
+//    private List<Review> review = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -50,9 +50,9 @@ public class Member {
         return password;
     }
 
-    public List<Review> getReview() {
-        return review;
-    }
+//    public List<Review> getReview() {
+//        return review;
+//    }
 
     public void updateLocationCategory(String locationCategory) {
         this.locationCategory = new LocationCategory(locationCategory);

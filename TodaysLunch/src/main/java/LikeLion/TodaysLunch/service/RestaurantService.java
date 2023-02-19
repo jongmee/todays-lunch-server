@@ -23,8 +23,10 @@ public class RestaurantService {
   private final LocationCategoryRepository locationCategoryRepository;
 
   public RestaurantService(DataJpaRestaurantRepository restaurantRepository,
-      FoodCategoryRepository foodCategoryRepository, LocationTagRepository locationTagRepository,
-      LocationCategoryRepository locationCategoryRepository) {
+      FoodCategoryRepository foodCategoryRepository,
+      LocationTagRepository locationTagRepository,
+      LocationCategoryRepository locationCategoryRepository
+      ) {
     this.restaurantRepository = restaurantRepository;
     this.foodCategoryRepository = foodCategoryRepository;
     this.locationTagRepository = locationTagRepository;
@@ -35,6 +37,7 @@ public class RestaurantService {
     Pageable pageable = determineSort(page, size, sort ,order);
     return restaurantRepository.findAll(pageable);
   }
+
 
   public Restaurant restaurantDetail(Long id){
     return restaurantRepository.findById(id).get();
@@ -70,7 +73,7 @@ public class RestaurantService {
     return restaurantRepository.findAllByLocationTagAndFoodCategory(locationTag, foodCategory, pageable);
   }
 
-  public Page<Restaurant> searchRestaurantName(String keyword, Pageable pageable){
+  public Page<Restaurant> searchRestaurantByName(String keyword, Pageable pageable){
     return restaurantRepository.findByRestaurantNameContaining(keyword, pageable);
   }
 

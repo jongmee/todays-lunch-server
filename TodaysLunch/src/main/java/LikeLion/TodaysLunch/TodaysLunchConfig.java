@@ -14,13 +14,15 @@ public class TodaysLunchConfig {
   private final LocationTagRepository locationTagRepository;
   private final MenuRepository menuRepository;
   private final ReviewRepository reviewRepository;
+  private final SaleRepository saleRepository;
   @Autowired
   public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
       FoodCategoryRepository foodCategoryRepository,
       LocationCategoryRepository locationCategoryRepository,
       LocationTagRepository locationTagRepository,
       MenuRepository menuRepository,
-      ReviewRepository reviewRepository)
+      ReviewRepository reviewRepository,
+      SaleRepository saleRepository)
   {
     this.restaurantRepository = restaurantRepository;
     this.foodCategoryRepository = foodCategoryRepository;
@@ -28,6 +30,7 @@ public class TodaysLunchConfig {
     this.locationTagRepository = locationTagRepository;
     this.menuRepository = menuRepository;
     this.reviewRepository = reviewRepository;
+    this.saleRepository = saleRepository;
   }
   @Bean
   public RestaurantService restaurantService(){
@@ -36,7 +39,7 @@ public class TodaysLunchConfig {
 
   @Bean
   public MenuService menuService(){
-    return new MenuService(menuRepository);
+    return new MenuService(menuRepository, saleRepository);
   }
 
   @Bean
