@@ -1,12 +1,15 @@
 package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Member;
-import LikeLion.TodaysLunch.service.MemberService;
+import LikeLion.TodaysLunch.dto.MemberDto;
+import LikeLion.TodaysLunch.service.login.MemberService;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +20,23 @@ public class MemberController {
     @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
+    }
+
+    @PostMapping("/join")
+    public Long join(@Valid @RequestBody MemberDto memberDto) {
+        return memberService.join(memberDto);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody MemberDto memberDto) {
+        return memberService.login(memberDto);
+    }
+
+   /* @PutMapping("/user")
+    public void updateMemberCategories
+            (@RequestParam Member member, @RequestParam String locationCategory, @RequestParam String foodCategory){
+        memberService.setLocationCategory(member,locationCategory);
+        memberService.setFoodCategory(member,foodCategory);
     }
 
     @GetMapping("/user")
@@ -33,13 +53,6 @@ public class MemberController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok().body("Success");
-    }
-
-    @PutMapping("/user")
-    public void updateMemberCategories
-            (@RequestParam Member member, @RequestParam String locationCategory, @RequestParam String foodCategory){
-        memberService.setLocationCategory(member,locationCategory);
-        memberService.setFoodCategory(member,foodCategory);
-    }
+    }*/
 
 }
