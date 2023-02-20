@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch;
+package LikeLion.TodaysLunch.config;
 
 import LikeLion.TodaysLunch.repository.*;
 import LikeLion.TodaysLunch.service.*;
