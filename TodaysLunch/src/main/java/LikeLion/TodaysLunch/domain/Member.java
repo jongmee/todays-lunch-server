@@ -1,13 +1,13 @@
 package LikeLion.TodaysLunch.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,12 +22,9 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nickname;
-
     private String password;
 
-    @ManyToOne
     private LocationCategory locationCategory;
-    @ManyToOne
     private FoodCategory foodCategory;
 
     public Member(String nickname, String password) {
@@ -44,10 +41,6 @@ public class Member {
 
     public String getNickname() {
         return nickname;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public List<Review> getReview() {
