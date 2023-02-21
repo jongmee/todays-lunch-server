@@ -55,7 +55,7 @@ public class Member {
 //    }
 
     public void updateLocationCategory(String locationCategory) {
-        this.locationCategory = new LocationCategory(locationCategory);
+        this.locationCategory.setName(locationCategory);
     }
 
 
