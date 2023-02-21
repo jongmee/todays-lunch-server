@@ -99,7 +99,7 @@ public class Member implements UserDetails {
         return true;
     }
     public void updateLocationCategory(String locationCategory) {
-        this.locationCategory = new LocationCategory(locationCategory);
+        this.locationCategory.setName(locationCategory);
     }
 
 
