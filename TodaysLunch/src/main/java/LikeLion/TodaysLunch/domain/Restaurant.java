@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.domain;
 
 import com.sun.istack.NotNull;
+import java.time.LocalDate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -10,17 +11,16 @@ import lombok.Setter;
 public class Restaurant {
   @PrePersist
   public void prePersist() {
-    this.restaurantRecmd = this.restaurantRecmd == null? 0:this.restaurantRecmd;
-    this.restaurantDecmd = this.restaurantDecmd == null? 0:this.restaurantDecmd;
     this.rating = this.rating == null? 0.0:this.rating;
     this.judgement = this.judgement == null? false:this.judgement;
     this.reviewCount = this.reviewCount == null? 0L:this.reviewCount;
+    this.agreement = this.agreement == null? 0L:this.agreement;
   }
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-//  @NotNull
+  @NotNull
   private String restaurantName;
   @ManyToOne
   @JoinColumn
@@ -31,8 +31,6 @@ public class Restaurant {
   @ManyToOne
   @JoinColumn
   private LocationTag locationTag;
-  private Long restaurantRecmd;
-  private Long restaurantDecmd;
 //  /**
 //   * Todo: 이미지 필드에 대해 찾아보기
 //   */
@@ -44,8 +42,8 @@ public class Restaurant {
   private String introduction;
   private Double rating;
   private Boolean judgement;
-  private LocalDateTime startDate;
-  private LocalDateTime endDate;
+  private LocalDate startDate;
+  private LocalDate endDate;
   private Long agreement;
 
   private Long reviewCount;
