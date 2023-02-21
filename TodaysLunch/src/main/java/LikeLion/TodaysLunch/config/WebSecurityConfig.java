@@ -44,7 +44,7 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .authorizeRequests()
-                .antMatchers("/join", "/login", "/h2-console/**").permitAll()
+                .antMatchers("/","/join", "/login", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
 
