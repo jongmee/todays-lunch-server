@@ -3,7 +3,9 @@ package LikeLion.TodaysLunch.config;
 import LikeLion.TodaysLunch.token.JwtAuthenticationFilter;
 import LikeLion.TodaysLunch.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,10 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
+@Configuration
 public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
     private JwtTokenProvider jwtTokenProvider;
-
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -30,6 +34,7 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    @Bean
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable().headers().frameOptions().disable()
@@ -43,6 +48,6 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
 
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
