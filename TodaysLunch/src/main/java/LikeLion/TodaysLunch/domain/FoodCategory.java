@@ -1,26 +1,18 @@
 package LikeLion.TodaysLunch.domain;
 
+import com.sun.istack.NotNull;
 import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class FoodCategory {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @NotNull
   private String name;
 
-  public String getName() {
-    return name;
-  }
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }

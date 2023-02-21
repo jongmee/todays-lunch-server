@@ -58,7 +58,7 @@ public class RestaurantController {
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<Restaurant> detail(@PathVariable Long restaurantId) {
+  public ResponseEntity<Restaurant> detail(@PathVariable() Long restaurantId) {
     Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }

@@ -20,6 +20,9 @@ public class Sale {
   private LocalDate startDate;
   @NotNull
   private LocalDate endDate;
+  @NotNull
+  private Long salePrice;
+
   /**
    * Todo: 유저 모델과의 mapping 필요
    */
