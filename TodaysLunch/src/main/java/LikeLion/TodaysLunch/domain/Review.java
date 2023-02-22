@@ -57,7 +57,7 @@ public class Review {
   }
 
   @ManyToOne
-  @JoinColumn(name="group")
+  @JoinColumn(name="G_ID")
   private Member member;
 
 }
