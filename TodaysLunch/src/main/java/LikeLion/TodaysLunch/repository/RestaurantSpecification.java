@@ -11,6 +11,16 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RestaurantSpecification {
+
+  public static Specification<Restaurant> equalJudgement(Boolean judgement){
+    return new Specification<Restaurant>() {
+      @Override
+      public Predicate toPredicate(Root<Restaurant> root, CriteriaQuery<?> query,
+          CriteriaBuilder criteriaBuilder) {
+        return criteriaBuilder.equal(root.get("judgement"), judgement);
+      }
+    };
+  }
   public static Specification<Restaurant> equalFoodCategory(FoodCategory foodCategory){
     return new Specification<Restaurant>() {
       @Override

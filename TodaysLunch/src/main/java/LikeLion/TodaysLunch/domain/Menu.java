@@ -27,8 +27,8 @@ public class Menu {
   @OneToOne
   @JoinColumn
   private Sale sale;
-  /**
-   * Todo: 이미지 필드 추가
-   */
+  @OneToOne
+  @JoinColumn
+  private ImageUrl imageUrl;
 
 }
