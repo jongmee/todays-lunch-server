@@ -95,9 +95,8 @@ public class RestaurantController {
   }
 
   @GetMapping("/search/restaurant-name")
-  public ResponseEntity<List<Restaurant>> searchRestaurantName(@RequestParam String keyword, Pageable pageable){
-    List<Restaurant> restaurants= restaurantService.searchRestaurantName(keyword, pageable).getContent();
+  public ResponseEntity<List<Restaurant>> searchRestaurantByRestaurantName(@RequestParam String keyword, Pageable pageable){
+    List<Restaurant> restaurants= restaurantService.searchRestaurantByName(keyword, pageable).getContent();
     return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
-
 }
