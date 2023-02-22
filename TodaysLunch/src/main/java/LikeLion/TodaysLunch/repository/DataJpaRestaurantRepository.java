@@ -16,4 +16,5 @@ public interface DataJpaRestaurantRepository extends JpaRepository <Restaurant, 
   Page<Restaurant> findAllByLocationCategory(LocationCategory locationCategory, Pageable pageable);
   Page<Restaurant> findAllByLocationTag(LocationTag locationTag, Pageable pageable);
   Page<Restaurant> findAllByLocationTagAndFoodCategory(LocationTag locationTag, FoodCategory foodCategory, Pageable pageable);
+  Page<Restaurant> findByRestaurantNameContaining(String keyword, Pageable pageable);
 }
