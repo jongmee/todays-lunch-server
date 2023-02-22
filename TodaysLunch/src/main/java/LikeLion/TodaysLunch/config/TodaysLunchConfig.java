@@ -36,23 +36,11 @@ public class TodaysLunchConfig {
 
     @Bean
     public RestaurantService restaurantService() {
-        return new RestaurantService(restaurantRepository);
+        return new RestaurantService(restaurantRepository,
+                foodCategoryRepository, locationTagRepository,
+                locationCategoryRepository);
     }
 
-    @Bean
-    public FoodCategoryService foodCategoryService() {
-        return new FoodCategoryService(foodCategoryRepository);
-    }
-
-    @Bean
-    public LocationCategoryService locationCategoryService() {
-        return new LocationCategoryService(locationCategoryRepository);
-    }
-
-    @Bean
-    public LocationTagService locationTagService() {
-        return new LocationTagService(locationTagRepository);
-    }
 
     @Bean
     public MenuService menuService() {
