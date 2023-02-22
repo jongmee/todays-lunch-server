@@ -12,7 +12,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,9 +37,7 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne
     private LocationCategory locationCategory;
-    @ManyToOne
     private FoodCategory foodCategory;
 
     @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
@@ -63,10 +60,6 @@ public class Member implements UserDetails {
     @Override
     public String getUsername() {
         return nickname;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public List<Review> getReview() {
