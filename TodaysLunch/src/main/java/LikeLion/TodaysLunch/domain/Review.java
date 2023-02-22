@@ -56,8 +56,8 @@ public class Review {
     }
   }
 
-  @ManyToOne
-  @JoinColumn(name="G_ID")
-  private Member member;
+//  @ManyToOne
+//  @JoinColumn(name="group")
+//  private Member member;
 
 }

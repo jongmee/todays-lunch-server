@@ -8,7 +8,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class Menu {
   @Id
@@ -23,8 +27,8 @@ public class Menu {
   @OneToOne
   @JoinColumn
   private Sale sale;
-  /**
-   * Todo: 이미지 필드 추가
-   */
+  @OneToOne
+  @JoinColumn
+  private ImageUrl imageUrl;
 
 }
