@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -24,12 +25,9 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nickname;
-
     private String password;
 
-    @ManyToOne
     private LocationCategory locationCategory;
-    @ManyToOne
     private FoodCategory foodCategory;
     @OneToOne
     @JoinColumn
