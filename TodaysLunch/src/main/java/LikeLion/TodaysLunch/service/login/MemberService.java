@@ -19,6 +19,7 @@ public class MemberService {
 
     @Transactional
     public Long join(MemberDto memberDto) {
+        validateDuplication(memberDto);
         Member member = Member.builder()
                 .nickname(memberDto.getNickname())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
@@ -26,6 +27,12 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member).getId();
+    }
+
+    private void validateDuplication(MemberDto memberDto) {
+        if(memberRepository.findByNickname(memberDto.getNickname()).isPresent()){
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+        }
     }
 
     @Transactional
