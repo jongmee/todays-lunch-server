@@ -29,13 +29,10 @@ public class RestaurantController {
   static final String ORDER = "descending";
 
   private final RestaurantService restaurantService;
-  private final MenuService menuService;
 
   @Autowired
-  public RestaurantController(RestaurantService restaurantService,
-      MenuService menuService) {
+  public RestaurantController(RestaurantService restaurantService) {
     this.restaurantService = restaurantService;
-    this.menuService = menuService;
   }
 
   /**
@@ -62,23 +59,17 @@ public class RestaurantController {
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<Restaurant> detail(@PathVariable() Long restaurantId) {
+  public ResponseEntity<Restaurant> detail(@PathVariable Long restaurantId) {
     Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
-  @GetMapping("/{restaurantId}/menus")
-  public ResponseEntity<List<Menu>> menuList(@PathVariable Long restaurantId) {
-    Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
-    List<Menu> menus = menuService.findMenuByRestaurant(restaurant);
-    return ResponseEntity.status(HttpStatus.OK).body(menus);
-  }
 
   @PostMapping("/judges")
   public ResponseEntity<Restaurant> createJudge(
-      @RequestParam MultipartFile restaurantImage, @RequestParam String address, @RequestParam String restaurantName,
+      @RequestParam(required = false) MultipartFile restaurantImage, @RequestParam(required = false) String address, @RequestParam String restaurantName,
       @RequestParam String foodCategoryName, @RequestParam String locationCategoryName,
-      @RequestParam String locationTagName, @RequestParam String introduction
+      @RequestParam String locationTagName, @RequestParam(required = false) String introduction
   ) throws IOException {
     Restaurant restaurant = restaurantService.createJudgeRestaurant(address, restaurantName,
         foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage);
