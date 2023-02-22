@@ -14,13 +14,17 @@ public class TodaysLunchConfig {
   private final LocationTagRepository locationTagRepository;
   private final MenuRepository menuRepository;
   private final ReviewRepository reviewRepository;
+  private final SaleRepository saleRepository;
+  private final ImageUrlRepository imageUrlRepository;
   @Autowired
   public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
       FoodCategoryRepository foodCategoryRepository,
       LocationCategoryRepository locationCategoryRepository,
       LocationTagRepository locationTagRepository,
       MenuRepository menuRepository,
-      ReviewRepository reviewRepository)
+      ReviewRepository reviewRepository,
+      SaleRepository saleRepository,
+      ImageUrlRepository imageUrlRepository)
   {
     this.restaurantRepository = restaurantRepository;
     this.foodCategoryRepository = foodCategoryRepository;
@@ -28,27 +32,17 @@ public class TodaysLunchConfig {
     this.locationTagRepository = locationTagRepository;
     this.menuRepository = menuRepository;
     this.reviewRepository = reviewRepository;
+    this.saleRepository = saleRepository;
+    this.imageUrlRepository = imageUrlRepository;
   }
   @Bean
   public RestaurantService restaurantService(){
-    return new RestaurantService(restaurantRepository);
-  }
-  @Bean
-  public FoodCategoryService foodCategoryService(){
-    return new FoodCategoryService(foodCategoryRepository);
-  }
-  @Bean
-  public LocationCategoryService locationCategoryService(){
-    return new LocationCategoryService(locationCategoryRepository);
+    return new RestaurantService(restaurantRepository, foodCategoryRepository, locationTagRepository, locationCategoryRepository, imageUrlRepository);
   }
 
   @Bean
-  public LocationTagService locationTagService(){
-    return new LocationTagService(locationTagRepository);
-  }
-  @Bean
   public MenuService menuService(){
-    return new MenuService(menuRepository);
+    return new MenuService(menuRepository, saleRepository);
   }
 
   @Bean
