@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.token;
 
+import LikeLion.TodaysLunch.service.login.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -7,23 +8,25 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
+
 @Component
 public class JwtTokenProvider {
     private static String secretKey = "todayslunch";
     private static String SECRET_KEY = Base64.getEncoder().encodeToString(secretKey.getBytes());
     private long tokenValidTime = 24 * 60 * 60 * 1000L;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailService customUserDetailService;
+
+    @Autowired
+    public JwtTokenProvider(CustomUserDetailService customUserDetailService) {
+        this.customUserDetailService = customUserDetailService;
+    }
 
 
     public String createToken(String userPk, List<String> roles) {
@@ -39,7 +42,7 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
+        UserDetails userDetails = customUserDetailService.loadUserByUsername(this.getUserPk(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

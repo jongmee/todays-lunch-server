@@ -1,8 +1,7 @@
 package LikeLion.TodaysLunch.config;
 
 import LikeLion.TodaysLunch.token.JwtAuthenticationFilter;
-import LikeLion.TodaysLunch.token.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +14,14 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@RequiredArgsConstructor
+
+@AllArgsConstructor
 @EnableWebSecurity
 @Configuration
-public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
-    private JwtTokenProvider jwtTokenProvider;
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -34,7 +34,6 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    @Bean
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable().headers().frameOptions().disable()
@@ -44,7 +43,7 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .authorizeRequests()
-                .antMatchers("/","/join", "/login", "/h2-console/**").permitAll()
+                .antMatchers("/", "/join", "/login", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
 
