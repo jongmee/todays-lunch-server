@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"LikeLion.TodaysLunch.token","LikeLion.TodaysLunch.config"})
 public class TodaysLunchApplication/* implements CommandLineRunner*/ {
 
     /*@Override

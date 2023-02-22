@@ -14,7 +14,6 @@ public class CustomUserDetailService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    @Bean
     public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
         return memberRepository.findByNickname(nickname)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 멤버입니다"));

@@ -64,8 +64,4 @@ public class TodaysLunchConfig {
         return new ReviewService(reviewRepository, restaurantRepository);
     }
 
-    @Bean
-    public CustomUserDetailService customUserDetailService() {
-        return new CustomUserDetailService(memberRepository);
-    }
 }
