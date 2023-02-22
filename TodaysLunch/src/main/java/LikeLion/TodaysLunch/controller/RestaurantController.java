@@ -3,17 +3,21 @@ package LikeLion.TodaysLunch.controller;
 import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.JudgeDto;
 import LikeLion.TodaysLunch.repository.RestaurantSpecification;
 import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -68,5 +72,22 @@ public class RestaurantController {
     Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
     List<Menu> menus = menuService.findMenuByRestaurant(restaurant);
     return ResponseEntity.status(HttpStatus.OK).body(menus);
+  }
+
+  @PostMapping("/judges")
+  public ResponseEntity<Restaurant> createJudge(
+      @RequestParam MultipartFile restaurantImage, @RequestParam String address, @RequestParam String restaurantName,
+      @RequestParam String foodCategoryName, @RequestParam String locationCategoryName,
+      @RequestParam String locationTagName, @RequestParam String introduction
+  ) throws IOException {
+    Restaurant restaurant = restaurantService.createJudgeRestaurant(address, restaurantName,
+        foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+  }
+
+  @GetMapping("/judges")
+  public ResponseEntity<List<Restaurant>> AllJudgeRestaurantList(Pageable pageable){
+  List<Restaurant> restaurants = restaurantService.judgeRestaurantList(pageable).getContent();
+  return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 }

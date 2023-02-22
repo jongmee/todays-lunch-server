@@ -12,7 +12,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +42,9 @@ public class Member implements UserDetails {
 
     private LocationCategory locationCategory;
     private FoodCategory foodCategory;
+    @OneToOne
+    @JoinColumn
+    private ImageUrl imageUrl;
 
     @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
     @Builder.Default

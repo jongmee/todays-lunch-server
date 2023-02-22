@@ -4,9 +4,12 @@ import com.sun.istack.NotNull;
 import java.time.LocalDate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 @Getter
+@NoArgsConstructor
 @Entity
 public class Restaurant {
   @PrePersist
@@ -31,10 +34,9 @@ public class Restaurant {
   @ManyToOne
   @JoinColumn
   private LocationTag locationTag;
-//  /**
-//   * Todo: 이미지 필드에 대해 찾아보기
-//   */
-//  private String restaurantImage;
+  @OneToOne
+  @JoinColumn
+  private ImageUrl imageUrl;
   private Double latitude;
   private Double longitude;
 
@@ -47,12 +49,27 @@ public class Restaurant {
   private Long agreement;
 
   private Long reviewCount;
+
+  // 맛집 심사를 위한 등록에서 쓰임
+  @Builder
+  public Restaurant(String restaurantName, FoodCategory foodCategory,
+      LocationCategory locationCategory, LocationTag locationTag, String address, String introduction) {
+    this.restaurantName = restaurantName;
+    this.foodCategory = foodCategory;
+    this.locationCategory = locationCategory;
+    this.locationTag = locationTag;
+    this.address = address;
+    this.introduction = introduction;
+    this.judgement = true;
+    this.startDate = LocalDate.now();
+    this.endDate = LocalDate.now().plusDays(7);
+  }
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setRestaurantName(String restaurantName) {
-    this.restaurantName = restaurantName;
+  public void setImageUrl(ImageUrl imageUrl) {
+    this.imageUrl = imageUrl;
   }
 
   public void setRating(Double rating) {
