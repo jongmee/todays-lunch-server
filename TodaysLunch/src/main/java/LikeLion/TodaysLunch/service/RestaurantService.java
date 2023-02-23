@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.dto.JudgeDto;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
@@ -84,16 +85,20 @@ public class RestaurantService {
     return restaurantRepository.findById(id).get();
   }
 
-  public Restaurant createJudgeRestaurant(String address, String restaurantName, String foodCategoryName,
+  public Restaurant createJudgeRestaurant(Member member, String address, String restaurantName, String foodCategoryName,
       String locationCategoryName, String locationTagName, String introduction,  MultipartFile restaurantImage)
       throws IOException {
-    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName).get();
-    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName).get();
-    LocationTag locationTag = locationTagRepository.findByName(locationTagName).get();
+    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
+        .orElseThrow(() -> new IllegalArgumentException("음식 카테고리 "+foodCategoryName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
+        .orElseThrow(() -> new IllegalArgumentException("위치 카테고리 "+locationCategoryName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+    LocationTag locationTag = locationTagRepository.findByName(locationTagName)
+        .orElseThrow(() -> new IllegalArgumentException("위치 태그 "+locationTagName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
 
     JudgeDto judgeDto = new JudgeDto(restaurantName, foodCategory,
         locationCategory, locationTag, address, introduction);
     Restaurant restaurant = judgeDto.toEntity();
+    restaurant.setMember(member);
 
     if(!restaurantImage.isEmpty()) {
       ImageUrl imageUrl = new ImageUrl();

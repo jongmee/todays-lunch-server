@@ -81,4 +81,5 @@ public class Restaurant {
   public void setReviewCount(Long reviewCount) {
     this.reviewCount = reviewCount;
   }
+  public void setMember(Member member) { this.member = member; }
 }

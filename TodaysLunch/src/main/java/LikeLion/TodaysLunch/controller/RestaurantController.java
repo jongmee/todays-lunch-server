@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.controller;
 
 
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,11 +68,17 @@ public class RestaurantController {
   public ResponseEntity<Restaurant> createJudge(
       @RequestParam(required = false) MultipartFile restaurantImage, @RequestParam(required = false) String address, @RequestParam String restaurantName,
       @RequestParam String foodCategoryName, @RequestParam String locationCategoryName,
-      @RequestParam String locationTagName, @RequestParam(required = false) String introduction
+      @RequestParam String locationTagName, @RequestParam(required = false) String introduction,
+      @AuthenticationPrincipal Member member
   ) throws IOException {
-    Restaurant restaurant = restaurantService.createJudgeRestaurant(address, restaurantName,
+    Restaurant restaurant = restaurantService.createJudgeRestaurant(member, address, restaurantName,
         foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage);
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+  }
+
+  @GetMapping("/test")
+  public String test(){
+    return "success";
   }
 
   @GetMapping("/judges")
