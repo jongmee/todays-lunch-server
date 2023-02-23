@@ -17,7 +17,7 @@ public class TokenDto {
         this.expirationTime = JwtTokenProvider.getExpirationTime(token);
     }
 
-    public Object getToken() {
+    public String getToken() {
         return this.token;
     }
 

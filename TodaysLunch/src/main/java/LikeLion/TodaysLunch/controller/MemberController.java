@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.dto.MemberDto;
+import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.MemberService;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody MemberDto memberDto) {
+    public TokenDto login(@RequestBody MemberDto memberDto) {
         return memberService.login(memberDto);
     }
 
