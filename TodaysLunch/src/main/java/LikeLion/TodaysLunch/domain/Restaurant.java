@@ -47,8 +47,10 @@ public class Restaurant {
   private LocalDate startDate;
   private LocalDate endDate;
   private Long agreement;
-
   private Long reviewCount;
+  @OneToOne
+  @JoinColumn
+  private Member member;
 
   // 맛집 심사를 위한 등록에서 쓰임
   @Builder
