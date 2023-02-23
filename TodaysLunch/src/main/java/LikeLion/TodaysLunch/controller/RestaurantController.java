@@ -68,10 +68,9 @@ public class RestaurantController {
   public ResponseEntity<Restaurant> createJudge(
       @RequestParam(required = false) MultipartFile restaurantImage, @RequestParam(required = false) String address, @RequestParam String restaurantName,
       @RequestParam String foodCategoryName, @RequestParam String locationCategoryName,
-      @RequestParam String locationTagName, @RequestParam(required = false) String introduction,
-      @AuthenticationPrincipal Member member
+      @RequestParam String locationTagName, @RequestParam(required = false) String introduction
   ) throws IOException {
-    Restaurant restaurant = restaurantService.createJudgeRestaurant(member, address, restaurantName,
+    Restaurant restaurant = restaurantService.createJudgeRestaurant(address, restaurantName,
         foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage);
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }

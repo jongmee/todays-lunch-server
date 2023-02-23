@@ -46,6 +46,12 @@ public class MenuService {
 
   public Menu create(MultipartFile menuImage, String name, Long price, Long restaurantId) throws IOException {
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+    // 최저 메뉴 가격 설정
+    Long originalLowestPrice = restaurant.getLowestPrice();
+    if (originalLowestPrice == null || originalLowestPrice > price){
+      restaurant.setLowestPrice(price);
+      restaurantRepository.save(restaurant);
+    }
     Menu menu = new Menu();
     menu.setName(name);
     menu.setPrice(price);

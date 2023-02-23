@@ -48,6 +48,7 @@ public class Restaurant {
   private LocalDate endDate;
   private Long agreement;
   private Long reviewCount;
+  private Long lowestPrice;
   @OneToOne
   @JoinColumn
   private Member member;
@@ -82,4 +83,5 @@ public class Restaurant {
     this.reviewCount = reviewCount;
   }
   public void setMember(Member member) { this.member = member; }
+  public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
 }

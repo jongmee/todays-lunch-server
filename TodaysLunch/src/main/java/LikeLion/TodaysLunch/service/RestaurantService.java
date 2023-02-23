@@ -55,9 +55,9 @@ public class RestaurantService {
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    FoodCategory foodCategoryObj = new FoodCategory();
-    LocationCategory locationCategoryObj = new LocationCategory();
-    LocationTag locationTagObj = new LocationTag();
+    FoodCategory foodCategoryObj;
+    LocationCategory locationCategoryObj;
+    LocationTag locationTagObj;
 
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
     if (foodCategory != null) {
@@ -85,7 +85,7 @@ public class RestaurantService {
     return restaurantRepository.findById(id).get();
   }
 
-  public Restaurant createJudgeRestaurant(Member member, String address, String restaurantName, String foodCategoryName,
+  public Restaurant createJudgeRestaurant(String address, String restaurantName, String foodCategoryName,
       String locationCategoryName, String locationTagName, String introduction,  MultipartFile restaurantImage)
       throws IOException {
     FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
@@ -98,7 +98,6 @@ public class RestaurantService {
     JudgeDto judgeDto = new JudgeDto(restaurantName, foodCategory,
         locationCategory, locationTag, address, introduction);
     Restaurant restaurant = judgeDto.toEntity();
-    restaurant.setMember(member);
 
     if(!restaurantImage.isEmpty()) {
       ImageUrl imageUrl = new ImageUrl();
