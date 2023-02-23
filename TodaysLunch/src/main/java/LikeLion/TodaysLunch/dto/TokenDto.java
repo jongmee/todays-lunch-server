@@ -1,27 +1,27 @@
 package LikeLion.TodaysLunch.dto;
 
 
-import LikeLion.TodaysLunch.token.JwtTokenProvider;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import java.util.Date;
+import javax.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class TokenDto {
 
-    private final String token;
-    private final Date expirationTime;
+    @NotNull
+    private String token;
+    @NotNull
+    private long tokenExpiresTime;
 
-    public TokenDto(String token) {
+    public TokenDto(String token, long tokenExpiresTime) {
         this.token = token;
-        this.expirationTime = JwtTokenProvider.getExpirationTime(token);
+        this.tokenExpiresTime = tokenExpiresTime;
     }
 
     public String getToken() {
         return this.token;
     }
 
-    public Date getTokenExpiresTime() {
-        return this.expirationTime;
+    public long getTokenExpiresTime() {
+        return this.tokenExpiresTime;
     }
 }
