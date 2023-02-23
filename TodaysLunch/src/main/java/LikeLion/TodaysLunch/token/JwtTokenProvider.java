@@ -34,12 +34,13 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userPk);
         claims.put("roles", roles);
         Date now = new Date();
+        long expiration = now.getTime() + tokenValidTime;
         return new TokenDto(Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .setExpiration(new Date(expiration))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact());
+                .compact(),expiration);
     }
 
     public Authentication getAuthentication(String token) {
