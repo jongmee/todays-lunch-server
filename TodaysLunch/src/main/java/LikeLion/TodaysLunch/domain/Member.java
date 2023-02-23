@@ -51,6 +51,7 @@ public class Member implements UserDetails {
     @JoinColumn
     private ImageUrl imageUrl;
 
+
     @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
     @Builder.Default
     private List<String> roles = new ArrayList<>();
@@ -63,6 +64,7 @@ public class Member implements UserDetails {
 
 //    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "member")
 //    private List<Review> review = new ArrayList<>();
+
 
     public Long getId() {
         return id;

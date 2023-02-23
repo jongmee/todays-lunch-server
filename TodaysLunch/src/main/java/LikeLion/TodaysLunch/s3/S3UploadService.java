@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.s3;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -33,6 +34,14 @@ public class S3UploadService {
     return amazonS3Client.getUrl(bucket, imageName).toString();
   }
 
+  // 현재는 Prefix의 길이가 모든 S3 이미지 파일에서 똑같아서 sunstring 함수를 사용했으나 추후 문제가 발생할 가능성이 있어 보임
+  public void delete(String imageName){
+    try {
+      amazonS3Client.deleteObject(this.bucket, imageName.substring(60));
+    } catch (AmazonServiceException e) {
+      System.err.println(e.getErrorMessage());
+    }
+  }
 
 
   // MultipartFile을 전달받아 File로 전환한 후 S3에 업로드
