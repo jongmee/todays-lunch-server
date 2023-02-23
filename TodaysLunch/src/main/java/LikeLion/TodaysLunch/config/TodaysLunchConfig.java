@@ -44,7 +44,7 @@ public class TodaysLunchConfig {
     public RestaurantService restaurantService() {
         return new RestaurantService(restaurantRepository,
                 foodCategoryRepository, locationTagRepository,
-                locationCategoryRepository, imageUrlRepository);
+                locationCategoryRepository, imageUrlRepository, memberRepository);
     }
 
 

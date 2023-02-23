@@ -6,6 +6,7 @@ import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +32,6 @@ public class RestaurantController {
     this.restaurantService = restaurantService;
   }
 
-  /**
-   * paging parameter 예시
-   * http://localhost:8080/restaurant?page=1&size=5
-   */
-  /**
-   * 설계
-   * restaurant?food-category=korean&location-category=sogang&location-tag&keyword=검색어&page=1&size=5&sorting=rating&order=ascending
-   */
   @GetMapping("")
   public ResponseEntity<HashMap<String, Object>> allRestaurantList(
       @RequestParam(value = "food-category", required = false) String foodCategory,
@@ -63,7 +56,6 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
-
   @PostMapping("/judges")
   public ResponseEntity<Restaurant> createJudge(
       @RequestParam(required = false) MultipartFile restaurantImage, @RequestParam(required = false) String address, @RequestParam String restaurantName,
@@ -87,5 +79,12 @@ public class RestaurantController {
   responseMap.put("data", restaurants.getContent());
   responseMap.put("totalPages", restaurants.getTotalPages());
   return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+  }
+
+  // 임시로 유저의 ID 값을 경로 변수로 받기
+  @GetMapping("/recommendation/{userId}")
+  public ResponseEntity<List<Restaurant>> recommendation(@PathVariable Long userId){
+    List<Restaurant> restaurants = restaurantService.recommendation(userId);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 }
