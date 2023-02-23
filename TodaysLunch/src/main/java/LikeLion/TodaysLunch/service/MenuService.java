@@ -111,4 +111,18 @@ public class MenuService {
 
     return menuRepository.save(menu);
   }
+
+  public Menu delete(Long restaurantId, Long menuId){
+    Menu menu = menuRepository.findById(menuId).get();
+
+    // 메뉴의 image가 있다면 s3에서 삭제
+    ImageUrl deleteImage = new ImageUrl();
+    if (menu.getImageUrl() != null ){
+      deleteImage = menu.getImageUrl();
+      s3UploadService.delete(deleteImage.getImageUrl()); // (전체 url string을 넘김)
+    }
+
+    menuRepository.delete(menu);
+    return menu;
+  }
 }
