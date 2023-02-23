@@ -6,8 +6,10 @@ import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.token.JwtTokenProvider;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,9 +49,24 @@ public class MemberService {
         }
 
         TokenDto tokenDto = jwtTokenProvider.createToken(member.getNickname(), member.getRoles());
+        long expiration = JwtTokenProvider.getExpirationTime(tokenDto.getToken()).getTime();
         redisTemplate.opsForValue()
-                .set(member.getNickname(), tokenDto.getToken());
+                .set(member.getNickname(), tokenDto.getToken(), expiration, TimeUnit.MILLISECONDS);
 
         return tokenDto;
+    }
+
+    @Transactional
+    public void logout(TokenDto tokenDto) {
+        String token = tokenDto.getToken();
+        if (jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        if (redisTemplate.opsForValue().get(authentication.getName()) != null) {
+            redisTemplate.delete(authentication.getName());
+        }
+        long expiration = JwtTokenProvider.getExpirationTime(token).getTime();
+        redisTemplate.opsForValue().set(token, "logout", expiration, TimeUnit.MILLISECONDS);
     }
 }
