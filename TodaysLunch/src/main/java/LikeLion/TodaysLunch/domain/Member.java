@@ -40,7 +40,11 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @ManyToOne
+    @JoinColumn
     private LocationCategory locationCategory;
+    @ManyToOne
+    @JoinColumn
     private FoodCategory foodCategory;
     @OneToOne
     @JoinColumn
