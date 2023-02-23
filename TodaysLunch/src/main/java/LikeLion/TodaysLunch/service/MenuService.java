@@ -60,7 +60,7 @@ public class MenuService {
     return menuRepository.findBySaleIsNotNull(pageable);
   }
 
-  public Menu createMenu(MultipartFile menuImage, String name, Long price, Long restaurantId) throws IOException {
+  public Menu create(MultipartFile menuImage, String name, Long price, Long restaurantId) throws IOException {
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
     Menu menu = new Menu();
     menu.setName(name);
@@ -70,11 +70,42 @@ public class MenuService {
       ImageUrl imageUrl = new ImageUrl();
       String originalName = menuImage.getOriginalFilename();
       String savedUrl = s3UploadService.upload(menuImage, "menu");
-      imageUrl.setImageUrl(savedUrl);
       imageUrl.setOriginalName(originalName);
+      imageUrl.setImageUrl(savedUrl);
       imageUrlRepository.save(imageUrl);
       menu.setImageUrl(imageUrl);
     }
+    return menuRepository.save(menu);
+  }
+
+  public Menu update(MultipartFile menuImage, String name, Long price, Long restaurantId, Long menuId) throws IOException{
+    Menu menu = menuRepository.findById(menuId).get();
+    if(menuImage != null && !menuImage.isEmpty()){
+      // 기존 image를 s3에서 삭제
+      ImageUrl deleteImage = new ImageUrl();
+      if(menu.getImageUrl() != null) {
+        deleteImage = menu.getImageUrl();
+        s3UploadService.delete(deleteImage.getImageUrl()); // (전체 url string을 넘김)
+      }
+
+      // s3에 update된 image 저장
+      String savedUrl = s3UploadService.upload(menuImage, "menu");
+
+      // update된 image url을 db에 저장하고 menu에 등록
+      ImageUrl imageUrl = new ImageUrl();
+      String originalName = menuImage.getOriginalFilename();
+      imageUrl.setOriginalName(originalName);
+      imageUrl.setImageUrl(savedUrl);
+      imageUrlRepository.save(imageUrl);
+      menu.setImageUrl(imageUrl);
+      // 기존 image url을 db에서 삭제
+      if(deleteImage.getImageUrl() != null) {
+        imageUrlRepository.delete(deleteImage);
+      }
+    }
+    if(name != null) menu.setName(name);
+    if(price != null) menu.setPrice(price);
+
     return menuRepository.save(menu);
   }
 }

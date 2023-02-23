@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +53,15 @@ public class MenuController {
   @PostMapping("restaurants/{restaurantId}/menus")
   public ResponseEntity<Menu> createMenu(@RequestParam(required = false) MultipartFile menuImage,
       @RequestParam String name, @RequestParam Long price, @PathVariable Long restaurantId) throws IOException {
-    Menu menu = menuService.createMenu(menuImage, name, price, restaurantId);
+    Menu menu = menuService.create(menuImage, name, price, restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).body(menu);
+  }
+
+  @PatchMapping("restaurants/{restaurantId}/menus/{menuId}")
+  public ResponseEntity<Menu> updateMenu(@RequestParam(required = false) MultipartFile menuImage,
+      @RequestParam(required = false) String name, @RequestParam(required = false) Long price,
+      @PathVariable Long restaurantId, @PathVariable Long menuId) throws IOException {
+    Menu menu = menuService.update(menuImage, name, price, restaurantId, menuId);
     return ResponseEntity.status(HttpStatus.OK).body(menu);
   }
 }
