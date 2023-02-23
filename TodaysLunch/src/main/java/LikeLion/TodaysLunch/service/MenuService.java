@@ -23,17 +23,14 @@ public class MenuService {
   @Autowired
   private S3UploadService s3UploadService;
   private final MenuRepository menuRepository;
-  private final SaleRepository saleRepository;
   private final ImageUrlRepository imageUrlRepository;
 
   private final DataJpaRestaurantRepository restaurantRepository;
   @Autowired
   public MenuService(MenuRepository menuRepository,
-      SaleRepository saleRepository,
       ImageUrlRepository imageUrlRepository,
       DataJpaRestaurantRepository restaurantRepository) {
     this.menuRepository = menuRepository;
-    this.saleRepository = saleRepository;
     this.imageUrlRepository = imageUrlRepository;
     this.restaurantRepository = restaurantRepository;
   }
@@ -46,19 +43,6 @@ public class MenuService {
     return menuRepository.findByNameContaining(keyword, pageable);
   }
 
-  public Page<Menu> saleMenuList(Pageable pageable){
-    LocalDate todayDate = LocalDate.now();
-    List<Sale> sales = saleRepository.findByEndDateBefore(todayDate);
-    for(int i = 0; i < sales.size(); i++){
-      Sale sale = sales.get(i);
-      Menu menu = menuRepository.findBySale(sale);
-      System.out.print(menu.getSale().getEndDate());
-      menu.setSale(null);
-      menuRepository.save(menu);
-      saleRepository.delete(sale);
-    }
-    return menuRepository.findBySaleIsNotNull(pageable);
-  }
 
   public Menu create(MultipartFile menuImage, String name, Long price, Long restaurantId) throws IOException {
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();

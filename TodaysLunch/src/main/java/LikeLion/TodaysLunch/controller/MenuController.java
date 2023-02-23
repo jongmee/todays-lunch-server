@@ -32,12 +32,6 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.OK).body(menus);
   }
 
-  @GetMapping("/sale-menus")
-  public ResponseEntity<List<Menu>> saleMenuList(Pageable pageable){
-    List<Menu> menus = menuService.saleMenuList(pageable).getContent();
-    return ResponseEntity.status(HttpStatus.OK).body(menus);
-  }
-
   @GetMapping("restaurants/{restaurantId}/menus")
   public ResponseEntity<List<Menu>> menuList(@PathVariable Long restaurantId) {
     Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
