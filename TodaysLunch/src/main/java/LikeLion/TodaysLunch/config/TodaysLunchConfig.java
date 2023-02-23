@@ -50,7 +50,7 @@ public class TodaysLunchConfig {
 
     @Bean
     public MenuService menuService() {
-        return new MenuService(menuRepository, saleRepository);
+        return new MenuService(menuRepository, saleRepository, imageUrlRepository, restaurantRepository);
     }
 
     @Bean
