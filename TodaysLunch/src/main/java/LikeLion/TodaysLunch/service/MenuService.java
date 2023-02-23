@@ -66,13 +66,16 @@ public class MenuService {
     menu.setName(name);
     menu.setPrice(price);
     menu.setRestaurant(restaurant);
-    if(!menuImage.isEmpty()){
+    if(menuImage != null && !menuImage.isEmpty()){
+      // s3에 이미지 저장
+      String savedUrl = s3UploadService.upload(menuImage, "menu");
+      // image url을 db에 저장
       ImageUrl imageUrl = new ImageUrl();
       String originalName = menuImage.getOriginalFilename();
-      String savedUrl = s3UploadService.upload(menuImage, "menu");
       imageUrl.setOriginalName(originalName);
       imageUrl.setImageUrl(savedUrl);
       imageUrlRepository.save(imageUrl);
+      // 해당 메뉴에 image url 저장
       menu.setImageUrl(imageUrl);
     }
     return menuRepository.save(menu);
