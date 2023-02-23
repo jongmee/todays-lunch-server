@@ -6,6 +6,7 @@ import LikeLion.TodaysLunch.service.login.MemberService;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,5 +29,9 @@ public class MemberController {
         return memberService.login(memberDto);
     }
 
+    @PutMapping("/logout-member")
+    public void logout(@RequestBody TokenDto tokenDto) {
+        memberService.logout(tokenDto);
+    }
 
 }
