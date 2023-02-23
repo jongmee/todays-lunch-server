@@ -35,8 +35,8 @@ public class MenuService {
     this.restaurantRepository = restaurantRepository;
   }
 
-  public List<Menu> findMenuByRestaurant(Restaurant restaurant){
-    return menuRepository.findAllByRestaurant(restaurant);
+  public Page<Menu> findMenuByRestaurant(Restaurant restaurant, Pageable pageable){
+    return menuRepository.findAllByRestaurant(restaurant, pageable);
   }
 
   public Page<Menu> searchMenuName(String keyword, Pageable pageable){

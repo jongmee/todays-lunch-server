@@ -5,8 +5,10 @@ import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +35,13 @@ public class MenuController {
   }
 
   @GetMapping("restaurants/{restaurantId}/menus")
-  public ResponseEntity<List<Menu>> menuList(@PathVariable Long restaurantId) {
+  public ResponseEntity<HashMap<String, Object>> menuList(@PathVariable Long restaurantId, Pageable pageable) {
     Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
-    List<Menu> menus = menuService.findMenuByRestaurant(restaurant);
-    return ResponseEntity.status(HttpStatus.OK).body(menus);
+    Page<Menu> menus = menuService.findMenuByRestaurant(restaurant, pageable);
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", menus.getContent());
+    responseMap.put("totalPages", menus.getTotalPages());
+    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
   @PostMapping("restaurants/{restaurantId}/menus")
