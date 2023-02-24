@@ -43,6 +43,7 @@ public class Member implements UserDetails {
     @ManyToOne
     @JoinColumn
     private LocationCategory locationCategory;
+
     @ManyToOne
     @JoinColumn
     private FoodCategory foodCategory;
