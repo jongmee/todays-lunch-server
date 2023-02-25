@@ -27,15 +27,12 @@ public class Restaurant {
   private String restaurantName;
   @ManyToOne
   @JoinColumn
-  @Column(nullable = false)
   private FoodCategory foodCategory;
   @ManyToOne
   @JoinColumn
-  @Column(nullable = false)
   private LocationCategory locationCategory;
   @ManyToOne
   @JoinColumn
-  @Column(nullable = false)
   private LocationTag locationTag;
   @OneToOne
   @JoinColumn

@@ -42,11 +42,9 @@ public class Member implements UserDetails {
 
     @ManyToOne
     @JoinColumn
-    @Column(nullable = false)
     private LocationCategory locationCategory;
     @ManyToOne
     @JoinColumn
-    @Column(nullable = false)
     private FoodCategory foodCategory;
     @OneToOne
     @JoinColumn

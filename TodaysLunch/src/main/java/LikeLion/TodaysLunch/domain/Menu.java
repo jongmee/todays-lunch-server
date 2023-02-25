@@ -24,13 +24,9 @@ public class Menu {
   private Long price;
   @ManyToOne
   @JoinColumn
-  @Column(nullable = false)
   private Restaurant restaurant;
   @OneToOne
   @JoinColumn
   private Sale sale;
-  @OneToOne
-  @JoinColumn
-  private ImageUrl imageUrl;
 
 }

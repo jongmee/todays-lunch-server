@@ -37,7 +37,6 @@ public class Review {
   private Long reviewDecmd;
   @ManyToOne
   @JoinColumn
-  @Column(nullable = false)
   private Restaurant restaurant;
 
   @Builder
