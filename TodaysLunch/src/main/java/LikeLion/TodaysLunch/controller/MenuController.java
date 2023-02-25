@@ -52,10 +52,9 @@ public class MenuController {
   }
 
   @PatchMapping("restaurants/{restaurantId}/menus/{menuId}")
-  public ResponseEntity<Menu> updateMenu(@RequestParam(required = false) MultipartFile menuImage,
-      @RequestParam(required = false) String name, @RequestParam(required = false) Long price,
-      @PathVariable Long restaurantId, @PathVariable Long menuId) throws IOException {
-    Menu menu = menuService.update(menuImage, name, price, restaurantId, menuId);
+  public ResponseEntity<Menu> updateMenu(@RequestParam(required = false) String name, @RequestParam(required = false) Long price,
+      @PathVariable Long restaurantId, @PathVariable Long menuId) {
+    Menu menu = menuService.update(name, price, restaurantId, menuId);
     return ResponseEntity.status(HttpStatus.OK).body(menu);
   }
 
