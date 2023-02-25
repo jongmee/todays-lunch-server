@@ -76,30 +76,18 @@ public class MenuService {
   }
 
   public Menu update(String name, Long price, Long restaurantId, Long menuId){
-    Menu menu = menuRepository.findById(menuId).get();
-//    if(menuImage != null && !menuImage.isEmpty()){
-//      // 기존 image를 s3에서 삭제
-//      ImageUrl deleteImage = new ImageUrl();
-//      if(menu.getImageUrl() != null) {
-//        deleteImage = menu.getImageUrl();
-//        s3UploadService.delete(deleteImage.getImageUrl()); // (전체 url string을 넘김)
-//      }
-//
-//      // s3에 update된 image 저장
-//      String savedUrl = s3UploadService.upload(menuImage, "menu");
-//
-//      // update된 image url을 db에 저장하고 menu에 등록
-//      ImageUrl imageUrl = new ImageUrl();
-//      String originalName = menuImage.getOriginalFilename();
-//      imageUrl.setOriginalName(originalName);
-//      imageUrl.setImageUrl(savedUrl);
-//      imageUrlRepository.save(imageUrl);
-//      menu.setImageUrl(imageUrl);
-//      // 기존 image url을 db에서 삭제
-//      if(deleteImage.getImageUrl() != null) {
-//        imageUrlRepository.delete(deleteImage);
-//      }
-//    }
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new IllegalArgumentException("메뉴 수정 실패! 메뉴를 수정하기 위한 대상 메뉴가 없습니다."));
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new IllegalArgumentException("메뉴 수정 실패! 메뉴를 수정하기 위한 대상 맛집이 없습니다."));
+
+    // 최저 메뉴 가격 설정
+    Long originalLowestPrice = restaurant.getLowestPrice();
+    if (originalLowestPrice == null || originalLowestPrice > price){
+      restaurant.setLowestPrice(price);
+      restaurantRepository.save(restaurant);
+    }
+
     if(name != null) menu.setName(name);
     if(price != null) menu.setPrice(price);
 
