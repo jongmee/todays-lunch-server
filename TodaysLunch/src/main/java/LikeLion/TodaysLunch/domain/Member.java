@@ -42,9 +42,11 @@ public class Member implements UserDetails {
 
     @ManyToOne
     @JoinColumn
+    @Column(nullable = false)
     private LocationCategory locationCategory;
     @ManyToOne
     @JoinColumn
+    @Column(nullable = false)
     private FoodCategory foodCategory;
     @OneToOne
     @JoinColumn
@@ -61,9 +63,6 @@ public class Member implements UserDetails {
         this.password = password;
     }
 
-//    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "member")
-//    private List<Review> review = new ArrayList<>();
-
 
     public Long getId() {
         return id;
@@ -74,16 +73,10 @@ public class Member implements UserDetails {
         return nickname;
     }
 
-    /*public List<Review> getReview() {
-        return review;
-    }*/
     public String getPassword() {
         return password;
     }
 
-//    public List<Review> getReview() {
-//        return review;
-//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

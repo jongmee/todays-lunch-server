@@ -23,16 +23,19 @@ public class Restaurant {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @NotNull
+  @Column(nullable = false)
   private String restaurantName;
   @ManyToOne
   @JoinColumn
+  @Column(nullable = false)
   private FoodCategory foodCategory;
   @ManyToOne
   @JoinColumn
+  @Column(nullable = false)
   private LocationCategory locationCategory;
   @ManyToOne
   @JoinColumn
+  @Column(nullable = false)
   private LocationTag locationTag;
   @OneToOne
   @JoinColumn
