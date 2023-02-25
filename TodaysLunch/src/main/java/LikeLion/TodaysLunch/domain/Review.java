@@ -31,6 +31,7 @@ public class Review {
   private Long id;
   @Column(length = 200, nullable = false)
   private String reviewContent;
+  @Column(nullable = false)
   private Integer rating;
   private Long reviewRecmd;
   private Long reviewDecmd;

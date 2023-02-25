@@ -1,21 +1,18 @@
 package LikeLion.TodaysLunch.controller;
 
-import LikeLion.TodaysLunch.domain.FoodCategory;
-import LikeLion.TodaysLunch.domain.Menu;
+
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
-import LikeLion.TodaysLunch.dto.JudgeDto;
-import LikeLion.TodaysLunch.repository.RestaurantSpecification;
-import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,16 +32,8 @@ public class RestaurantController {
     this.restaurantService = restaurantService;
   }
 
-  /**
-   * paging parameter 예시
-   * http://localhost:8080/restaurant?page=1&size=5
-   */
-  /**
-   * 설계
-   * restaurant?food-category=korean&location-category=sogang&location-tag&keyword=검색어&page=1&size=5&sorting=rating&order=ascending
-   */
   @GetMapping("")
-  public ResponseEntity<List<Restaurant>> allRestaurantList(
+  public ResponseEntity<HashMap<String, Object>> allRestaurantList(
       @RequestParam(value = "food-category", required = false) String foodCategory,
       @RequestParam(value = "location-category", required = false) String locationCategory,
       @RequestParam(value = "location-tag", required = false) String locationTag,
@@ -53,9 +42,12 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order) {
-    List<Restaurant> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
-        locationTag, keyword, page, size, sort, order).getContent();
-    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
+    Page<Restaurant> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
+        locationTag, keyword, page, size, sort, order);
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", restaurants.getContent());
+    responseMap.put("totalPages", restaurants.getTotalPages());
+    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
   @GetMapping("/{restaurantId}")
@@ -63,7 +55,6 @@ public class RestaurantController {
     Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
-
 
   @PostMapping("/judges")
   public ResponseEntity<Restaurant> createJudge(
@@ -76,9 +67,24 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
+  @GetMapping("/test")
+  public String test(){
+    return "success";
+  }
+
   @GetMapping("/judges")
-  public ResponseEntity<List<Restaurant>> AllJudgeRestaurantList(Pageable pageable){
-  List<Restaurant> restaurants = restaurantService.judgeRestaurantList(pageable).getContent();
-  return ResponseEntity.status(HttpStatus.OK).body(restaurants);
+  public ResponseEntity<HashMap<String, Object>> AllJudgeRestaurantList(Pageable pageable){
+  Page<Restaurant> restaurants = restaurantService.judgeRestaurantList(pageable);
+  HashMap<String, Object> responseMap = new HashMap<>();
+  responseMap.put("data", restaurants.getContent());
+  responseMap.put("totalPages", restaurants.getTotalPages());
+  return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+  }
+
+  // 임시로 유저의 ID 값을 경로 변수로 받기
+  @GetMapping("/recommendation/{userId}")
+  public ResponseEntity<List<Restaurant>> recommendation(@PathVariable Long userId){
+    List<Restaurant> restaurants = restaurantService.recommendation(userId);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
 }

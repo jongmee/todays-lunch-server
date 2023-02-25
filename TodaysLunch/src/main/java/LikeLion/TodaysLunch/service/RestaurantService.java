@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.dto.JudgeDto;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
@@ -11,9 +12,12 @@ import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationTagRepository;
+import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.repository.RestaurantSpecification;
 import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +25,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
@@ -30,6 +36,7 @@ public class RestaurantService {
   private final LocationTagRepository locationTagRepository;
   private final LocationCategoryRepository locationCategoryRepository;
   private final ImageUrlRepository imageUrlRepository;
+  private final MemberRepository memberRepository;
 
   @Autowired
   private S3UploadService s3UploadService;
@@ -38,13 +45,15 @@ public class RestaurantService {
       FoodCategoryRepository foodCategoryRepository,
       LocationTagRepository locationTagRepository,
       LocationCategoryRepository locationCategoryRepository,
-      ImageUrlRepository imageUrlRepository
+      ImageUrlRepository imageUrlRepository,
+      MemberRepository memberRepository
       ) {
     this.restaurantRepository = restaurantRepository;
     this.foodCategoryRepository = foodCategoryRepository;
     this.locationTagRepository = locationTagRepository;
     this.locationCategoryRepository = locationCategoryRepository;
     this.imageUrlRepository = imageUrlRepository;
+    this.memberRepository = memberRepository;
   }
 
   public Page<Restaurant> restaurantList(
@@ -54,9 +63,9 @@ public class RestaurantService {
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    FoodCategory foodCategoryObj = new FoodCategory();
-    LocationCategory locationCategoryObj = new LocationCategory();
-    LocationTag locationTagObj = new LocationTag();
+    FoodCategory foodCategoryObj;
+    LocationCategory locationCategoryObj;
+    LocationTag locationTagObj;
 
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
     if (foodCategory != null) {
@@ -87,9 +96,12 @@ public class RestaurantService {
   public Restaurant createJudgeRestaurant(String address, String restaurantName, String foodCategoryName,
       String locationCategoryName, String locationTagName, String introduction,  MultipartFile restaurantImage)
       throws IOException {
-    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName).get();
-    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName).get();
-    LocationTag locationTag = locationTagRepository.findByName(locationTagName).get();
+    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
+        .orElseThrow(() -> new IllegalArgumentException("음식 카테고리 "+foodCategoryName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
+        .orElseThrow(() -> new IllegalArgumentException("위치 카테고리 "+locationCategoryName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+    LocationTag locationTag = locationTagRepository.findByName(locationTagName)
+        .orElseThrow(() -> new IllegalArgumentException("위치 태그 "+locationTagName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
 
     JudgeDto judgeDto = new JudgeDto(restaurantName, foodCategory,
         locationCategory, locationTag, address, introduction);
@@ -112,6 +124,34 @@ public class RestaurantService {
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
     spec = spec.and(RestaurantSpecification.equalJudgement(true));
     return restaurantRepository.findAll(spec, pageable);
+  }
+  // 추후 개선 사항 : 새로 고침할 때마다 추천 메뉴가 바뀌도록 구현하기 (랜덤으로?)
+  public List<Restaurant> recommendation(Long userId){
+    Member member = memberRepository.findById(userId)
+        .orElseThrow(() -> new IllegalArgumentException("맛집 추천을 위한 대상 유저 찾기 실패!"));
+
+    FoodCategory foodCategory = member.getFoodCategory();
+    LocationCategory locationCategory = member.getLocationCategory();
+    Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
+    if (foodCategory != null){
+      spec = spec.and(RestaurantSpecification.equalFoodCategory(foodCategory));
+    }
+    if (locationCategory != null){
+      spec = spec.and(RestaurantSpecification.equalLocationCategory(locationCategory));
+    }
+    Pageable pageable = determineSort(0, 5, "rating", "descending");
+    Page<Restaurant> recmdResult = restaurantRepository.findAll(spec, pageable);
+
+    // 추천 맛집 수가 5개보다 작을 경우, 전체 맛집에서 평점 높은 순으로 모자른 맛집 수를 채운다.
+    List<Restaurant> rest =  new ArrayList<>();
+    if(recmdResult.getNumberOfElements() < 5){
+      pageable = determineSort(0, 5-recmdResult.getNumberOfElements(), "rating", "descending");
+      rest = restaurantRepository.findAll((root, query, criteriaBuilder) -> null, pageable).getContent();
+    }
+    List<Restaurant> finalList =  new ArrayList<>();
+    finalList.addAll(recmdResult.getContent());
+    finalList.addAll(rest);
+    return finalList;
   }
 
   public Pageable determineSort(int page, int size, String sort, String order){

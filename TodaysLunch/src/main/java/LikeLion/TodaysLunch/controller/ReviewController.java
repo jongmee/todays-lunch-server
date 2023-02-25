@@ -3,8 +3,10 @@ package LikeLion.TodaysLunch.controller;
 import LikeLion.TodaysLunch.domain.Review;
 import LikeLion.TodaysLunch.dto.ReviewDto;
 import LikeLion.TodaysLunch.service.ReviewService;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,12 @@ public class ReviewController {
   }
 
   @GetMapping("/restaurants/{restaurantId}/reviews")
-  public ResponseEntity<List<Review>> allReviewList(@PathVariable Long restaurantId, Pageable pageable){
-    List<Review> reviews = reviewService.reviewsList(restaurantId, pageable).getContent();
-    return ResponseEntity.status(HttpStatus.OK).body(reviews);
+  public ResponseEntity<HashMap<String, Object>> allReviewList(@PathVariable Long restaurantId, Pageable pageable){
+    Page<Review> reviews = reviewService.reviewsList(restaurantId, pageable);
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", reviews.getContent());
+    responseMap.put("totalPages", reviews.getTotalPages());
+    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
   @PatchMapping("/restaurants/{restaurantId}/reviews/{reviewId}")

@@ -23,7 +23,7 @@ public class Restaurant {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @NotNull
+  @Column(nullable = false)
   private String restaurantName;
   @ManyToOne
   @JoinColumn
@@ -47,8 +47,11 @@ public class Restaurant {
   private LocalDate startDate;
   private LocalDate endDate;
   private Long agreement;
-
   private Long reviewCount;
+  private Long lowestPrice;
+  @OneToOne
+  @JoinColumn
+  private Member member;
 
   // 맛집 심사를 위한 등록에서 쓰임
   @Builder
@@ -79,4 +82,6 @@ public class Restaurant {
   public void setReviewCount(Long reviewCount) {
     this.reviewCount = reviewCount;
   }
+  public void setMember(Member member) { this.member = member; }
+  public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
 }

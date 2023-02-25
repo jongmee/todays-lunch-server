@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.domain;
 
 import com.sun.istack.NotNull;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,7 +19,7 @@ public class Menu {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @NotNull
+  @Column(nullable = false)
   private String name;
   private Long price;
   @ManyToOne
@@ -27,8 +28,5 @@ public class Menu {
   @OneToOne
   @JoinColumn
   private Sale sale;
-  @OneToOne
-  @JoinColumn
-  private ImageUrl imageUrl;
 
 }
