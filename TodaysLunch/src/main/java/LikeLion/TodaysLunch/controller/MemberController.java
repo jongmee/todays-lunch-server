@@ -4,12 +4,10 @@ import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.MemberService;
 import javax.validation.Valid;
-import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,14 +28,15 @@ public class MemberController {
         }catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
-        return ResponseEntity.ok().build("성공적으로 가입했습니다.");
+        return ResponseEntity.ok("성공적으로 가입했습니다.");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody MemberDto memberDto) {
+    public ResponseEntity<?> login(@RequestBody MemberDto memberDto) {
         TokenDto tokenDto;
         try{
             tokenDto = memberService.login(memberDto);
+            return ResponseEntity.ok(tokenDto);
         } catch (IllegalArgumentException e){
             String errorMessage = e.getMessage();
             if(errorMessage.equals("존재하지 않는 회원입니다.")){
@@ -50,13 +49,12 @@ public class MemberController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
             }
         }
-        return ResponseEntity.ok(tokenDto.getToken());
     }
 
-    @PutMapping("/logout-member")
-    public ResponseEntity<String> logout(@RequestHeader("token") TokenDto tokenDto) {
+    @PostMapping("/logout-member")
+    public ResponseEntity<String> logout(@RequestHeader String token) {
         try{
-            memberService.logout(tokenDto);
+            memberService.logout(token);
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }

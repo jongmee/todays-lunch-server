@@ -57,8 +57,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void logout(TokenDto tokenDto) {
-        String token = tokenDto.getToken();
+    public void logout(String token) {
         if (jwtTokenProvider.validateToken(token)) {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
