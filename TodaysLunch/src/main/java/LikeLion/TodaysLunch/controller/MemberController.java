@@ -35,8 +35,9 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody MemberDto memberDto) {
+        TokenDto tokenDto;
         try{
-            memberService.login(memberDto);
+            tokenDto = memberService.login(memberDto);
         } catch (IllegalArgumentException e){
             String errorMessage = e.getMessage();
             if(errorMessage.equals("존재하지 않는 회원입니다.")){
@@ -49,7 +50,7 @@ public class MemberController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
             }
         }
-        return ResponseEntity.ok("성공적으로 로그인했습니다.");
+        return ResponseEntity.ok(tokenDto.getToken());
     }
 
     @PutMapping("/logout-member")
