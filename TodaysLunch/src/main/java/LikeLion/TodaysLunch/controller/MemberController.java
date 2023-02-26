@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.MemberService;
 import javax.validation.Valid;
+import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +24,32 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public Long join(@Valid @RequestBody MemberDto memberDto) {
-        return memberService.join(memberDto);
+    public ResponseEntity<String> join(@Valid @RequestBody MemberDto memberDto) {
+        try{
+            memberService.join(memberDto);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+        return ResponseEntity.ok().build("성공적으로 가입했습니다.");
     }
 
     @PostMapping("/login")
-    public TokenDto login(@RequestBody MemberDto memberDto) {
-        return memberService.login(memberDto);
+    public ResponseEntity<String> login(@RequestBody MemberDto memberDto) {
+        try{
+            memberService.login(memberDto);
+        } catch (IllegalArgumentException e){
+            String errorMessage = e.getMessage();
+            if(errorMessage.equals("존재하지 않는 회원입니다.")){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+            }
+            if(errorMessage.equals("비밀번호가 일치하지 않습니다.")){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+            }
+        }
+        return ResponseEntity.ok("성공적으로 로그인했습니다.");
     }
 
     @PutMapping("/logout-member")
