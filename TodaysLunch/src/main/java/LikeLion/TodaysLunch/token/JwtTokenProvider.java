@@ -60,13 +60,13 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String jwtToken) {
         try {
-            return getExpirationTime(jwtToken).before(new Date());
+            return getExpirationTime(jwtToken).after(new Date());
         } catch (Exception e) {
             return false;
         }
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN");
+        return request.getHeader("Authentication");
     }
 }
