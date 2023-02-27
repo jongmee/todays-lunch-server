@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.controller;
 
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.MemberService;
@@ -7,6 +8,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -61,4 +64,15 @@ public class MemberController {
         return ResponseEntity.ok("성공적으로 로그아웃했습니다.");
     }
 
+    @GetMapping("/mypage")
+    public ResponseEntity<?> myPage(@AuthenticationPrincipal Member member){
+        try {
+            MemberDto memberDto = memberService.getAuthenticatedMember(member);
+            return ResponseEntity.ok(memberDto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

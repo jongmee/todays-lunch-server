@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.service.login;
 
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.dto.MemberDto;
+import LikeLion.TodaysLunch.dto.MemberDtoMapper;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.token.JwtTokenProvider;
@@ -10,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +67,13 @@ public class MemberService {
         if (redisTemplate.opsForValue().get(authentication.getName()) != null) {
             redisTemplate.delete(authentication.getName());
         }
-        long expiration = JwtTokenProvider.getExpirationTime(token).getTime();
-        redisTemplate.opsForValue().set(token, "logout", expiration, TimeUnit.MILLISECONDS);
+    }
+
+    public MemberDto getAuthenticatedMember(@AuthenticationPrincipal Member member) {
+        if (member != null) {
+            return MemberDtoMapper.toDto(member);
+        } else {
+            throw new IllegalArgumentException("인가 되지 않은 사용자입니다.");
+        }
     }
 }
