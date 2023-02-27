@@ -52,9 +52,9 @@ public class MemberController {
     }
 
     @PostMapping("/logout-member")
-    public ResponseEntity<String> logout(@RequestHeader String token) {
+    public ResponseEntity<String> logout(@RequestHeader String Authentication) {
         try{
-            memberService.logout(token);
+            memberService.logout(Authentication);
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
