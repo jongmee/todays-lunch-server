@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.token;
 
+import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -29,16 +30,17 @@ public class JwtTokenProvider {
     }
 
 
-    public String createToken(String userPk, List<String> roles) {
+    public TokenDto createToken(String userPk, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(userPk);
         claims.put("roles", roles);
         Date now = new Date();
-        return Jwts.builder()
+        long expiration = now.getTime() + tokenValidTime;
+        return new TokenDto(Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .setExpiration(new Date(expiration))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
+                .compact(),expiration);
     }
 
     public Authentication getAuthentication(String token) {
@@ -50,10 +52,15 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
 
+    public static Date getExpirationTime(String jwtToken) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken)
+                .getBody().getExpiration();
+
+    }
+
     public boolean validateToken(String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken);
-            return !claims.getBody().getExpiration().before(new Date());
+            return getExpirationTime(jwtToken).before(new Date());
         } catch (Exception e) {
             return false;
         }
