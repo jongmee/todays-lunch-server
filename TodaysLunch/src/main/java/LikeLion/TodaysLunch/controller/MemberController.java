@@ -3,6 +3,7 @@ package LikeLion.TodaysLunch.controller;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.MemberJoinDto;
+import LikeLion.TodaysLunch.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.MemberService;
 import javax.validation.Valid;
@@ -36,7 +37,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberDto memberDto) {
+    public ResponseEntity<?> login(@RequestBody MemberLoginDto memberDto) {
         TokenDto tokenDto;
         try{
             tokenDto = memberService.login(memberDto);
@@ -56,9 +57,9 @@ public class MemberController {
     }
 
     @PostMapping("/logout-member")
-    public ResponseEntity<String> logout(@RequestHeader String Authentication) {
+    public ResponseEntity<String> logout(@RequestHeader String Authorization) {
         try{
-            memberService.logout(Authentication);
+            memberService.logout(Authorization);
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }

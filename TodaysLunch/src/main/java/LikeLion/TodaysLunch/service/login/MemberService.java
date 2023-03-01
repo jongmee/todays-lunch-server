@@ -6,6 +6,7 @@ import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.MemberDtoMapper;
 import LikeLion.TodaysLunch.dto.MemberJoinDto;
+import LikeLion.TodaysLunch.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
@@ -58,9 +59,10 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenDto login(MemberDto memberDto) {
+    public TokenDto login(MemberLoginDto memberDto) {
         Member member = memberRepository.findByNickname(memberDto.getNickname())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
         if (!passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
@@ -75,10 +77,10 @@ public class MemberService {
 
     @Transactional
     public void logout(String token) {
-        if (jwtTokenProvider.validateToken(token)) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
-        }
+        jwtTokenProvider.validateToken(token);
+
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
         if (redisTemplate.opsForValue().get(authentication.getName()) != null) {
             redisTemplate.delete(authentication.getName());
         }
