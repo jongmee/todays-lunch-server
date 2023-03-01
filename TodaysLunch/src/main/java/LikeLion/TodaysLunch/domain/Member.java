@@ -57,9 +57,11 @@ public class Member implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
 
-    public Member(String nickname, String password) {
+    public Member(String nickname, String password, FoodCategory foodCategory, LocationCategory locationCategory) {
         this.nickname = nickname;
         this.password = password;
+        this.foodCategory = foodCategory;
+        this.locationCategory = locationCategory;
     }
 
 

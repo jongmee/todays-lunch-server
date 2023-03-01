@@ -1,9 +1,14 @@
 package LikeLion.TodaysLunch.service.login;
 
+import LikeLion.TodaysLunch.domain.FoodCategory;
+import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.MemberDtoMapper;
+import LikeLion.TodaysLunch.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
+import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
+import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.token.JwtTokenProvider;
 import java.util.Collections;
@@ -22,21 +27,31 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final FoodCategoryRepository foodCategoryRepository;
+    private final LocationCategoryRepository locationCategoryRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
-    public Long join(MemberDto memberDto) {
+    public Long join(MemberJoinDto memberDto) {
         validateDuplication(memberDto);
+
+        FoodCategory foodCategory = foodCategoryRepository.findByName(memberDto.getFoodCategory())
+            .orElseThrow(() -> new IllegalArgumentException("음식 카테고리 '"+memberDto.getFoodCategory()+"' 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+        LocationCategory locationCategory = locationCategoryRepository.findByName(memberDto.getLocationCategory())
+            .orElseThrow(() -> new IllegalArgumentException("위치 카테고리 '"+memberDto.getLocationCategory()+"' 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+
         Member member = Member.builder()
                 .nickname(memberDto.getNickname())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
+            .foodCategory(foodCategory)
+            .locationCategory(locationCategory)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
 
         return memberRepository.save(member).getId();
     }
 
-    private void validateDuplication(MemberDto memberDto) {
+    private void validateDuplication(MemberJoinDto memberDto) {
         if (memberRepository.findByNickname(memberDto.getNickname()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
         }

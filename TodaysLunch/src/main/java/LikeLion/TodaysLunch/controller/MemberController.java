@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.dto.MemberDto;
+import LikeLion.TodaysLunch.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.MemberService;
 import javax.validation.Valid;
@@ -25,7 +26,7 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<String> join(@Valid @RequestBody MemberDto memberDto) {
+    public ResponseEntity<String> join(@Valid @RequestBody MemberJoinDto memberDto) {
         try{
             memberService.join(memberDto);
         }catch (IllegalArgumentException e){
