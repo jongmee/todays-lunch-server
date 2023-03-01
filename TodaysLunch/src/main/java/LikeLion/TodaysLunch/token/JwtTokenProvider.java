@@ -3,9 +3,13 @@ package LikeLion.TodaysLunch.token;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -60,9 +64,16 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String jwtToken) {
         try {
-            return getExpirationTime(jwtToken).after(new Date());
-        } catch (Exception e) {
-            return false;
+            Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken).getBody();
+            return true;
+        } catch (MalformedJwtException e) {
+            throw new MalformedJwtException("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            throw new UnsupportedJwtException("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("JWT 토큰이 잘못되었습니다.");
         }
     }
 
