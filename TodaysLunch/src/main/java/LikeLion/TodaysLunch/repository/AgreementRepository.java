@@ -7,5 +7,5 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AgreementRepository extends JpaRepository<Agreement, Long> {
-  Optional<Agreement> findByMemberandRestaurant(Member member, Restaurant restaurant);
+  Optional<Agreement> findByMemberAndRestaurant(Member member, Restaurant restaurant);
 }
