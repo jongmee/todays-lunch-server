@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
+@RequiredArgsConstructor
 public class
 RestaurantService {
   private final DataJpaRestaurantRepository restaurantRepository;
@@ -39,20 +41,6 @@ RestaurantService {
   @Autowired
   private S3UploadService s3UploadService;
 
-  public RestaurantService(DataJpaRestaurantRepository restaurantRepository,
-      FoodCategoryRepository foodCategoryRepository,
-      LocationTagRepository locationTagRepository,
-      LocationCategoryRepository locationCategoryRepository,
-      ImageUrlRepository imageUrlRepository,
-      MemberRepository memberRepository
-      ) {
-    this.restaurantRepository = restaurantRepository;
-    this.foodCategoryRepository = foodCategoryRepository;
-    this.locationTagRepository = locationTagRepository;
-    this.locationCategoryRepository = locationCategoryRepository;
-    this.imageUrlRepository = imageUrlRepository;
-    this.memberRepository = memberRepository;
-  }
 
   public Page<Restaurant> restaurantList(
       String foodCategory, String locationCategory,
