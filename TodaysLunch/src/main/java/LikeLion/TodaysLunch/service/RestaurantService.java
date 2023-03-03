@@ -139,6 +139,16 @@ RestaurantService {
     }
   }
 
+  public String isAlreadyAgree(Member member, Long restaurantId){
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new IllegalArgumentException("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"));
+
+    if(isNotAlreadyAgree(member, restaurant))
+      return "false";
+    else
+      return "true";
+  }
+
   // 유저가 이미 동의한 심사 레스토랑인지 체크
   private boolean isNotAlreadyAgree(Member member, Restaurant restaurant){
     return agreementRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
