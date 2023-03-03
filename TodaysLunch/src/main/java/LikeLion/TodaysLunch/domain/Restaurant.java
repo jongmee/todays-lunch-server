@@ -2,6 +2,8 @@ package LikeLion.TodaysLunch.domain;
 
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -17,7 +19,6 @@ public class Restaurant {
     this.rating = this.rating == null? 0.0:this.rating;
     this.judgement = this.judgement == null? false:this.judgement;
     this.reviewCount = this.reviewCount == null? 0L:this.reviewCount;
-    this.agreement = this.agreement == null? 0L:this.agreement;
   }
 
   @Id
@@ -46,7 +47,8 @@ public class Restaurant {
   private Boolean judgement;
   private LocalDate startDate;
   private LocalDate endDate;
-  private Long agreement;
+  @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+  Set<Agreement> agreementSet = new HashSet<>();
   private Long reviewCount;
   private Long lowestPrice;
   @OneToOne

@@ -1,11 +1,13 @@
 package LikeLion.TodaysLunch.service;
 
+import LikeLion.TodaysLunch.domain.Agreement;
 import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.repository.AgreementRepository;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
@@ -37,6 +39,7 @@ RestaurantService {
   private final LocationCategoryRepository locationCategoryRepository;
   private final ImageUrlRepository imageUrlRepository;
   private final MemberRepository memberRepository;
+  private final AgreementRepository agreementRepository;
 
   @Autowired
   private S3UploadService s3UploadService;
@@ -122,6 +125,23 @@ RestaurantService {
     spec = spec.and(RestaurantSpecification.equalJudgement(true));
     return restaurantRepository.findAll(spec, pageable);
   }
+
+  public boolean addAgreement(Member member, Long restaurantId){
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new IllegalArgumentException("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"));
+    if(isNotAlreadyLike(member, restaurant)){
+      agreementRepository.save(new Agreement(member, restaurant));
+      return true;
+    }
+    return false;
+  }
+
+  // 유저가 이미 동의한 심사 레스토랑인지 체크
+  private boolean isNotAlreadyLike(Member member, Restaurant restaurant){
+    return agreementRepository.findByMemberandRestaurant(member, restaurant).isEmpty();
+  }
+
+
   // 추후 개선 사항 : 새로 고침할 때마다 추천 메뉴가 바뀌도록 구현하기 (랜덤으로?)
   public List<Restaurant> recommendation(Long userId){
     Member member = memberRepository.findById(userId)

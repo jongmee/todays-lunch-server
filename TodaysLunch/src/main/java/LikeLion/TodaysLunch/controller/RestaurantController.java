@@ -99,6 +99,21 @@ public class RestaurantController {
   return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
+  @PostMapping("/judges/{restaurantId}/agree")
+  public ResponseEntity<String> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    try{
+      memberService.getAuthenticatedMember(member);
+      if (restaurantService.addAgreement(member, restaurantId))
+        return ResponseEntity.status(HttpStatus.OK).body("심사 맛집 동의 성공!");
+    } catch (IllegalArgumentException e){
+      if (e.getMessage().equals("인가 되지 않은 사용자입니다."))
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+      else if (e.getMessage().equals("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"))
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("심사 맛집 동의 실패!");
+  }
+
   // 임시로 유저의 ID 값을 경로 변수로 받기
   @GetMapping("/recommendation/{userId}")
   public ResponseEntity<List<Restaurant>> recommendation(@PathVariable Long userId){
