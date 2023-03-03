@@ -132,10 +132,10 @@ RestaurantService {
 
     if(isNotAlreadyAgree(member, restaurant)){
       agreementRepository.save(new Agreement(member, restaurant));
-      return "맛집 심사 동의";
+      return "맛집 심사 동의 성공";
     } else {
       agreementRepository.delete(agreementRepository.findByMemberAndRestaurant(member, restaurant).get());
-      return "맛집 심사 동의 취소";
+      return "맛집 심사 동의 취소 성공";
     }
   }
 
