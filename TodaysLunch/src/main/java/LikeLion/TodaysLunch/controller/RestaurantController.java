@@ -3,7 +3,9 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.service.RestaurantService;
+import LikeLion.TodaysLunch.service.login.MemberService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +28,12 @@ public class RestaurantController {
   static final String ORDER = "descending";
 
   private final RestaurantService restaurantService;
+  private final MemberService memberService;
 
   @Autowired
-  public RestaurantController(RestaurantService restaurantService) {
+  public RestaurantController(RestaurantService restaurantService, MemberService memberService) {
     this.restaurantService = restaurantService;
+    this.memberService = memberService;
   }
 
   @GetMapping("")
@@ -58,13 +62,27 @@ public class RestaurantController {
 
   @PostMapping("/judges")
   public ResponseEntity<Restaurant> createJudge(
-      @RequestParam(required = false) MultipartFile restaurantImage, @RequestParam(required = false) String address, @RequestParam String restaurantName,
-      @RequestParam String foodCategoryName, @RequestParam String locationCategoryName,
-      @RequestParam String locationTagName, @RequestParam(required = false) String introduction
+      @RequestParam(required = false) MultipartFile restaurantImage,
+      @RequestParam String address,
+      @RequestParam Double latitude,
+      @RequestParam Double longitude,
+      @RequestParam String restaurantName,
+      @RequestParam String foodCategoryName,
+      @RequestParam String locationCategoryName,
+      @RequestParam String locationTagName,
+      @RequestParam(required = false) String introduction,
+      @AuthenticationPrincipal Member member
   ) throws IOException {
-    Restaurant restaurant = restaurantService.createJudgeRestaurant(address, restaurantName,
-        foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    try {
+      memberService.getAuthenticatedMember(member);
+      Restaurant restaurant = restaurantService.createJudgeRestaurant(latitude, longitude, address, restaurantName,
+          foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage, member);
+      return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Restaurant());
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Restaurant());
+    }
   }
 
   @GetMapping("/test")

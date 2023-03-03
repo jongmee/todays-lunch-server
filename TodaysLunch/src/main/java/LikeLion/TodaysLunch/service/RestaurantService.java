@@ -6,7 +6,6 @@ import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
-import LikeLion.TodaysLunch.dto.JudgeDto;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
@@ -25,12 +24,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
-public class RestaurantService {
+public class
+RestaurantService {
   private final DataJpaRestaurantRepository restaurantRepository;
   private final FoodCategoryRepository foodCategoryRepository;
   private final LocationTagRepository locationTagRepository;
@@ -93,9 +91,12 @@ public class RestaurantService {
     return restaurantRepository.findById(id).get();
   }
 
-  public Restaurant createJudgeRestaurant(String address, String restaurantName, String foodCategoryName,
-      String locationCategoryName, String locationTagName, String introduction,  MultipartFile restaurantImage)
+  public Restaurant createJudgeRestaurant(Double latitude, Double longitude,
+      String address, String restaurantName, String foodCategoryName,
+      String locationCategoryName, String locationTagName, String introduction,
+      MultipartFile restaurantImage, Member member)
       throws IOException {
+
     FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
         .orElseThrow(() -> new IllegalArgumentException("음식 카테고리 "+foodCategoryName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
     LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
@@ -103,9 +104,17 @@ public class RestaurantService {
     LocationTag locationTag = locationTagRepository.findByName(locationTagName)
         .orElseThrow(() -> new IllegalArgumentException("위치 태그 "+locationTagName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
 
-    JudgeDto judgeDto = new JudgeDto(restaurantName, foodCategory,
-        locationCategory, locationTag, address, introduction);
-    Restaurant restaurant = judgeDto.toEntity();
+    Restaurant restaurant = Restaurant.builder()
+        .foodCategory(foodCategory)
+        .locationCategory(locationCategory)
+        .locationTag(locationTag)
+        .address(address)
+        .restaurantName(restaurantName)
+        .introduction(introduction)
+        .longitude(longitude)
+        .latitude(latitude)
+        .member(member)
+        .build();
 
     if(!restaurantImage.isEmpty()) {
       ImageUrl imageUrl = new ImageUrl();

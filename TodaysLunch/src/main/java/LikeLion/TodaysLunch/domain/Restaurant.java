@@ -56,7 +56,9 @@ public class Restaurant {
   // 맛집 심사를 위한 등록에서 쓰임
   @Builder
   public Restaurant(String restaurantName, FoodCategory foodCategory,
-      LocationCategory locationCategory, LocationTag locationTag, String address, String introduction) {
+      LocationCategory locationCategory, LocationTag locationTag,
+      String address, String introduction, Double longitude, Double latitude,
+      Member member) {
     this.restaurantName = restaurantName;
     this.foodCategory = foodCategory;
     this.locationCategory = locationCategory;
@@ -66,6 +68,9 @@ public class Restaurant {
     this.judgement = true;
     this.startDate = LocalDate.now();
     this.endDate = LocalDate.now().plusDays(7);
+    this.longitude = longitude;
+    this.latitude = latitude;
+    this.member = member;
   }
   public void setId(Long id) {
     this.id = id;
