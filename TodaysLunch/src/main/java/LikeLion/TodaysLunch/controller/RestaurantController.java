@@ -103,8 +103,7 @@ public class RestaurantController {
   public ResponseEntity<String> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     try{
       memberService.getAuthenticatedMember(member);
-      if (restaurantService.addAgreement(member, restaurantId))
-        return ResponseEntity.status(HttpStatus.OK).body("심사 맛집 동의 성공!");
+      return ResponseEntity.status(HttpStatus.OK).body(restaurantService.addOrCancelAgreement(member, restaurantId));
     } catch (IllegalArgumentException e){
       if (e.getMessage().equals("인가 되지 않은 사용자입니다."))
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

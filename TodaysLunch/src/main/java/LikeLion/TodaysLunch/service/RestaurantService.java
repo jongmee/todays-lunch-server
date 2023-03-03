@@ -126,19 +126,22 @@ RestaurantService {
     return restaurantRepository.findAll(spec, pageable);
   }
 
-  public boolean addAgreement(Member member, Long restaurantId){
+  public String addOrCancelAgreement(Member member, Long restaurantId){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new IllegalArgumentException("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"));
+
     if(isNotAlreadyLike(member, restaurant)){
       agreementRepository.save(new Agreement(member, restaurant));
-      return true;
+      return "맛집 심사 동의";
+    } else {
+      agreementRepository.delete(agreementRepository.findByMemberAndRestaurant(member, restaurant).get());
+      return "맛집 심사 동의 취소";
     }
-    return false;
   }
 
   // 유저가 이미 동의한 심사 레스토랑인지 체크
   private boolean isNotAlreadyLike(Member member, Restaurant restaurant){
-    return agreementRepository.findByMemberandRestaurant(member, restaurant).isEmpty();
+    return agreementRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
   }
 
 
