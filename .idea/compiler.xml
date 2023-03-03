@@ -12,5 +12,10 @@
         <module name="LikeLion.TodaysLunch.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="LikeLion.TodaysLunch" target="11" />
+      <module name="LikeLion.TodaysLunch.main" target="11" />
+      <module name="LikeLion.TodaysLunch.test" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
