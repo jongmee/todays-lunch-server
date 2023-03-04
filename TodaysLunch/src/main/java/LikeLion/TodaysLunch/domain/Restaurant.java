@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -40,15 +41,13 @@ public class Restaurant {
   private ImageUrl imageUrl;
   private Double latitude;
   private Double longitude;
-
   private String address;
   private String introduction;
   private Double rating;
   private Boolean judgement;
   private LocalDate startDate;
   private LocalDate endDate;
-  @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-  Set<Agreement> agreementSet = new HashSet<>();
+  private AtomicLong agreementCount;
   private Long reviewCount;
   private Long lowestPrice;
   @OneToOne
@@ -73,11 +72,11 @@ public class Restaurant {
     this.longitude = longitude;
     this.latitude = latitude;
     this.member = member;
+    this.agreementCount = new AtomicLong(0);
   }
   public void setId(Long id) {
     this.id = id;
   }
-
   public void setImageUrl(ImageUrl imageUrl) {
     this.imageUrl = imageUrl;
   }
@@ -91,4 +90,5 @@ public class Restaurant {
   }
   public void setMember(Member member) { this.member = member; }
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
+  public void setAgreementCount(AtomicLong agreementCount) { this.agreementCount = agreementCount; }
 }

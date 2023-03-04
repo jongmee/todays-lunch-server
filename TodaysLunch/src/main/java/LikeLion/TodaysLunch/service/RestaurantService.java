@@ -19,6 +19,7 @@ import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,9 +133,18 @@ RestaurantService {
 
     if(isNotAlreadyAgree(member, restaurant)){
       agreementRepository.save(new Agreement(member, restaurant));
+      AtomicLong agreementCount = restaurant.getAgreementCount();
+      agreementCount.incrementAndGet();
+      restaurant.setAgreementCount(agreementCount);
+      restaurantRepository.save(restaurant);
       return "맛집 심사 동의 성공";
     } else {
-      agreementRepository.delete(agreementRepository.findByMemberAndRestaurant(member, restaurant).get());
+      Agreement agreement = agreementRepository.findByMemberAndRestaurant(member, restaurant).get();
+      AtomicLong agreementCount = restaurant.getAgreementCount();
+      agreementCount.decrementAndGet();
+      restaurant.setAgreementCount(agreementCount);
+      restaurantRepository.save(restaurant);
+      agreementRepository.delete(agreement);
       return "맛집 심사 동의 취소 성공";
     }
   }
