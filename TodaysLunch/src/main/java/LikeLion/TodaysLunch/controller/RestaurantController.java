@@ -3,7 +3,9 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.service.RestaurantService;
+import LikeLion.TodaysLunch.service.login.MemberService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +28,12 @@ public class RestaurantController {
   static final String ORDER = "descending";
 
   private final RestaurantService restaurantService;
+  private final MemberService memberService;
 
   @Autowired
-  public RestaurantController(RestaurantService restaurantService) {
+  public RestaurantController(RestaurantService restaurantService, MemberService memberService) {
     this.restaurantService = restaurantService;
+    this.memberService = memberService;
   }
 
   @GetMapping("")
@@ -58,13 +62,27 @@ public class RestaurantController {
 
   @PostMapping("/judges")
   public ResponseEntity<Restaurant> createJudge(
-      @RequestParam(required = false) MultipartFile restaurantImage, @RequestParam(required = false) String address, @RequestParam String restaurantName,
-      @RequestParam String foodCategoryName, @RequestParam String locationCategoryName,
-      @RequestParam String locationTagName, @RequestParam(required = false) String introduction
+      @RequestParam(required = false) MultipartFile restaurantImage,
+      @RequestParam String address,
+      @RequestParam Double latitude,
+      @RequestParam Double longitude,
+      @RequestParam String restaurantName,
+      @RequestParam String foodCategoryName,
+      @RequestParam String locationCategoryName,
+      @RequestParam String locationTagName,
+      @RequestParam(required = false) String introduction,
+      @AuthenticationPrincipal Member member
   ) throws IOException {
-    Restaurant restaurant = restaurantService.createJudgeRestaurant(address, restaurantName,
-        foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    try {
+      memberService.getAuthenticatedMember(member);
+      Restaurant restaurant = restaurantService.createJudgeRestaurant(latitude, longitude, address, restaurantName,
+          foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage, member);
+      return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Restaurant());
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Restaurant());
+    }
   }
 
   @GetMapping("/test")
@@ -79,6 +97,34 @@ public class RestaurantController {
   responseMap.put("data", restaurants.getContent());
   responseMap.put("totalPages", restaurants.getTotalPages());
   return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+  }
+
+  @PostMapping("/judges/{restaurantId}/agree")
+  public ResponseEntity<String> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    try{
+      memberService.getAuthenticatedMember(member);
+      return ResponseEntity.status(HttpStatus.OK).body(restaurantService.addOrCancelAgreement(member, restaurantId));
+    } catch (IllegalArgumentException e){
+      if (e.getMessage().equals("인가 되지 않은 사용자입니다."))
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+      else if (e.getMessage().equals("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"))
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("심사 맛집 동의 실패!");
+  }
+
+  @GetMapping("/judges/{restaurantId}/agree")
+  public ResponseEntity<String> isAlreadyAgree(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    try {
+      memberService.getAuthenticatedMember(member);
+      return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyAgree(member, restaurantId));
+    } catch (IllegalArgumentException e){
+      if (e.getMessage().equals("인가 되지 않은 사용자입니다."))
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+      else if (e.getMessage().equals("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"))
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("심사 맛집 동의 조회 실패!");
   }
 
   // 임시로 유저의 ID 값을 경로 변수로 받기
