@@ -133,9 +133,14 @@ RestaurantService {
 
     if(isNotAlreadyAgree(member, restaurant)){
       agreementRepository.save(new Agreement(member, restaurant));
+
       AtomicLong agreementCount = restaurant.getAgreementCount();
       agreementCount.incrementAndGet();
       restaurant.setAgreementCount(agreementCount);
+
+      if (agreementCount.get() > 4L)
+        restaurant.setJudgement(false);
+
       restaurantRepository.save(restaurant);
       return "맛집 심사 동의 성공";
     } else {

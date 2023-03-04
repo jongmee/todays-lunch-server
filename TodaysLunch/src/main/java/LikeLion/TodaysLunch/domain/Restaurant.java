@@ -80,15 +80,15 @@ public class Restaurant {
   public void setImageUrl(ImageUrl imageUrl) {
     this.imageUrl = imageUrl;
   }
-
   public void setRating(Double rating) {
     this.rating = rating;
   }
-
   public void setReviewCount(Long reviewCount) {
     this.reviewCount = reviewCount;
   }
   public void setMember(Member member) { this.member = member; }
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
   public void setAgreementCount(AtomicLong agreementCount) { this.agreementCount = agreementCount; }
+
+  public void setJudgement(Boolean judgement) { this.judgement = judgement; }
 }
