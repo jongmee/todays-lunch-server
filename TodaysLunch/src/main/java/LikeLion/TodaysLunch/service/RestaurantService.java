@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.AgreementRepository;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
@@ -90,11 +91,11 @@ RestaurantService {
       throws IOException {
 
     FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
-        .orElseThrow(() -> new IllegalArgumentException("음식 카테고리 "+foodCategoryName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+        .orElseThrow(() -> new NotFoundException("음식 카테고리"));
     LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
-        .orElseThrow(() -> new IllegalArgumentException("위치 카테고리 "+locationCategoryName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+        .orElseThrow(() -> new NotFoundException("위치 카테고리"));
     LocationTag locationTag = locationTagRepository.findByName(locationTagName)
-        .orElseThrow(() -> new IllegalArgumentException("위치 태그 "+locationTagName+" 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+        .orElseThrow(() -> new NotFoundException("위치 태그"));
 
     Restaurant restaurant = Restaurant.builder()
         .foodCategory(foodCategory)
