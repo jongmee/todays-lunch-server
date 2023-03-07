@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Sale;
+import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
@@ -46,7 +47,7 @@ public class MenuService {
 
   public Menu create(MultipartFile menuImage, String name, Long price, Long restaurantId) throws IOException {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new IllegalArgumentException("메뉴 생성 실패! 메뉴를 생성하기 위한 대상 맛집이 없습니다."));
+        .orElseThrow(() -> new NotFoundException("맛집"));
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
     if (originalLowestPrice == null || originalLowestPrice > price){
@@ -77,9 +78,9 @@ public class MenuService {
 
   public Menu update(String name, Long price, Long restaurantId, Long menuId){
     Menu menu = menuRepository.findById(menuId)
-        .orElseThrow(() -> new IllegalArgumentException("메뉴 수정 실패! 메뉴를 수정하기 위한 대상 메뉴가 없습니다."));
+        .orElseThrow(() -> new NotFoundException("메뉴"));
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new IllegalArgumentException("메뉴 수정 실패! 메뉴를 수정하기 위한 대상 맛집이 없습니다."));
+        .orElseThrow(() -> new NotFoundException("맛집"));
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();

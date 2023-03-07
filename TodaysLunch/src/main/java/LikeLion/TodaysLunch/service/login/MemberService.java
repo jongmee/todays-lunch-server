@@ -8,6 +8,9 @@ import LikeLion.TodaysLunch.dto.MemberDtoMapper;
 import LikeLion.TodaysLunch.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
+import LikeLion.TodaysLunch.exception.DuplicationException;
+import LikeLion.TodaysLunch.exception.NotFoundException;
+import LikeLion.TodaysLunch.exception.UnauthorizedException;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
@@ -37,9 +40,9 @@ public class MemberService {
         validateDuplication(memberDto);
 
         FoodCategory foodCategory = foodCategoryRepository.findByName(memberDto.getFoodCategory())
-            .orElseThrow(() -> new IllegalArgumentException("음식 카테고리 '"+memberDto.getFoodCategory()+"' 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+            .orElseThrow(() -> new NotFoundException("음식 카테고리"));
         LocationCategory locationCategory = locationCategoryRepository.findByName(memberDto.getLocationCategory())
-            .orElseThrow(() -> new IllegalArgumentException("위치 카테고리 '"+memberDto.getLocationCategory()+"' 찾기 실패! 심사 맛집을 등록할 수 없습니다."));
+            .orElseThrow(() -> new NotFoundException("위치 카테고리"));
 
         Member member = Member.builder()
                 .nickname(memberDto.getNickname())
@@ -54,17 +57,17 @@ public class MemberService {
 
     private void validateDuplication(MemberJoinDto memberDto) {
         if (memberRepository.findByNickname(memberDto.getNickname()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+            throw new DuplicationException("아이디");
         }
     }
 
     @Transactional
     public TokenDto login(MemberLoginDto memberDto) {
         Member member = memberRepository.findByNickname(memberDto.getNickname())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new NotFoundException("아이디"));
 
         if (!passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new UnauthorizedException("회원정보의 비밀번호와 일치하지 않습니다.");
         }
 
         TokenDto tokenDto = jwtTokenProvider.createToken(member.getNickname(), member.getRoles());
@@ -90,7 +93,7 @@ public class MemberService {
         if (member != null) {
             return MemberDtoMapper.toDto(member);
         } else {
-            throw new IllegalArgumentException("인가 되지 않은 사용자입니다.");
+            throw new UnauthorizedException("인가 되지 않은 사용자입니다.");
         }
     }
 }

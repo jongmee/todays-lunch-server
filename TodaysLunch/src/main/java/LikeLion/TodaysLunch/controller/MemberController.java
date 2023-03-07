@@ -28,53 +28,25 @@ public class MemberController {
 
     @PostMapping("/join")
     public ResponseEntity<String> join(@Valid @RequestBody MemberJoinDto memberDto) {
-        try{
-            memberService.join(memberDto);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        }
+        memberService.join(memberDto);
         return ResponseEntity.ok("성공적으로 가입했습니다.");
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody MemberLoginDto memberDto) {
-        TokenDto tokenDto;
-        try{
-            tokenDto = memberService.login(memberDto);
-            return ResponseEntity.ok(tokenDto);
-        } catch (IllegalArgumentException e){
-            String errorMessage = e.getMessage();
-            if(errorMessage.equals("존재하지 않는 회원입니다.")){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
-            }
-            if(errorMessage.equals("비밀번호가 일치하지 않습니다.")){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-            }
-        }
+        TokenDto tokenDto = memberService.login(memberDto);
+        return ResponseEntity.ok(tokenDto);
     }
 
     @PostMapping("/logout-member")
     public ResponseEntity<String> logout(@RequestHeader String Authorization) {
-        try{
-            memberService.logout(Authorization);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+        memberService.logout(Authorization);
         return ResponseEntity.ok("성공적으로 로그아웃했습니다.");
     }
 
     @GetMapping("/mypage")
     public ResponseEntity<?> myPage(@AuthenticationPrincipal Member member){
-        try {
-            MemberDto memberDto = memberService.getAuthenticatedMember(member);
-            return ResponseEntity.ok(memberDto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        MemberDto memberDto = memberService.getAuthenticatedMember(member);
+        return ResponseEntity.ok(memberDto);
     }
 }
