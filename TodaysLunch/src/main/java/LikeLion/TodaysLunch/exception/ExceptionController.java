@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.exception;
 
+import java.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public class ExceptionController {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public Object processValidationException(MethodArgumentNotValidException ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getBindingResult().getAllErrors().get(0).getDefaultMessage(),HttpStatus.BAD_REQUEST.value()));
   }
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<ErrorResponse> objectNotFoundException(RuntimeException ex){
