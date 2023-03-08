@@ -93,6 +93,11 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
+  @GetMapping("/judges/{restaurantId}")
+  public ResponseEntity<JudgeRestaurantDto> judgeRestaurantDetail(@PathVariable Long restaurantId){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantDetail(restaurantId));
+  }
+
   @PostMapping("/judges/{restaurantId}/agree")
   public ResponseEntity<String> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     memberService.getAuthenticatedMember(member);

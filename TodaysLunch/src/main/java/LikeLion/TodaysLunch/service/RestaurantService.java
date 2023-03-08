@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.AgreementRepository;
@@ -128,6 +129,10 @@ RestaurantService {
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
     spec = spec.and(RestaurantSpecification.equalJudgement(true));
     return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
+  }
+
+  public JudgeRestaurantDto judgeRestaurantDetail(Long id){
+    return JudgeRestaurantDto.fromEntity(restaurantRepository.findById(id).get());
   }
 
   public String addOrCancelAgreement(Member member, Long restaurantId){
