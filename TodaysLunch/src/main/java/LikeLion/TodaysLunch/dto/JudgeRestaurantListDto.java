@@ -16,10 +16,14 @@ public class JudgeRestaurantListDto {
   private String nickname;
   private String imageUrl;
   public static JudgeRestaurantListDto fromEntity(Restaurant restaurant){
+    String image = null;
+    if (restaurant.getImageUrl() != null){
+      image = restaurant.getImageUrl().getImageUrl();
+    }
     return JudgeRestaurantListDto.builder()
         .restaurantName(restaurant.getRestaurantName())
         .introduction(restaurant.getIntroduction())
         .nickname(restaurant.getMember().getNickname())
-        .imageUrl(restaurant.getImageUrl().getImageUrl()).build();
+        .imageUrl(image).build();
   }
 }

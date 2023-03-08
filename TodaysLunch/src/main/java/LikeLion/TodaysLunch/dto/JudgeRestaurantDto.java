@@ -18,11 +18,15 @@ public class JudgeRestaurantDto {
   private Double latitude;
   private Double longitude;
   public static JudgeRestaurantDto fromEntity(Restaurant restaurant){
+    String image = null;
+    if (restaurant.getImageUrl() != null){
+      image = restaurant.getImageUrl().getImageUrl();
+    }
     return JudgeRestaurantDto.builder()
         .restaurantName(restaurant.getRestaurantName())
         .introduction(restaurant.getIntroduction())
         .nickname(restaurant.getMember().getNickname())
-        .imageUrl(restaurant.getImageUrl().getImageUrl())
+        .imageUrl(image)
         .latitude(restaurant.getLatitude())
         .longitude(restaurant.getLongitude()).build();
   }
