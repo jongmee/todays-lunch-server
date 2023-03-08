@@ -3,6 +3,8 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.exception.ErrorResponse;
 import LikeLion.TodaysLunch.service.RestaurantService;
@@ -84,7 +86,7 @@ public class RestaurantController {
 
   @GetMapping("/judges")
   public ResponseEntity<HashMap<String, Object>> AllJudgeRestaurantList(Pageable pageable){
-    Page<Restaurant> restaurants = restaurantService.judgeRestaurantList(pageable);
+    Page<JudgeRestaurantListDto> restaurants = restaurantService.judgeRestaurantList(pageable);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurants.getContent());
     responseMap.put("totalPages", restaurants.getTotalPages());

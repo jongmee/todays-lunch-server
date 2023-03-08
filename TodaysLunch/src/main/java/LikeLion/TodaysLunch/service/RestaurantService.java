@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.AgreementRepository;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,10 +124,10 @@ RestaurantService {
     return restaurantRepository.save(restaurant);
   }
 
-  public Page<Restaurant> judgeRestaurantList(Pageable pageable){
+  public Page<JudgeRestaurantListDto> judgeRestaurantList(Pageable pageable){
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
     spec = spec.and(RestaurantSpecification.equalJudgement(true));
-    return restaurantRepository.findAll(spec, pageable);
+    return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
   }
 
   public String addOrCancelAgreement(Member member, Long restaurantId){
