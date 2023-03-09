@@ -125,9 +125,34 @@ RestaurantService {
     return restaurantRepository.save(restaurant);
   }
 
-  public Page<JudgeRestaurantListDto> judgeRestaurantList(Pageable pageable){
+  public Page<JudgeRestaurantListDto> judgeRestaurantList(
+      String foodCategory, String locationCategory, String locationTag,
+      int page, int size, String sort, String order) {
+
+    Pageable pageable = determineSort(page, size, sort, order);
+
+    FoodCategory foodCategoryObj;
+    LocationCategory locationCategoryObj;
+    LocationTag locationTagObj;
+
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
+    if (foodCategory != null) {
+      foodCategoryObj = foodCategoryRepository.findByName(foodCategory)
+          .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalFoodCategory(foodCategoryObj));
+    }
+    if (locationCategory != null) {
+      locationCategoryObj = locationCategoryRepository.findByName(locationCategory)
+          .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalLocationCategory(locationCategoryObj));
+    }
+    if (locationTag != null) {
+      locationTagObj = locationTagRepository.findByName(locationTag)
+          .orElseThrow(() -> new NotFoundException("위치 태그"));
+      spec = spec.and(RestaurantSpecification.equalLocationTag(locationTagObj));
+    }
     spec = spec.and(RestaurantSpecification.equalJudgement(true));
+
     return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
   }
 

@@ -85,8 +85,15 @@ public class RestaurantController {
   }
 
   @GetMapping("/judges")
-  public ResponseEntity<HashMap<String, Object>> AllJudgeRestaurantList(Pageable pageable){
-    Page<JudgeRestaurantListDto> restaurants = restaurantService.judgeRestaurantList(pageable);
+  public ResponseEntity<HashMap<String, Object>> AllJudgeRestaurantList(
+      @RequestParam(value = "food-category", required = false) String foodCategory,
+      @RequestParam(value = "location-category", required = false) String locationCategory,
+      @RequestParam(value = "location-tag", required = false) String locationTag,
+      @RequestParam(defaultValue = PAGE_VALUE) int page,
+      @RequestParam(defaultValue = PAGE_SIZE) int size,
+      @RequestParam(defaultValue = SORT) String sort,
+      @RequestParam(defaultValue = ORDER) String order){
+    Page<JudgeRestaurantListDto> restaurants = restaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, page, size, sort, order);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurants.getContent());
     responseMap.put("totalPages", restaurants.getTotalPages());
