@@ -8,8 +8,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 public class RestaurantRecommendCategoryRelation {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,5 +23,11 @@ public class RestaurantRecommendCategoryRelation {
   @ManyToOne
   @JoinColumn
   private RecommendCategory recommendCategory;
+
+  @Builder
+  public RestaurantRecommendCategoryRelation(Restaurant restaurant, RecommendCategory recommendCategory){
+    this.restaurant = restaurant;
+    this.recommendCategory = recommendCategory;
+  }
 
 }

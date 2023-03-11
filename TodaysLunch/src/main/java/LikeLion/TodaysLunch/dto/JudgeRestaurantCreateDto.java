@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.dto;
 
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 
@@ -14,6 +15,7 @@ public class JudgeRestaurantCreateDto {
   private String foodCategoryName;
   private String locationCategoryName;
   private String locationTagName;
+  private List<Long> recommendCategoryIds;
   @NotBlank(message = "위도는 Null과 공백일 수 없습니다!")
   private Double latitude;
   @NotBlank(message = "경도는 Null과 공백일 수 없습니다!")

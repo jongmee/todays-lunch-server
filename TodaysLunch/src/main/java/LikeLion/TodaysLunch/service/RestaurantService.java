@@ -6,7 +6,9 @@ import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
+import LikeLion.TodaysLunch.domain.RecommendCategory;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.domain.relation.RestaurantRecommendCategoryRelation;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
@@ -18,6 +20,8 @@ import LikeLion.TodaysLunch.repository.ImageUrlRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
+import LikeLion.TodaysLunch.repository.RecommendCategoryRepository;
+import LikeLion.TodaysLunch.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.repository.RestaurantSpecification;
 import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
@@ -46,6 +50,8 @@ RestaurantService {
   private final ImageUrlRepository imageUrlRepository;
   private final MemberRepository memberRepository;
   private final AgreementRepository agreementRepository;
+  private final RecommendCategoryRepository recommendCategoryRepository;
+  private final RestRecmdRelRepository restRecmdRelRepository;
 
   @Autowired
   private S3UploadService s3UploadService;
@@ -121,7 +127,17 @@ RestaurantService {
       restaurant.setImageUrl(imageUrl);
     }
 
-    return restaurantRepository.save(restaurant);
+    Restaurant result = restaurantRepository.save(restaurant);
+
+    List<Long> recommendCategoryIds= createDto.getRecommendCategoryIds();
+    for(int i = 0; i < recommendCategoryIds.size(); i++){
+      RecommendCategory recommendCategory = recommendCategoryRepository.findById(recommendCategoryIds.get(i))
+          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+      RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, recommendCategory);
+      restRecmdRelRepository.save(relation);
+    }
+
+    return result;
   }
 
   public Page<JudgeRestaurantListDto> judgeRestaurantList(
