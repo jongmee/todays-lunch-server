@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
@@ -87,28 +88,26 @@ RestaurantService {
     return restaurantRepository.findById(id).get();
   }
 
-  public Restaurant createJudgeRestaurant(Double latitude, Double longitude,
-      String address, String restaurantName, String foodCategoryName,
-      String locationCategoryName, String locationTagName, String introduction,
+  public Restaurant createJudgeRestaurant(JudgeRestaurantCreateDto createDto,
       MultipartFile restaurantImage, Member member)
       throws IOException {
 
-    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
+    FoodCategory foodCategory = foodCategoryRepository.findByName(createDto.getFoodCategoryName())
         .orElseThrow(() -> new NotFoundException("음식 카테고리"));
-    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
+    LocationCategory locationCategory = locationCategoryRepository.findByName(createDto.getLocationCategoryName())
         .orElseThrow(() -> new NotFoundException("위치 카테고리"));
-    LocationTag locationTag = locationTagRepository.findByName(locationTagName)
+    LocationTag locationTag = locationTagRepository.findByName(createDto.getLocationTagName())
         .orElseThrow(() -> new NotFoundException("위치 태그"));
 
     Restaurant restaurant = Restaurant.builder()
         .foodCategory(foodCategory)
         .locationCategory(locationCategory)
         .locationTag(locationTag)
-        .address(address)
-        .restaurantName(restaurantName)
-        .introduction(introduction)
-        .longitude(longitude)
-        .latitude(latitude)
+        .address(createDto.getAddress())
+        .restaurantName(createDto.getRestaurantName())
+        .introduction(createDto.getIntroduction())
+        .longitude(createDto.getLongitude())
+        .latitude(createDto.getLatitude())
         .member(member)
         .build();
 

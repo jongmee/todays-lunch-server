@@ -3,6 +3,7 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.dto.MemberDto;
@@ -65,22 +66,12 @@ public class RestaurantController {
 
   @PostMapping("/judges")
   public ResponseEntity<Object> createJudge(
-      @RequestParam(required = false) MultipartFile restaurantImage,
-      @RequestParam String address,
-      @RequestParam Double latitude,
-      @RequestParam Double longitude,
-      @RequestParam String restaurantName,
-      @RequestParam String foodCategoryName,
-      @RequestParam String locationCategoryName,
-      @RequestParam String locationTagName,
-      @RequestParam(required = false) String introduction,
+      @RequestPart(required = false) MultipartFile restaurantImage,
+      @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
     memberService.getAuthenticatedMember(member);
-    Restaurant restaurant = restaurantService.createJudgeRestaurant(latitude, longitude, address,
-          restaurantName,
-          foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage,
-          member);
+    Restaurant restaurant = restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
