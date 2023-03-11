@@ -3,6 +3,9 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.exception.ErrorResponse;
 import LikeLion.TodaysLunch.service.RestaurantService;
@@ -63,32 +66,35 @@ public class RestaurantController {
 
   @PostMapping("/judges")
   public ResponseEntity<Object> createJudge(
-      @RequestParam(required = false) MultipartFile restaurantImage,
-      @RequestParam String address,
-      @RequestParam Double latitude,
-      @RequestParam Double longitude,
-      @RequestParam String restaurantName,
-      @RequestParam String foodCategoryName,
-      @RequestParam String locationCategoryName,
-      @RequestParam String locationTagName,
-      @RequestParam(required = false) String introduction,
+      @RequestPart(required = false) MultipartFile restaurantImage,
+      @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
     memberService.getAuthenticatedMember(member);
-    Restaurant restaurant = restaurantService.createJudgeRestaurant(latitude, longitude, address,
-          restaurantName,
-          foodCategoryName, locationCategoryName, locationTagName, introduction, restaurantImage,
-          member);
+    Restaurant restaurant = restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
     return ResponseEntity.status(HttpStatus.OK).body(restaurant);
   }
 
   @GetMapping("/judges")
-  public ResponseEntity<HashMap<String, Object>> AllJudgeRestaurantList(Pageable pageable){
-    Page<Restaurant> restaurants = restaurantService.judgeRestaurantList(pageable);
+  public ResponseEntity<HashMap<String, Object>> AllJudgeRestaurantList(
+      @RequestParam(value = "food-category", required = false) String foodCategory,
+      @RequestParam(value = "location-category", required = false) String locationCategory,
+      @RequestParam(value = "location-tag", required = false) String locationTag,
+      @RequestParam(value = "recommend-category-id", required = false) Long recommendCategoryId,
+      @RequestParam(defaultValue = PAGE_VALUE) int page,
+      @RequestParam(defaultValue = PAGE_SIZE) int size,
+      @RequestParam(defaultValue = SORT) String sort,
+      @RequestParam(defaultValue = ORDER) String order){
+    Page<JudgeRestaurantListDto> restaurants = restaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, recommendCategoryId, page, size, sort, order);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurants.getContent());
     responseMap.put("totalPages", restaurants.getTotalPages());
     return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+  }
+
+  @GetMapping("/judges/{restaurantId}")
+  public ResponseEntity<JudgeRestaurantDto> judgeRestaurantDetail(@PathVariable Long restaurantId){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantDetail(restaurantId));
   }
 
   @PostMapping("/judges/{restaurantId}/agree")

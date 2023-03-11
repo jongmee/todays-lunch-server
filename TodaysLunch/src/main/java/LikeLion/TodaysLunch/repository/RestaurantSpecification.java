@@ -3,9 +3,12 @@ package LikeLion.TodaysLunch.repository;
 import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
+import LikeLion.TodaysLunch.domain.RecommendCategory;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
@@ -47,6 +50,17 @@ public class RestaurantSpecification {
       public Predicate toPredicate(Root<Restaurant> root, CriteriaQuery<?> query,
           CriteriaBuilder criteriaBuilder) {
         return criteriaBuilder.equal(root.get("locationTag"), locationTag);
+      }
+    };
+  }
+
+  public static Specification<Restaurant> equalRecommendCategory(RecommendCategory recommendCategory){
+    return new Specification<Restaurant>() {
+      @Override
+      public Predicate toPredicate(Root<Restaurant> root, CriteriaQuery<?> query,
+          CriteriaBuilder criteriaBuilder) {
+        Join<Object, Object> relationJoin = root.join("recommendCategoryRelations", JoinType.INNER);
+        return criteriaBuilder.equal(relationJoin.get("recommendCategory"), recommendCategory);
       }
     };
   }

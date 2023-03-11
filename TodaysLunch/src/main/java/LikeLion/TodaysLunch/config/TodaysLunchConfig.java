@@ -21,6 +21,8 @@ public class TodaysLunchConfig {
     private final ImageUrlRepository imageUrlRepository;
     private final SaleRepository saleRepository;
     private final AgreementRepository agreementRepository;
+    private final RecommendCategoryRepository recommendCategoryRepository;
+    private final RestRecmdRelRepository restRecmdRelRepository;
 
     @Autowired
     public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
@@ -30,7 +32,9 @@ public class TodaysLunchConfig {
                              MenuRepository menuRepository,
                              ReviewRepository reviewRepository, MemberRepository memberRepository,
                              ImageUrlRepository imageUrlRepository, SaleRepository saleRepository,
-                            AgreementRepository agreementRepository) {
+                            AgreementRepository agreementRepository,
+                            RecommendCategoryRepository recommendCategoryRepository,
+                            RestRecmdRelRepository restRecmdRelRepository) {
         this.restaurantRepository = restaurantRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.locationCategoryRepository = locationCategoryRepository;
@@ -41,6 +45,8 @@ public class TodaysLunchConfig {
         this.imageUrlRepository = imageUrlRepository;
         this.saleRepository = saleRepository;
         this.agreementRepository = agreementRepository;
+        this.recommendCategoryRepository = recommendCategoryRepository;
+        this.restRecmdRelRepository = restRecmdRelRepository;
     }
 
     @Bean
@@ -48,7 +54,8 @@ public class TodaysLunchConfig {
         return new RestaurantService(restaurantRepository,
             foodCategoryRepository, locationTagRepository,
             locationCategoryRepository, imageUrlRepository,
-            memberRepository, agreementRepository);
+            memberRepository, agreementRepository,
+            recommendCategoryRepository, restRecmdRelRepository);
     }
 
 

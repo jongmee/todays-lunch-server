@@ -6,7 +6,12 @@ import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
+import LikeLion.TodaysLunch.domain.RecommendCategory;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.domain.relation.RestaurantRecommendCategoryRelation;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
+import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.AgreementRepository;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
@@ -15,12 +20,15 @@ import LikeLion.TodaysLunch.repository.ImageUrlRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
+import LikeLion.TodaysLunch.repository.RecommendCategoryRepository;
+import LikeLion.TodaysLunch.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.repository.RestaurantSpecification;
 import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +50,8 @@ RestaurantService {
   private final ImageUrlRepository imageUrlRepository;
   private final MemberRepository memberRepository;
   private final AgreementRepository agreementRepository;
+  private final RecommendCategoryRepository recommendCategoryRepository;
+  private final RestRecmdRelRepository restRecmdRelRepository;
 
   @Autowired
   private S3UploadService s3UploadService;
@@ -84,28 +94,26 @@ RestaurantService {
     return restaurantRepository.findById(id).get();
   }
 
-  public Restaurant createJudgeRestaurant(Double latitude, Double longitude,
-      String address, String restaurantName, String foodCategoryName,
-      String locationCategoryName, String locationTagName, String introduction,
+  public Restaurant createJudgeRestaurant(JudgeRestaurantCreateDto createDto,
       MultipartFile restaurantImage, Member member)
       throws IOException {
 
-    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
+    FoodCategory foodCategory = foodCategoryRepository.findByName(createDto.getFoodCategoryName())
         .orElseThrow(() -> new NotFoundException("음식 카테고리"));
-    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
+    LocationCategory locationCategory = locationCategoryRepository.findByName(createDto.getLocationCategoryName())
         .orElseThrow(() -> new NotFoundException("위치 카테고리"));
-    LocationTag locationTag = locationTagRepository.findByName(locationTagName)
+    LocationTag locationTag = locationTagRepository.findByName(createDto.getLocationTagName())
         .orElseThrow(() -> new NotFoundException("위치 태그"));
 
     Restaurant restaurant = Restaurant.builder()
         .foodCategory(foodCategory)
         .locationCategory(locationCategory)
         .locationTag(locationTag)
-        .address(address)
-        .restaurantName(restaurantName)
-        .introduction(introduction)
-        .longitude(longitude)
-        .latitude(latitude)
+        .address(createDto.getAddress())
+        .restaurantName(createDto.getRestaurantName())
+        .introduction(createDto.getIntroduction())
+        .longitude(createDto.getLongitude())
+        .latitude(createDto.getLatitude())
         .member(member)
         .build();
 
@@ -119,13 +127,63 @@ RestaurantService {
       restaurant.setImageUrl(imageUrl);
     }
 
-    return restaurantRepository.save(restaurant);
+    Restaurant result = restaurantRepository.save(restaurant);
+
+    List<Long> recommendCategoryIds= createDto.getRecommendCategoryIds();
+    for(int i = 0; i < recommendCategoryIds.size(); i++){
+      RecommendCategory recommendCategory = recommendCategoryRepository.findById(recommendCategoryIds.get(i))
+          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+      RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, recommendCategory);
+      restRecmdRelRepository.save(relation);
+      restaurant.addRecommendCategoryRelation(relation);
+    }
+
+    if (recommendCategoryIds.size() > 0){
+      result = restaurantRepository.save(restaurant);
+    }
+
+    return result;
   }
 
-  public Page<Restaurant> judgeRestaurantList(Pageable pageable){
+  public Page<JudgeRestaurantListDto> judgeRestaurantList(
+      String foodCategory, String locationCategory, String locationTag, Long recommendCategoryId,
+      int page, int size, String sort, String order) {
+
+    Pageable pageable = determineSort(page, size, sort, order);
+
+    FoodCategory foodCategoryObj;
+    LocationCategory locationCategoryObj;
+    LocationTag locationTagObj;
+    RecommendCategory recommendCategoryObj;
+
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
+    if (foodCategory != null) {
+      foodCategoryObj = foodCategoryRepository.findByName(foodCategory)
+          .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalFoodCategory(foodCategoryObj));
+    }
+    if (locationCategory != null) {
+      locationCategoryObj = locationCategoryRepository.findByName(locationCategory)
+          .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalLocationCategory(locationCategoryObj));
+    }
+    if (locationTag != null) {
+      locationTagObj = locationTagRepository.findByName(locationTag)
+          .orElseThrow(() -> new NotFoundException("위치 태그"));
+      spec = spec.and(RestaurantSpecification.equalLocationTag(locationTagObj));
+    }
+    if (recommendCategoryId != null) {
+      recommendCategoryObj = recommendCategoryRepository.findById(recommendCategoryId)
+          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalRecommendCategory(recommendCategoryObj));
+    }
     spec = spec.and(RestaurantSpecification.equalJudgement(true));
-    return restaurantRepository.findAll(spec, pageable);
+
+    return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
+  }
+
+  public JudgeRestaurantDto judgeRestaurantDetail(Long id){
+    return JudgeRestaurantDto.fromEntity(restaurantRepository.findById(id).get());
   }
 
   public String addOrCancelAgreement(Member member, Long restaurantId){
