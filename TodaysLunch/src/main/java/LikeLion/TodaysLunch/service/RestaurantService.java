@@ -135,13 +135,18 @@ RestaurantService {
           .orElseThrow(() -> new NotFoundException("추천 카테고리"));
       RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, recommendCategory);
       restRecmdRelRepository.save(relation);
+      restaurant.addRecommendCategoryRelation(relation);
+    }
+
+    if (recommendCategoryIds.size() > 0){
+      result = restaurantRepository.save(restaurant);
     }
 
     return result;
   }
 
   public Page<JudgeRestaurantListDto> judgeRestaurantList(
-      String foodCategory, String locationCategory, String locationTag,
+      String foodCategory, String locationCategory, String locationTag, Long recommendCategoryId,
       int page, int size, String sort, String order) {
 
     Pageable pageable = determineSort(page, size, sort, order);
@@ -149,6 +154,7 @@ RestaurantService {
     FoodCategory foodCategoryObj;
     LocationCategory locationCategoryObj;
     LocationTag locationTagObj;
+    RecommendCategory recommendCategoryObj;
 
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
     if (foodCategory != null) {
@@ -165,6 +171,11 @@ RestaurantService {
       locationTagObj = locationTagRepository.findByName(locationTag)
           .orElseThrow(() -> new NotFoundException("위치 태그"));
       spec = spec.and(RestaurantSpecification.equalLocationTag(locationTagObj));
+    }
+    if (recommendCategoryId != null) {
+      recommendCategoryObj = recommendCategoryRepository.findById(recommendCategoryId)
+          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalRecommendCategory(recommendCategoryObj));
     }
     spec = spec.and(RestaurantSpecification.equalJudgement(true));
 

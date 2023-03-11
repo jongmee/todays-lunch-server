@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.domain;
 
+import LikeLion.TodaysLunch.domain.relation.RestaurantRecommendCategoryRelation;
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -36,6 +37,8 @@ public class Restaurant {
   @ManyToOne
   @JoinColumn
   private LocationTag locationTag;
+  @OneToMany(mappedBy="restaurant", cascade = CascadeType.ALL)
+  private Set<RestaurantRecommendCategoryRelation> recommendCategoryRelations = new HashSet<>();
   @OneToOne
   @JoinColumn
   private ImageUrl imageUrl;
@@ -89,6 +92,8 @@ public class Restaurant {
   public void setMember(Member member) { this.member = member; }
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
   public void setAgreementCount(AtomicLong agreementCount) { this.agreementCount = agreementCount; }
-
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
+  public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
+    recommendCategoryRelations.add(recommendCategoryRelation);
+  }
 }
