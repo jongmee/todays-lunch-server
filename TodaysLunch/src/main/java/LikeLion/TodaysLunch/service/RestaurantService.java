@@ -61,7 +61,7 @@ RestaurantService {
 
   public Page<RestaurantListDto> restaurantList(
       String foodCategory, String locationCategory,
-      String locationTag, String keyword,
+      String locationTag, Long recommendCategoryId, String keyword,
       int page, int size, String sort, String order) {
 
     Pageable pageable = determineSort(page, size, sort, order);
@@ -69,6 +69,7 @@ RestaurantService {
     FoodCategory foodCategoryObj;
     LocationCategory locationCategoryObj;
     LocationTag locationTagObj;
+    RecommendCategory recommendCategoryObj;
 
     Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
     if (foodCategory != null) {
@@ -82,6 +83,11 @@ RestaurantService {
     if (locationTag != null) {
       locationTagObj = locationTagRepository.findByName(locationTag).get();
       spec = spec.and(RestaurantSpecification.equalLocationTag(locationTagObj));
+    }
+    if (recommendCategoryId != null) {
+      recommendCategoryObj = recommendCategoryRepository.findById(recommendCategoryId)
+          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalRecommendCategory(recommendCategoryObj));
     }
     if (keyword != null) {
       spec = spec.and(RestaurantSpecification.likeRestaurantName(keyword));

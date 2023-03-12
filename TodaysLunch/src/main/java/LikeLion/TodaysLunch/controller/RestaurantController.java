@@ -47,13 +47,14 @@ public class RestaurantController {
       @RequestParam(value = "food-category", required = false) String foodCategory,
       @RequestParam(value = "location-category", required = false) String locationCategory,
       @RequestParam(value = "location-tag", required = false) String locationTag,
+      @RequestParam(value = "recommend-category-id", required = false) Long recommendCategoryId,
       @RequestParam(value = "keyword", required = false) String keyword,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order) {
     Page<RestaurantListDto> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
-        locationTag, keyword, page, size, sort, order);
+        locationTag, recommendCategoryId, keyword, page, size, sort, order);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurants.getContent());
     responseMap.put("totalPages", restaurants.getTotalPages());
