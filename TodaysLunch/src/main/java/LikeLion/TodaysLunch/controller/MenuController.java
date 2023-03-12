@@ -36,8 +36,7 @@ public class MenuController {
 
   @GetMapping("restaurants/{restaurantId}/menus")
   public ResponseEntity<HashMap<String, Object>> menuList(@PathVariable Long restaurantId, Pageable pageable) {
-    Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
-    Page<Menu> menus = menuService.findMenuByRestaurant(restaurant, pageable);
+    Page<Menu> menus = menuService.findMenuByRestaurant(restaurantId, pageable);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", menus.getContent());
     responseMap.put("totalPages", menus.getTotalPages());
