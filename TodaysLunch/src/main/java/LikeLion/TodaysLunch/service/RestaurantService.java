@@ -12,6 +12,7 @@ import LikeLion.TodaysLunch.domain.relation.RestaurantRecommendCategoryRelation;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
+import LikeLion.TodaysLunch.dto.RestaurantDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.AgreementRepository;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
@@ -90,8 +91,10 @@ RestaurantService {
     return restaurantRepository.findAll(spec, pageable);
   }
 
-  public Restaurant restaurantDetail(Long id){
-    return restaurantRepository.findById(id).get();
+  public RestaurantDto restaurantDetail(Long id){
+    Restaurant restaurant = restaurantRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    return RestaurantDto.fromEntity(restaurant);
   }
 
   public Restaurant createJudgeRestaurant(JudgeRestaurantCreateDto createDto,

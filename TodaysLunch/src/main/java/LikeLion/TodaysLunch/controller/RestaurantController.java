@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.dto.MemberDto;
+import LikeLion.TodaysLunch.dto.RestaurantDto;
 import LikeLion.TodaysLunch.exception.ErrorResponse;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import LikeLion.TodaysLunch.service.login.MemberService;
@@ -59,20 +60,20 @@ public class RestaurantController {
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<Restaurant> detail(@PathVariable Long restaurantId) {
-    Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+  public ResponseEntity<RestaurantDto> detail(@PathVariable Long restaurantId) {
+    RestaurantDto restaurantDto = restaurantService.restaurantDetail(restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantDto);
   }
 
   @PostMapping("/judges")
-  public ResponseEntity<Object> createJudge(
+  public ResponseEntity<JudgeRestaurantCreateDto> createJudge(
       @RequestPart(required = false) MultipartFile restaurantImage,
       @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
     memberService.getAuthenticatedMember(member);
     Restaurant restaurant = restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    return ResponseEntity.status(HttpStatus.OK).body(createDto);
   }
 
   @GetMapping("/judges")
