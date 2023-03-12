@@ -7,6 +7,8 @@ import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.dto.MemberDto;
+import LikeLion.TodaysLunch.dto.RestaurantDto;
+import LikeLion.TodaysLunch.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.exception.ErrorResponse;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import LikeLion.TodaysLunch.service.login.MemberService;
@@ -45,13 +47,14 @@ public class RestaurantController {
       @RequestParam(value = "food-category", required = false) String foodCategory,
       @RequestParam(value = "location-category", required = false) String locationCategory,
       @RequestParam(value = "location-tag", required = false) String locationTag,
+      @RequestParam(value = "recommend-category-id", required = false) Long recommendCategoryId,
       @RequestParam(value = "keyword", required = false) String keyword,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order) {
-    Page<Restaurant> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
-        locationTag, keyword, page, size, sort, order);
+    Page<RestaurantListDto> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
+        locationTag, recommendCategoryId, keyword, page, size, sort, order);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurants.getContent());
     responseMap.put("totalPages", restaurants.getTotalPages());
@@ -59,20 +62,20 @@ public class RestaurantController {
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<Restaurant> detail(@PathVariable Long restaurantId) {
-    Restaurant restaurant = restaurantService.restaurantDetail(restaurantId);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+  public ResponseEntity<RestaurantDto> detail(@PathVariable Long restaurantId) {
+    RestaurantDto restaurantDto = restaurantService.restaurantDetail(restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantDto);
   }
 
   @PostMapping("/judges")
-  public ResponseEntity<Object> createJudge(
+  public ResponseEntity<JudgeRestaurantCreateDto> createJudge(
       @RequestPart(required = false) MultipartFile restaurantImage,
       @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
     memberService.getAuthenticatedMember(member);
     Restaurant restaurant = restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    return ResponseEntity.status(HttpStatus.OK).body(createDto);
   }
 
   @GetMapping("/judges")

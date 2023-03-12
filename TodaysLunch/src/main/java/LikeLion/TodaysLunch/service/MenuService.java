@@ -25,7 +25,6 @@ public class MenuService {
   private S3UploadService s3UploadService;
   private final MenuRepository menuRepository;
   private final ImageUrlRepository imageUrlRepository;
-
   private final DataJpaRestaurantRepository restaurantRepository;
   @Autowired
   public MenuService(MenuRepository menuRepository,
@@ -36,7 +35,9 @@ public class MenuService {
     this.restaurantRepository = restaurantRepository;
   }
 
-  public Page<Menu> findMenuByRestaurant(Restaurant restaurant, Pageable pageable){
+  public Page<Menu> findMenuByRestaurant(Long restaurantId, Pageable pageable){
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
     return menuRepository.findAllByRestaurant(restaurant, pageable);
   }
 
