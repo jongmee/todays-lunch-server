@@ -66,34 +66,7 @@ RestaurantService {
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    FoodCategory foodCategoryObj;
-    LocationCategory locationCategoryObj;
-    LocationTag locationTagObj;
-    RecommendCategory recommendCategoryObj;
-
-    Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
-    if (foodCategory != null) {
-      foodCategoryObj = foodCategoryRepository.findByName(foodCategory).get();
-      spec = spec.and(RestaurantSpecification.equalFoodCategory(foodCategoryObj));
-    }
-    if (locationCategory != null) {
-      locationCategoryObj = locationCategoryRepository.findByName(locationCategory).get();
-      spec = spec.and(RestaurantSpecification.equalLocationCategory(locationCategoryObj));
-    }
-    if (locationTag != null) {
-      locationTagObj = locationTagRepository.findByName(locationTag).get();
-      spec = spec.and(RestaurantSpecification.equalLocationTag(locationTagObj));
-    }
-    if (recommendCategoryId != null) {
-      recommendCategoryObj = recommendCategoryRepository.findById(recommendCategoryId)
-          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
-      spec = spec.and(RestaurantSpecification.equalRecommendCategory(recommendCategoryObj));
-    }
-    if (keyword != null) {
-      spec = spec.and(RestaurantSpecification.likeRestaurantName(keyword));
-    }
-
-    spec = spec.and(RestaurantSpecification.equalJudgement(false));
+    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false);
 
     return restaurantRepository.findAll(spec, pageable).map(RestaurantListDto::fromEntity);
   }
@@ -161,33 +134,7 @@ RestaurantService {
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    FoodCategory foodCategoryObj;
-    LocationCategory locationCategoryObj;
-    LocationTag locationTagObj;
-    RecommendCategory recommendCategoryObj;
-
-    Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
-    if (foodCategory != null) {
-      foodCategoryObj = foodCategoryRepository.findByName(foodCategory)
-          .orElseThrow(() -> new NotFoundException("음식 카테고리"));
-      spec = spec.and(RestaurantSpecification.equalFoodCategory(foodCategoryObj));
-    }
-    if (locationCategory != null) {
-      locationCategoryObj = locationCategoryRepository.findByName(locationCategory)
-          .orElseThrow(() -> new NotFoundException("위치 카테고리"));
-      spec = spec.and(RestaurantSpecification.equalLocationCategory(locationCategoryObj));
-    }
-    if (locationTag != null) {
-      locationTagObj = locationTagRepository.findByName(locationTag)
-          .orElseThrow(() -> new NotFoundException("위치 태그"));
-      spec = spec.and(RestaurantSpecification.equalLocationTag(locationTagObj));
-    }
-    if (recommendCategoryId != null) {
-      recommendCategoryObj = recommendCategoryRepository.findById(recommendCategoryId)
-          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
-      spec = spec.and(RestaurantSpecification.equalRecommendCategory(recommendCategoryObj));
-    }
-    spec = spec.and(RestaurantSpecification.equalJudgement(true));
+    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, null, true);
 
     return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
   }
@@ -276,5 +223,37 @@ RestaurantService {
       pageable = PageRequest.of(page, size, Sort.by(sort).descending());
     }
     return pageable;
+  }
+
+  public Specification<Restaurant> determineSpecification(String foodCategory, String locationCategory,
+      String locationTag, Long recommendCategoryId, String keyword, Boolean judgement){
+    FoodCategory foodCategoryObj;
+    LocationCategory locationCategoryObj;
+    LocationTag locationTagObj;
+    RecommendCategory recommendCategoryObj;
+
+    Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
+    if (foodCategory != null) {
+      foodCategoryObj = foodCategoryRepository.findByName(foodCategory).get();
+      spec = spec.and(RestaurantSpecification.equalFoodCategory(foodCategoryObj));
+    }
+    if (locationCategory != null) {
+      locationCategoryObj = locationCategoryRepository.findByName(locationCategory).get();
+      spec = spec.and(RestaurantSpecification.equalLocationCategory(locationCategoryObj));
+    }
+    if (locationTag != null) {
+      locationTagObj = locationTagRepository.findByName(locationTag).get();
+      spec = spec.and(RestaurantSpecification.equalLocationTag(locationTagObj));
+    }
+    if (recommendCategoryId != null) {
+      recommendCategoryObj = recommendCategoryRepository.findById(recommendCategoryId)
+          .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+      spec = spec.and(RestaurantSpecification.equalRecommendCategory(recommendCategoryObj));
+    }
+    if (keyword != null) {
+      spec = spec.and(RestaurantSpecification.likeRestaurantName(keyword));
+    }
+
+    return spec.and(RestaurantSpecification.equalJudgement(judgement));
   }
 }
