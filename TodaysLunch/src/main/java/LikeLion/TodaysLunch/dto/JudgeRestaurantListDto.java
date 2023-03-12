@@ -15,6 +15,9 @@ public class JudgeRestaurantListDto {
   private String introduction;
   private String nickname;
   private String imageUrl;
+  private String foodCategory;
+  private String locationCategory;
+  private String locationTag;
   public static JudgeRestaurantListDto fromEntity(Restaurant restaurant){
     String image = null;
     if (restaurant.getImageUrl() != null){
@@ -24,6 +27,10 @@ public class JudgeRestaurantListDto {
         .restaurantName(restaurant.getRestaurantName())
         .introduction(restaurant.getIntroduction())
         .nickname(restaurant.getMember().getNickname())
-        .imageUrl(image).build();
+        .imageUrl(image)
+        .foodCategory(restaurant.getFoodCategory().getName())
+        .locationCategory(restaurant.getLocationCategory().getName())
+        .locationTag(restaurant.getLocationTag().getName())
+        .build();
   }
 }
