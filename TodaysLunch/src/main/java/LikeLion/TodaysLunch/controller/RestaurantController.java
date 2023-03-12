@@ -8,6 +8,7 @@ import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.RestaurantDto;
+import LikeLion.TodaysLunch.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.exception.ErrorResponse;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import LikeLion.TodaysLunch.service.login.MemberService;
@@ -51,7 +52,7 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order) {
-    Page<Restaurant> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
+    Page<RestaurantListDto> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
         locationTag, keyword, page, size, sort, order);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurants.getContent());

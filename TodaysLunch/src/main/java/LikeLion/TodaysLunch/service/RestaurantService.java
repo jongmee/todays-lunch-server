@@ -13,6 +13,7 @@ import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.dto.RestaurantDto;
+import LikeLion.TodaysLunch.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.AgreementRepository;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
@@ -58,7 +59,7 @@ RestaurantService {
   private S3UploadService s3UploadService;
 
 
-  public Page<Restaurant> restaurantList(
+  public Page<RestaurantListDto> restaurantList(
       String foodCategory, String locationCategory,
       String locationTag, String keyword,
       int page, int size, String sort, String order) {
@@ -88,7 +89,7 @@ RestaurantService {
 
     spec = spec.and(RestaurantSpecification.equalJudgement(false));
 
-    return restaurantRepository.findAll(spec, pageable);
+    return restaurantRepository.findAll(spec, pageable).map(RestaurantListDto::fromEntity);
   }
 
   public RestaurantDto restaurantDetail(Long id){
