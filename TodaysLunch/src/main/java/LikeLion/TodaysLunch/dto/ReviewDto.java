@@ -18,6 +18,7 @@ public class ReviewDto {
   @NotBlank(message = "별점은 Null과 공백일 수 없습니다!")
   private Integer rating;
   private LocalDate createdDate;
+  private Long likeCount;
   @Builder
   public ReviewDto(String reviewContent, Integer rating){
     this.rating = rating;
@@ -33,6 +34,7 @@ public class ReviewDto {
         .rating(review.getRating())
         .reviewContent(review.getReviewContent())
         .createdDate(review.getCreatedDate())
+        .likeCount(review.getLikeCount().get())
         .build();
   }
 

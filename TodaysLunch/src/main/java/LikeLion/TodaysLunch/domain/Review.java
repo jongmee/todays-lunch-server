@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.domain;
 
 import LikeLion.TodaysLunch.dto.ReviewDto;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,12 +21,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class Review extends BaseTimeEntity {
-
-  @PrePersist
-  public void prePersist() {
-    this.reviewRecmd = this.reviewRecmd == null ? 0L : reviewRecmd;
-  }
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -33,7 +28,7 @@ public class Review extends BaseTimeEntity {
   private String reviewContent;
   @Column(nullable = false)
   private Integer rating;
-  private Long reviewRecmd;
+  private AtomicLong likeCount;
   @ManyToOne
   @JoinColumn
   private Restaurant restaurant;
@@ -45,12 +40,14 @@ public class Review extends BaseTimeEntity {
   public Review(String reviewContent, Integer rating) {
     this.reviewContent = reviewContent;
     this.rating = rating;
+    this.likeCount = new AtomicLong(0);
   }
 
   public void setRestaurant(Restaurant restaurant) {
     this.restaurant = restaurant;
   }
   public void setMember(Member member) { this.member = member; }
+  public void setLikeCount(AtomicLong likeCount) { this.likeCount = likeCount; }
 
   public void update(ReviewDto reviewDto) {
     if (reviewDto.getReviewContent() != null) {

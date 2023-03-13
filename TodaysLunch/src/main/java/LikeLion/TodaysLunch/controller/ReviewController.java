@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -53,6 +54,13 @@ public class ReviewController {
   @DeleteMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
   public ResponseEntity<Void> delete(@PathVariable Long reviewId, @PathVariable Long restaurantId){
     Review deletedReview = reviewService.delete(reviewId, restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @PostMapping("/reviews/{reviewId}/like")
+  public ResponseEntity<Void> likeReview(
+      @PathVariable Long reviewId, @AuthenticationPrincipal Member member){
+    reviewService.addOrCancelLike(reviewId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 

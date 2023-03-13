@@ -4,27 +4,29 @@ import LikeLion.TodaysLunch.controller.ReviewController;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Review;
+import LikeLion.TodaysLunch.domain.ReviewLike;
 import LikeLion.TodaysLunch.dto.ReviewDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
+import LikeLion.TodaysLunch.repository.ReviewLikeRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 
 @Transactional
+@RequiredArgsConstructor
 public class ReviewService {
   private final ReviewRepository reviewRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
+  private final ReviewLikeRepository reviewLikeRepository;
 
-  public ReviewService(ReviewRepository reviewRepository, DataJpaRestaurantRepository restaurantRepository) {
-    this.reviewRepository = reviewRepository;
-    this.restaurantRepository = restaurantRepository;
-  }
   public Review create(Long restaurantId, ReviewDto reviewDto, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
@@ -101,4 +103,32 @@ public class ReviewService {
     reviewRepository.delete(review);
     return review;
   }
+
+  public void addOrCancelLike(Long reviewId, Member member){
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new NotFoundException("리뷰"));
+
+    if (isNotAlreadyLike(member, review)){
+      reviewLikeRepository.save(new ReviewLike(member, review));
+
+      AtomicLong likeCount = review.getLikeCount();
+      likeCount.incrementAndGet();
+      review.setLikeCount(likeCount);
+
+      reviewRepository.save(review);
+    } else {
+      ReviewLike like = reviewLikeRepository.findByReviewAndMember(review, member).get();
+      AtomicLong likeCount = review.getLikeCount();
+      likeCount.decrementAndGet();
+      review.setLikeCount(likeCount);
+      reviewRepository.save(review);
+      reviewLikeRepository.delete(like);
+    }
+  }
+
+  // 유저가 이미 추천한 리뷰인지 체크
+  private boolean isNotAlreadyLike(Member member, Review review){
+    return reviewLikeRepository.findByReviewAndMember(review, member).isEmpty();
+  }
+
 }
