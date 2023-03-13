@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RestaurantDto {
+  private Long id;
   private String restaurantName;
   private String foodCategory;
   private String locationCategory;
@@ -36,6 +37,7 @@ public class RestaurantDto {
       nickname = restaurant.getMember().getNickname();
     }
     return RestaurantDto.builder()
+        .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())
         .foodCategory(restaurant.getFoodCategory().getName())
         .locationCategory(restaurant.getLocationCategory().getName())

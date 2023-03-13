@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ReviewDto {
+  private Long id;
   @NotBlank(message = "리뷰 내용은 Null과 공백일 수 없습니다!")
   private String reviewContent;
   @NotBlank(message = "별점은 Null과 공백일 수 없습니다!")
@@ -31,6 +32,7 @@ public class ReviewDto {
 
   public static ReviewDto fromEntity(Review review){
     return ReviewDto.builder()
+        .id(review.getId())
         .rating(review.getRating())
         .reviewContent(review.getReviewContent())
         .createdDate(review.getCreatedDate())
