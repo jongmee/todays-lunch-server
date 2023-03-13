@@ -64,4 +64,10 @@ public class ReviewController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
+  @GetMapping("/reviews/{reviewId}/like")
+  public  ResponseEntity<String>isAlreadyLike(
+      @PathVariable Long reviewId, @AuthenticationPrincipal Member member){
+    return ResponseEntity.status(HttpStatus.OK).body(reviewService.isAlreadyLike(member, reviewId));
+  }
+
 }

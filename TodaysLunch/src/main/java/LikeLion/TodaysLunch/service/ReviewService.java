@@ -126,6 +126,16 @@ public class ReviewService {
     }
   }
 
+  public String isAlreadyLike(Member member, Long reviewId){
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new NotFoundException("리뷰"));
+
+    if(isNotAlreadyLike(member, review))
+      return "false";
+    else
+      return "true";
+  }
+
   // 유저가 이미 추천한 리뷰인지 체크
   private boolean isNotAlreadyLike(Member member, Review review){
     return reviewLikeRepository.findByReviewAndMember(review, member).isEmpty();
