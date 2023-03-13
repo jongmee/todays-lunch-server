@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.controller;
 
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Review;
 import LikeLion.TodaysLunch.dto.ReviewDto;
 import LikeLion.TodaysLunch.service.ReviewService;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,12 +28,10 @@ public class ReviewController {
     this.reviewService = reviewService;
   }
   @PostMapping("/restaurants/{restaurantId}/reviews")
-  public ResponseEntity<Review> createReview(@RequestBody ReviewDto reviewDto, @PathVariable Long restaurantId){
-    if(reviewDto.getReviewContent() == null || reviewDto.getRating() == null){
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Review());
-    }
-    Review review = reviewService.create(restaurantId, reviewDto);
-    return ResponseEntity.status(HttpStatus.OK).body(review);
+  public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto reviewDto,
+      @PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    reviewService.create(restaurantId, reviewDto, member);
+    return ResponseEntity.status(HttpStatus.OK).body(reviewDto);
   }
 
   @GetMapping("/restaurants/{restaurantId}/reviews")

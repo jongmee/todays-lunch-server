@@ -1,9 +1,11 @@
 package LikeLion.TodaysLunch.service;
 
 import LikeLion.TodaysLunch.controller.ReviewController;
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Review;
 import LikeLion.TodaysLunch.dto.ReviewDto;
+import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
@@ -23,9 +25,9 @@ public class ReviewService {
     this.reviewRepository = reviewRepository;
     this.restaurantRepository = restaurantRepository;
   }
-  public Review create(Long restaurantId, ReviewDto reviewDto){
+  public Review create(Long restaurantId, ReviewDto reviewDto, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new IllegalArgumentException("리뷰 생성 실패! 리뷰를 생성하기 위한 대상 맛집이 없습니다."));
+        .orElseThrow(() -> new NotFoundException("맛집"));
 
     Long count = restaurant.getReviewCount() + 1;
     restaurant.setReviewCount(count);
@@ -48,6 +50,7 @@ public class ReviewService {
 
     Review review = reviewDto.toEntity();
     review.setRestaurant(restaurant);
+    review.setMember(member);
     return reviewRepository.save(review);
   }
 
