@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +76,7 @@ RestaurantService {
     return RestaurantDto.fromEntity(restaurant);
   }
 
-  public Restaurant createJudgeRestaurant(JudgeRestaurantCreateDto createDto,
+  public void createJudgeRestaurant(JudgeRestaurantCreateDto createDto,
       MultipartFile restaurantImage, Member member)
       throws IOException {
 
@@ -110,7 +109,7 @@ RestaurantService {
       restaurant.setImageUrl(imageUrl);
     }
 
-    Restaurant result = restaurantRepository.save(restaurant);
+    restaurantRepository.save(restaurant);
 
     List<Long> recommendCategoryIds= createDto.getRecommendCategoryIds();
     for(int i = 0; i < recommendCategoryIds.size(); i++){
@@ -122,10 +121,8 @@ RestaurantService {
     }
 
     if (recommendCategoryIds.size() > 0){
-      result = restaurantRepository.save(restaurant);
+      restaurantRepository.save(restaurant);
     }
-
-    return result;
   }
 
   public Page<JudgeRestaurantListDto> judgeRestaurantList(
@@ -143,14 +140,15 @@ RestaurantService {
     return JudgeRestaurantDto.fromEntity(restaurantRepository.findById(id).get());
   }
 
-  public String addOrCancelAgreement(Member member, Long restaurantId){
+  public void addOrCancelAgreement(Member member, Long restaurantId){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new IllegalArgumentException("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"));
+        .orElseThrow(() -> new NotFoundException("맛집"));
+
+    AtomicLong agreementCount = restaurant.getAgreementCount();
 
     if(isNotAlreadyAgree(member, restaurant)){
       agreementRepository.save(new Agreement(member, restaurant));
 
-      AtomicLong agreementCount = restaurant.getAgreementCount();
       agreementCount.incrementAndGet();
       restaurant.setAgreementCount(agreementCount);
 
@@ -158,21 +156,18 @@ RestaurantService {
         restaurant.setJudgement(false);
 
       restaurantRepository.save(restaurant);
-      return "맛집 심사 동의 성공";
     } else {
       Agreement agreement = agreementRepository.findByMemberAndRestaurant(member, restaurant).get();
-      AtomicLong agreementCount = restaurant.getAgreementCount();
       agreementCount.decrementAndGet();
       restaurant.setAgreementCount(agreementCount);
       restaurantRepository.save(restaurant);
       agreementRepository.delete(agreement);
-      return "맛집 심사 동의 취소 성공";
     }
   }
 
   public String isAlreadyAgree(Member member, Long restaurantId){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new IllegalArgumentException("맛집 심사 동의를 위한 대상 맛집 찾기 실패!"));
+        .orElseThrow(() -> new NotFoundException("맛집"));
 
     if(isNotAlreadyAgree(member, restaurant))
       return "false";

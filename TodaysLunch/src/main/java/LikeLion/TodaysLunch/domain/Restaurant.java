@@ -53,6 +53,7 @@ public class Restaurant {
   private AtomicLong agreementCount;
   private Long reviewCount;
   private Long lowestPrice;
+  private String bestReview;
   @OneToOne
   @JoinColumn
   private Member member;
@@ -93,6 +94,7 @@ public class Restaurant {
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
   public void setAgreementCount(AtomicLong agreementCount) { this.agreementCount = agreementCount; }
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
+  public void setBestReview(String bestReview) { this.bestReview = bestReview; }
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);
   }
