@@ -11,13 +11,17 @@ import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
 import LikeLion.TodaysLunch.repository.ReviewLikeRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 
 @Transactional
@@ -104,7 +108,9 @@ public class ReviewService {
     return review;
   }
 
-  public void addOrCancelLike(Long reviewId, Member member){
+  public void addOrCancelLike(Long restaurantId, Long reviewId, Member member){
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
     Review review = reviewRepository.findById(reviewId)
         .orElseThrow(() -> new NotFoundException("리뷰"));
 
@@ -123,6 +129,13 @@ public class ReviewService {
       review.setLikeCount(likeCount);
       reviewRepository.save(review);
       reviewLikeRepository.delete(like);
+    }
+
+    Pageable pageable = PageRequest.of(0, (int)reviewRepository.count(), Sort.by("likeCount").descending());
+    Review bestReview = reviewRepository.findAllByRestaurant(restaurant, pageable).getContent().get(0);
+    if(bestReview.getLikeCount().get() <= review.getLikeCount().get()){
+      restaurant.setBestReview(review.getReviewContent());
+      restaurantRepository.save(restaurant);
     }
   }
 

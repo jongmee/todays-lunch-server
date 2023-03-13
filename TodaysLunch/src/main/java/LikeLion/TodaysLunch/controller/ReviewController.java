@@ -57,10 +57,11 @@ public class ReviewController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
-  @PostMapping("/reviews/{reviewId}/like")
+  @PostMapping("/restaurants/{restaurantId}/reviews/{reviewId}/like")
   public ResponseEntity<Void> likeReview(
+      @PathVariable Long restaurantId,
       @PathVariable Long reviewId, @AuthenticationPrincipal Member member){
-    reviewService.addOrCancelLike(reviewId, member);
+    reviewService.addOrCancelLike(restaurantId, reviewId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
