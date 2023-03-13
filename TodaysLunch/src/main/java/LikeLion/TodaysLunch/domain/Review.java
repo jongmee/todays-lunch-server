@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import lombok.Builder;
 import lombok.Data;
@@ -18,11 +19,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Review {
+public class Review extends BaseTimeEntity {
 
   @PrePersist
   public void prePersist() {
-    this.reviewDecmd = this.reviewDecmd == null ? 0L : reviewDecmd;
     this.reviewRecmd = this.reviewRecmd == null ? 0L : reviewRecmd;
   }
 
@@ -34,10 +34,12 @@ public class Review {
   @Column(nullable = false)
   private Integer rating;
   private Long reviewRecmd;
-  private Long reviewDecmd;
   @ManyToOne
   @JoinColumn
   private Restaurant restaurant;
+  @OneToOne
+  @JoinColumn(nullable = false)
+  Member member;
 
   @Builder
   public Review(String reviewContent, Integer rating) {
@@ -48,6 +50,7 @@ public class Review {
   public void setRestaurant(Restaurant restaurant) {
     this.restaurant = restaurant;
   }
+  public void setMember(Member member) { this.member = member; }
 
   public void update(ReviewDto reviewDto) {
     if (reviewDto.getReviewContent() != null) {
@@ -57,9 +60,5 @@ public class Review {
       this.rating = reviewDto.getRating();
     }
   }
-
-//  @ManyToOne
-//  @JoinColumn(name="group")
-//  private Member member;
 
 }
