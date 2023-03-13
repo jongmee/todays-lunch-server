@@ -28,15 +28,15 @@ public class ReviewController {
     this.reviewService = reviewService;
   }
   @PostMapping("/restaurants/{restaurantId}/reviews")
-  public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto reviewDto,
+  public ResponseEntity<Void> createReview(@RequestBody ReviewDto reviewDto,
       @PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     reviewService.create(restaurantId, reviewDto, member);
-    return ResponseEntity.status(HttpStatus.OK).body(reviewDto);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @GetMapping("/restaurants/{restaurantId}/reviews")
   public ResponseEntity<HashMap<String, Object>> allReviewList(@PathVariable Long restaurantId, Pageable pageable){
-    Page<Review> reviews = reviewService.reviewsList(restaurantId, pageable);
+    Page<ReviewDto> reviews = reviewService.reviewsList(restaurantId, pageable);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviews.getContent());
     responseMap.put("totalPages", reviews.getTotalPages());
@@ -44,17 +44,16 @@ public class ReviewController {
   }
 
   @PatchMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
-  public  ResponseEntity<Review> updateReview(@PathVariable Long reviewId, @PathVariable Long restaurantId,
+  public  ResponseEntity<Void> updateReview(@PathVariable Long reviewId, @PathVariable Long restaurantId,
       @RequestBody ReviewDto dto){
     Review updatedReview = reviewService.update(reviewId, restaurantId, dto);
-    return ResponseEntity.status(HttpStatus.OK).body(updatedReview);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @DeleteMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
-  public ResponseEntity<Review> delete(@PathVariable Long reviewId, @PathVariable Long restaurantId){
+  public ResponseEntity<Void> delete(@PathVariable Long reviewId, @PathVariable Long restaurantId){
     Review deletedReview = reviewService.delete(reviewId, restaurantId);
-    return ResponseEntity.status(HttpStatus.OK).body(deletedReview);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
-
 
 }

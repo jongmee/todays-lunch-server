@@ -54,9 +54,9 @@ public class ReviewService {
     return reviewRepository.save(review);
   }
 
-  public Page<Review> reviewsList(Long restaurantId, Pageable pageable){
+  public Page<ReviewDto> reviewsList(Long restaurantId, Pageable pageable){
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-    return reviewRepository.findAllByRestaurant(restaurant, pageable);
+    return reviewRepository.findAllByRestaurant(restaurant, pageable).map(ReviewDto::fromEntity);
   }
 
   public Review update(Long reviewId, Long restaurantId, ReviewDto reviewDto){
