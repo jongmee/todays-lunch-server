@@ -6,10 +6,8 @@ import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
-import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.RestaurantDto;
 import LikeLion.TodaysLunch.dto.RestaurantListDto;
-import LikeLion.TodaysLunch.exception.ErrorResponse;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import LikeLion.TodaysLunch.service.login.MemberService;
 import java.io.IOException;
@@ -17,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -68,14 +65,14 @@ public class RestaurantController {
   }
 
   @PostMapping("/judges")
-  public ResponseEntity<JudgeRestaurantCreateDto> createJudge(
+  public ResponseEntity<Void> createJudge(
       @RequestPart(required = false) MultipartFile restaurantImage,
       @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
     memberService.getAuthenticatedMember(member);
-    Restaurant restaurant = restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
-    return ResponseEntity.status(HttpStatus.OK).body(createDto);
+    restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @GetMapping("/judges")
@@ -101,16 +98,16 @@ public class RestaurantController {
   }
 
   @PostMapping("/judges/{restaurantId}/agree")
-  public ResponseEntity<String> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+  public ResponseEntity<Void> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     memberService.getAuthenticatedMember(member);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.addOrCancelAgreement(member, restaurantId));
+    restaurantService.addOrCancelAgreement(member, restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @GetMapping("/judges/{restaurantId}/agree")
   public ResponseEntity<String> isAlreadyAgree(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     memberService.getAuthenticatedMember(member);
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyAgree(member, restaurantId));
-
   }
 
   // 임시로 유저의 ID 값을 경로 변수로 받기
