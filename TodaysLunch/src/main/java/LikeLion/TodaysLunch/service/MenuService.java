@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Sale;
+import LikeLion.TodaysLunch.dto.MenuDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
@@ -35,10 +36,10 @@ public class MenuService {
     this.restaurantRepository = restaurantRepository;
   }
 
-  public Page<Menu> findMenuByRestaurant(Long restaurantId, Pageable pageable){
+  public Page<MenuDto> findMenuByRestaurant(Long restaurantId, Pageable pageable){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
-    return menuRepository.findAllByRestaurant(restaurant, pageable);
+    return menuRepository.findAllByRestaurant(restaurant, pageable).map(MenuDto::fromEntity);
   }
 
   public Page<Menu> searchMenuName(String keyword, Pageable pageable){

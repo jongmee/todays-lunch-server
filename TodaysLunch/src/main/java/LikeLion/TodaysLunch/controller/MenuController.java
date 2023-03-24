@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.MenuDto;
 import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class MenuController {
 
   @GetMapping("restaurants/{restaurantId}/menus")
   public ResponseEntity<HashMap<String, Object>> menuList(@PathVariable Long restaurantId, Pageable pageable) {
-    Page<Menu> menus = menuService.findMenuByRestaurant(restaurantId, pageable);
+    Page<MenuDto> menus = menuService.findMenuByRestaurant(restaurantId, pageable);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", menus.getContent());
     responseMap.put("totalPages", menus.getTotalPages());
