@@ -69,7 +69,7 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.OK).body(menu);
   }
 
-  @PostMapping("menus/{menuId}/image")
+  @PostMapping("menus/{menuId}/images")
   public ResponseEntity<Void> createMenuImage(
       @RequestParam MultipartFile menuImage,
       @PathVariable Long menuId,
@@ -79,13 +79,13 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
-  @GetMapping("menus/{menuId}/image")
+  @GetMapping("menus/{menuId}/images")
   public ResponseEntity<List<MenuImageDto>> menuImageList(@PathVariable Long menuId){
     List<MenuImageDto> menuImages = menuService.menuImageList(menuId);
     return ResponseEntity.status(HttpStatus.OK).body(menuImages);
   }
 
-  @DeleteMapping("menus/{menuId}/image/{imageId}")
+  @DeleteMapping("menus/{menuId}/images/{imageId}")
   public ResponseEntity<Void> deleteMenuImage(
       @PathVariable Long menuId,
       @PathVariable Long imageId
