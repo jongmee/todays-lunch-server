@@ -31,7 +31,7 @@ public class ReviewService {
   private final DataJpaRestaurantRepository restaurantRepository;
   private final ReviewLikeRepository reviewLikeRepository;
 
-  public Review create(Long restaurantId, ReviewDto reviewDto, Member member){
+  public void create(Long restaurantId, ReviewDto reviewDto, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
@@ -57,7 +57,7 @@ public class ReviewService {
     Review review = reviewDto.toEntity();
     review.setRestaurant(restaurant);
     review.setMember(member);
-    return reviewRepository.save(review);
+    reviewRepository.save(review);
   }
 
   public Page<ReviewDto> reviewsList(Long restaurantId, Pageable pageable){
@@ -65,7 +65,7 @@ public class ReviewService {
     return reviewRepository.findAllByRestaurant(restaurant, pageable).map(ReviewDto::fromEntity);
   }
 
-  public Review update(Long reviewId, Long restaurantId, ReviewDto reviewDto){
+  public void update(Long reviewId, Long restaurantId, ReviewDto reviewDto){
     Review review = reviewRepository.findById(reviewId)
         .orElseThrow(() -> new IllegalArgumentException("리뷰 수정 실패! 대상 리뷰가 없습니다."));
 
@@ -83,10 +83,10 @@ public class ReviewService {
     restaurantRepository.save(restaurant);
     review.update(reviewDto);
 
-    return reviewRepository.save(review);
+    reviewRepository.save(review);
   }
 
-  public Review delete(Long reviewId, Long restaurantId){
+  public void delete(Long reviewId, Long restaurantId){
     Review review = reviewRepository.findById(reviewId)
         .orElseThrow(() -> new IllegalArgumentException("리뷰 삭제 실패! 대상 리뷰가 없습니다."));
 
@@ -105,7 +105,6 @@ public class ReviewService {
     restaurantRepository.save(restaurant);
 
     reviewRepository.delete(review);
-    return review;
   }
 
   public void addOrCancelLike(Long restaurantId, Long reviewId, Member member){

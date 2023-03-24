@@ -47,13 +47,13 @@ public class ReviewController {
   @PatchMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
   public  ResponseEntity<Void> updateReview(@PathVariable Long reviewId, @PathVariable Long restaurantId,
       @RequestBody ReviewDto dto){
-    Review updatedReview = reviewService.update(reviewId, restaurantId, dto);
+    reviewService.update(reviewId, restaurantId, dto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @DeleteMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
   public ResponseEntity<Void> delete(@PathVariable Long reviewId, @PathVariable Long restaurantId){
-    Review deletedReview = reviewService.delete(reviewId, restaurantId);
+    reviewService.delete(reviewId, restaurantId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 

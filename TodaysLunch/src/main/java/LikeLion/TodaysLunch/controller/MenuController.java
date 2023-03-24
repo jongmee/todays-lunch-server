@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.controller;
 
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.dto.MenuDto;
 import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class MenuController {
 
   @GetMapping("restaurants/{restaurantId}/menus")
   public ResponseEntity<HashMap<String, Object>> menuList(@PathVariable Long restaurantId, Pageable pageable) {
-    Page<Menu> menus = menuService.findMenuByRestaurant(restaurantId, pageable);
+    Page<MenuDto> menus = menuService.findMenuByRestaurant(restaurantId, pageable);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", menus.getContent());
     responseMap.put("totalPages", menus.getTotalPages());
@@ -44,10 +45,9 @@ public class MenuController {
   }
 
   @PostMapping("restaurants/{restaurantId}/menus")
-  public ResponseEntity<Menu> createMenu(@RequestParam(required = false) MultipartFile menuImage,
-      @RequestParam String name, @RequestParam Long price, @PathVariable Long restaurantId) throws IOException {
-    Menu menu = menuService.create(menuImage, name, price, restaurantId);
-    return ResponseEntity.status(HttpStatus.OK).body(menu);
+  public ResponseEntity<Void> createMenu(@RequestBody MenuDto menuDto, @PathVariable Long restaurantId){
+    menuService.create(menuDto, restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @PatchMapping("restaurants/{restaurantId}/menus/{menuId}")
