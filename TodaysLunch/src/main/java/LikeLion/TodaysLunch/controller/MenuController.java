@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.dto.MenuDto;
+import LikeLion.TodaysLunch.dto.MenuImageDto;
 import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
 import LikeLion.TodaysLunch.service.login.MemberService;
@@ -76,5 +77,11 @@ public class MenuController {
     memberService.getAuthenticatedMember(member);
     menuService.createImage(menuImage, menuId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @GetMapping("menus/{menuId}/image")
+  public ResponseEntity<List<MenuImageDto>> menuImageList(@PathVariable Long menuId){
+    List<MenuImageDto> menuImages = menuService.menuImageList(menuId);
+    return ResponseEntity.status(HttpStatus.OK).body(menuImages);
   }
 }

@@ -6,6 +6,7 @@ import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Sale;
 import LikeLion.TodaysLunch.dto.MenuDto;
+import LikeLion.TodaysLunch.dto.MenuImageDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
@@ -15,6 +16,7 @@ import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -120,5 +122,12 @@ public class MenuService {
 
       imageUrlRepository.save(imageUrl);
     }
+  }
+
+  public List<MenuImageDto> menuImageList(Long menuId){
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+    return imageUrlRepository.findAllByMenu(menu).stream()
+        .map(MenuImageDto::fromEntity).collect(Collectors.toList());
   }
 }
