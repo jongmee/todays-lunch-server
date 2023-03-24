@@ -45,10 +45,9 @@ public class MenuController {
   }
 
   @PostMapping("restaurants/{restaurantId}/menus")
-  public ResponseEntity<Menu> createMenu(@RequestParam(required = false) MultipartFile menuImage,
-      @RequestParam String name, @RequestParam Long price, @PathVariable Long restaurantId) throws IOException {
-    Menu menu = menuService.create(menuImage, name, price, restaurantId);
-    return ResponseEntity.status(HttpStatus.OK).body(menu);
+  public ResponseEntity<Void> createMenu(@RequestBody MenuDto menuDto, @PathVariable Long restaurantId){
+    menuService.create(menuDto, restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @PatchMapping("restaurants/{restaurantId}/menus/{menuId}")

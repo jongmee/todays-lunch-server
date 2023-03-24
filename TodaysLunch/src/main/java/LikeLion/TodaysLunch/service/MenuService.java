@@ -47,35 +47,20 @@ public class MenuService {
   }
 
 
-  public Menu create(MultipartFile menuImage, String name, Long price, Long restaurantId) throws IOException {
+  public void create(MenuDto menuDto, Long restaurantId){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
+    Long price = menuDto.getPrice();
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
     if (originalLowestPrice == null || originalLowestPrice > price){
       restaurant.setLowestPrice(price);
       restaurantRepository.save(restaurant);
     }
-    Menu menu = new Menu();
-    menu.setName(name);
-    menu.setPrice(price);
+
+    Menu menu = menuDto.toEntity();
     menu.setRestaurant(restaurant);
-    if(menuImage != null && !menuImage.isEmpty()){
-      // s3에 이미지 저장
-      String savedUrl = s3UploadService.upload(menuImage, "menu");
-      // image url을 db에 저장
-      ImageUrl imageUrl = new ImageUrl();
-      String originalName = menuImage.getOriginalFilename();
-
-      imageUrl.setOriginalName(originalName);
-      imageUrl.setImageUrl(savedUrl);
-
-      Menu savedMenu = menuRepository.save(menu);
-      imageUrl.setMenu(savedMenu);
-
-      imageUrlRepository.save(imageUrl);
-    }
-    return menuRepository.save(menu);
+    menuRepository.save(menu);
   }
 
   public Menu update(String name, Long price, Long restaurantId, Long menuId){

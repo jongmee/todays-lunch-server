@@ -36,5 +36,6 @@ public class Menu {
   public Menu(String name, Long price){
     this.name = name;
     this.price = price;
+    this.imageCount = 0L;
   }
 }
