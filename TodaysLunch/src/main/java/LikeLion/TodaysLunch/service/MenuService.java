@@ -1,10 +1,12 @@
 package LikeLion.TodaysLunch.service;
 
 import LikeLion.TodaysLunch.domain.ImageUrl;
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Sale;
 import LikeLion.TodaysLunch.dto.MenuDto;
+import LikeLion.TodaysLunch.dto.MenuImageDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
@@ -14,6 +16,7 @@ import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -95,5 +98,50 @@ public class MenuService {
 
     menuRepository.delete(menu);
     return menu;
+  }
+
+  public void createImage(MultipartFile image, Long menuId, Member member) throws IOException {
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+
+    if(image != null && !image.isEmpty()){
+      Long count = menu.getImageCount();
+      menu.setImageCount(++count);
+      Menu savedMenu = menuRepository.save(menu);
+
+      // s3에 이미지 저장
+      String savedUrl = s3UploadService.upload(image, "menu");
+      // image url을 db에 저장
+      String originalName = image.getOriginalFilename();
+      ImageUrl imageUrl = ImageUrl.builder()
+              .originalName(originalName)
+                  .imageUrl(savedUrl)
+                      .member(member)
+                        .menu(savedMenu)
+                          .build();
+
+      imageUrlRepository.save(imageUrl);
+    }
+  }
+
+  public List<MenuImageDto> menuImageList(Long menuId){
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+    return imageUrlRepository.findAllByMenu(menu).stream()
+        .map(MenuImageDto::fromEntity).collect(Collectors.toList());
+  }
+
+  public void deleteImage(Long menuId, Long imageId){
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+    ImageUrl imageUrl = imageUrlRepository.findById(imageId)
+        .orElseThrow(() -> new NotFoundException("메뉴의 이미지"));
+
+    Long count = menu.getImageCount();
+    menu.setImageCount(--count);
+    menuRepository.save(menu);
+
+    s3UploadService.delete(imageUrl.getImageUrl());
+    imageUrlRepository.delete(imageUrl);
   }
 }
