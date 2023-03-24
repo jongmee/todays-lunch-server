@@ -44,13 +44,7 @@ public class MemberService {
         LocationCategory locationCategory = locationCategoryRepository.findByName(memberDto.getLocationCategory())
             .orElseThrow(() -> new NotFoundException("위치 카테고리"));
 
-        Member member = Member.builder()
-                .nickname(memberDto.getNickname())
-                .password(passwordEncoder.encode(memberDto.getPassword()))
-            .foodCategory(foodCategory)
-            .locationCategory(locationCategory)
-                .roles(Collections.singletonList("ROLE_USER"))
-                .build();
+        Member member = memberDto.toEntity(foodCategory, locationCategory, passwordEncoder.encode(memberDto.getPassword()));
 
         return memberRepository.save(member).getId();
     }
