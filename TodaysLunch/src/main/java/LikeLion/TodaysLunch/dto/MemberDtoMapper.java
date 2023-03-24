@@ -8,6 +8,7 @@ public class MemberDtoMapper {
 
     public static MemberDto toDto(Member member) {
         MemberDto dto = new MemberDto();
+        dto.setEmail(member.getEmail());
         dto.setNickname(member.getNickname());
         dto.setPassword(member.getPassword());
         dto.setLocationCategory(member.getLocationCategory());

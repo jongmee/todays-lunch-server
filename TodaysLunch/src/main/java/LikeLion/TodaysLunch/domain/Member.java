@@ -73,7 +73,7 @@ public class Member implements UserDetails {
 
     @Override
     public String getUsername() {
-        return nickname;
+        return email;
     }
 
     public String getPassword() {
