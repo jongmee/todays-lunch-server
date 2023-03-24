@@ -130,4 +130,18 @@ public class MenuService {
     return imageUrlRepository.findAllByMenu(menu).stream()
         .map(MenuImageDto::fromEntity).collect(Collectors.toList());
   }
+
+  public void deleteImage(Long menuId, Long imageId){
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+    ImageUrl imageUrl = imageUrlRepository.findById(imageId)
+        .orElseThrow(() -> new NotFoundException("메뉴의 이미지"));
+
+    Long count = menu.getImageCount();
+    menu.setImageCount(--count);
+    menuRepository.save(menu);
+
+    s3UploadService.delete(imageUrl.getImageUrl());
+    imageUrlRepository.delete(imageUrl);
+  }
 }

@@ -84,4 +84,13 @@ public class MenuController {
     List<MenuImageDto> menuImages = menuService.menuImageList(menuId);
     return ResponseEntity.status(HttpStatus.OK).body(menuImages);
   }
+
+  @DeleteMapping("menus/{menuId}/image/{imageId}")
+  public ResponseEntity<Void> deleteMenuImage(
+      @PathVariable Long menuId,
+      @PathVariable Long imageId
+  ){
+    menuService.deleteImage(menuId, imageId);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
 }
