@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.service;
 
 import LikeLion.TodaysLunch.domain.ImageUrl;
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Sale;
@@ -95,5 +96,29 @@ public class MenuService {
 
     menuRepository.delete(menu);
     return menu;
+  }
+
+  public void createImage(MultipartFile image, Long menuId, Member member) throws IOException {
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+
+    if(image != null && !image.isEmpty()){
+      Long count = menu.getImageCount();
+      menu.setImageCount(++count);
+      Menu savedMenu = menuRepository.save(menu);
+
+      // s3에 이미지 저장
+      String savedUrl = s3UploadService.upload(image, "menu");
+      // image url을 db에 저장
+      String originalName = image.getOriginalFilename();
+      ImageUrl imageUrl = ImageUrl.builder()
+              .originalName(originalName)
+                  .imageUrl(savedUrl)
+                      .member(member)
+                        .menu(savedMenu)
+                          .build();
+
+      imageUrlRepository.save(imageUrl);
+    }
   }
 }

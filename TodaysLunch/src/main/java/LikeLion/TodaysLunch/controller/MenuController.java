@@ -1,10 +1,12 @@
 package LikeLion.TodaysLunch.controller;
 
+import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.dto.MenuDto;
 import LikeLion.TodaysLunch.service.MenuService;
 import LikeLion.TodaysLunch.service.RestaurantService;
+import LikeLion.TodaysLunch.service.login.MemberService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,11 +25,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class MenuController {
   private final MenuService menuService;
   private final RestaurantService restaurantService;
+  private final MemberService memberService;
 
   @Autowired
-  public MenuController(MenuService menuService, RestaurantService restaurantService) {
+  public MenuController(MenuService menuService, RestaurantService restaurantService, MemberService memberService) {
     this.menuService = menuService;
     this.restaurantService = restaurantService;
+    this.memberService = memberService;
   }
 
   @GetMapping("/search/menu-name")
@@ -61,5 +66,15 @@ public class MenuController {
   public ResponseEntity<Menu> deleteMenu(@PathVariable Long restaurantId, @PathVariable Long menuId){
     Menu menu = menuService.delete(restaurantId, menuId);
     return ResponseEntity.status(HttpStatus.OK).body(menu);
+  }
+
+  @PostMapping("menus/{menuId}/image")
+  public ResponseEntity<Void> createMenuImage(
+      @RequestParam MultipartFile menuImage,
+      @PathVariable Long menuId,
+      @AuthenticationPrincipal Member member) throws IOException {
+    memberService.getAuthenticatedMember(member);
+    menuService.createImage(menuImage, menuId, member);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 }
