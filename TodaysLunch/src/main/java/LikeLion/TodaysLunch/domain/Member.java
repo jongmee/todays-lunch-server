@@ -33,6 +33,8 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
+    private String email;
 
     @Column(nullable = false)
     private String nickname;
@@ -49,7 +51,7 @@ public class Member implements UserDetails {
     private FoodCategory foodCategory;
     @OneToOne
     @JoinColumn
-    private ImageUrl imageUrl;
+    private ImageUrl icon;
 
 
     @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
