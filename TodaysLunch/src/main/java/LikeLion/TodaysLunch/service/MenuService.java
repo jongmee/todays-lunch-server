@@ -5,12 +5,14 @@ import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.Menu;
 import LikeLion.TodaysLunch.domain.Restaurant;
 import LikeLion.TodaysLunch.domain.Sale;
+import LikeLion.TodaysLunch.domain.relation.RestaurantContributor;
 import LikeLion.TodaysLunch.dto.MenuDto;
 import LikeLion.TodaysLunch.dto.MenuImageDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.ImageUrlRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
+import LikeLion.TodaysLunch.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.repository.SaleRepository;
 import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
@@ -30,13 +32,16 @@ public class MenuService {
   private final MenuRepository menuRepository;
   private final ImageUrlRepository imageUrlRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
+  private final RestaurantContributorRepository restaurantContributorRepository;
   @Autowired
   public MenuService(MenuRepository menuRepository,
       ImageUrlRepository imageUrlRepository,
-      DataJpaRestaurantRepository restaurantRepository) {
+      DataJpaRestaurantRepository restaurantRepository,
+      RestaurantContributorRepository restaurantContributorRepository) {
     this.menuRepository = menuRepository;
     this.imageUrlRepository = imageUrlRepository;
     this.restaurantRepository = restaurantRepository;
+    this.restaurantContributorRepository = restaurantContributorRepository;
   }
 
   public Page<MenuDto> findMenuByRestaurant(Long restaurantId, Pageable pageable){
@@ -50,7 +55,7 @@ public class MenuService {
   }
 
 
-  public void create(MenuDto menuDto, Long restaurantId){
+  public void create(MenuDto menuDto, Long restaurantId, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
     Long price = menuDto.getPrice();
@@ -64,9 +69,11 @@ public class MenuService {
     Menu menu = menuDto.toEntity();
     menu.setRestaurant(restaurant);
     menuRepository.save(menu);
+
+    createRestaurantContributor(restaurant, member);
   }
 
-  public Menu update(String name, Long price, Long restaurantId, Long menuId){
+  public void update(String name, Long price, Long restaurantId, Long menuId, Member member){
     Menu menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new NotFoundException("메뉴"));
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
@@ -82,7 +89,9 @@ public class MenuService {
     if(name != null) menu.setName(name);
     if(price != null) menu.setPrice(price);
 
-    return menuRepository.save(menu);
+    menuRepository.save(menu);
+
+    createRestaurantContributor(restaurant, member);
   }
 
   public Menu delete(Long restaurantId, Long menuId){
@@ -143,5 +152,15 @@ public class MenuService {
 
     s3UploadService.delete(imageUrl.getImageUrl());
     imageUrlRepository.delete(imageUrl);
+  }
+
+  private void createRestaurantContributor(Restaurant restaurant, Member member){
+    if(restaurantContributorRepository.findByRestaurantAndMember(restaurant, member).isEmpty()){
+      RestaurantContributor contributor = RestaurantContributor.builder()
+          .member(member)
+          .restaurant(restaurant)
+          .build();
+      restaurantContributorRepository.save(contributor);
+    }
   }
 }

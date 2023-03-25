@@ -51,16 +51,23 @@ public class MenuController {
   }
 
   @PostMapping("restaurants/{restaurantId}/menus")
-  public ResponseEntity<Void> createMenu(@RequestBody MenuDto menuDto, @PathVariable Long restaurantId){
-    menuService.create(menuDto, restaurantId);
+  public ResponseEntity<Void> createMenu(
+      @RequestBody MenuDto menuDto,
+      @PathVariable Long restaurantId,
+      @AuthenticationPrincipal Member member){
+    menuService.create(menuDto, restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @PatchMapping("restaurants/{restaurantId}/menus/{menuId}")
-  public ResponseEntity<Menu> updateMenu(@RequestParam(required = false) String name, @RequestParam(required = false) Long price,
-      @PathVariable Long restaurantId, @PathVariable Long menuId) {
-    Menu menu = menuService.update(name, price, restaurantId, menuId);
-    return ResponseEntity.status(HttpStatus.OK).body(menu);
+  public ResponseEntity<Void> updateMenu(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) Long price,
+      @PathVariable Long restaurantId,
+      @PathVariable Long menuId,
+      @AuthenticationPrincipal Member member) {
+    menuService.update(name, price, restaurantId, menuId, member);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @DeleteMapping("restaurants/{restaurantId}/menus/{menuId}")
