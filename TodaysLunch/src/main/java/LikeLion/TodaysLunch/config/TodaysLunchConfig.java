@@ -15,15 +15,14 @@ public class TodaysLunchConfig {
     private final LocationTagRepository locationTagRepository;
     private final MenuRepository menuRepository;
     private final ReviewRepository reviewRepository;
-
     private final MemberRepository memberRepository;
-
     private final ImageUrlRepository imageUrlRepository;
     private final SaleRepository saleRepository;
     private final AgreementRepository agreementRepository;
     private final RecommendCategoryRepository recommendCategoryRepository;
     private final RestRecmdRelRepository restRecmdRelRepository;
     private final ReviewLikeRepository reviewLikeRepository;
+    private final RestaurantContributorRepository restaurantContributorRepository;
 
     @Autowired
     public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
@@ -36,7 +35,8 @@ public class TodaysLunchConfig {
                             AgreementRepository agreementRepository,
                             RecommendCategoryRepository recommendCategoryRepository,
                             RestRecmdRelRepository restRecmdRelRepository,
-                            ReviewLikeRepository reviewLikeRepository) {
+                            ReviewLikeRepository reviewLikeRepository,
+                            RestaurantContributorRepository restaurantContributorRepository) {
         this.restaurantRepository = restaurantRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.locationCategoryRepository = locationCategoryRepository;
@@ -50,6 +50,7 @@ public class TodaysLunchConfig {
         this.recommendCategoryRepository = recommendCategoryRepository;
         this.restRecmdRelRepository = restRecmdRelRepository;
         this.reviewLikeRepository = reviewLikeRepository;
+        this.restaurantContributorRepository = restaurantContributorRepository;
     }
 
     @Bean
@@ -63,7 +64,7 @@ public class TodaysLunchConfig {
 
     @Bean
     public MenuService menuService() {
-        return new MenuService(menuRepository, imageUrlRepository, restaurantRepository);
+        return new MenuService(menuRepository, imageUrlRepository, restaurantRepository, restaurantContributorRepository);
     }
 
     @Bean
