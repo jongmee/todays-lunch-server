@@ -44,36 +44,30 @@ public class MemberService {
         LocationCategory locationCategory = locationCategoryRepository.findByName(memberDto.getLocationCategory())
             .orElseThrow(() -> new NotFoundException("위치 카테고리"));
 
-        Member member = Member.builder()
-                .nickname(memberDto.getNickname())
-                .password(passwordEncoder.encode(memberDto.getPassword()))
-            .foodCategory(foodCategory)
-            .locationCategory(locationCategory)
-                .roles(Collections.singletonList("ROLE_USER"))
-                .build();
+        Member member = memberDto.toEntity(foodCategory, locationCategory, passwordEncoder.encode(memberDto.getPassword()));
 
         return memberRepository.save(member).getId();
     }
 
     private void validateDuplication(MemberJoinDto memberDto) {
-        if (memberRepository.findByNickname(memberDto.getNickname()).isPresent()) {
-            throw new DuplicationException("아이디");
+        if (memberRepository.findByEmail(memberDto.getEmail()).isPresent()) {
+            throw new DuplicationException("이메일");
         }
     }
 
     @Transactional
     public TokenDto login(MemberLoginDto memberDto) {
-        Member member = memberRepository.findByNickname(memberDto.getNickname())
-                .orElseThrow(() -> new NotFoundException("아이디"));
+        Member member = memberRepository.findByEmail(memberDto.getEmail())
+                .orElseThrow(() -> new NotFoundException("이메일"));
 
         if (!passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {
             throw new UnauthorizedException("회원정보의 비밀번호와 일치하지 않습니다.");
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createToken(member.getNickname(), member.getRoles());
+        TokenDto tokenDto = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
         long expiration = JwtTokenProvider.getExpirationTime(tokenDto.getToken()).getTime();
         redisTemplate.opsForValue()
-                .set(member.getNickname(), tokenDto.getToken(), expiration, TimeUnit.MILLISECONDS);
+                .set(member.getEmail(), tokenDto.getToken(), expiration, TimeUnit.MILLISECONDS);
 
         return tokenDto;
     }

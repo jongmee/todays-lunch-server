@@ -14,7 +14,7 @@ public class JudgeRestaurantDto {
   private Long id;
   private String restaurantName;
   private String introduction;
-  private String nickname;
+  private String registrant;
   private String imageUrl;
   private Double latitude;
   private Double longitude;
@@ -28,7 +28,7 @@ public class JudgeRestaurantDto {
         .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())
         .introduction(restaurant.getIntroduction())
-        .nickname(restaurant.getMember().getNickname())
+        .registrant(restaurant.getRegistrant().getNickname())
         .imageUrl(image)
         .latitude(restaurant.getLatitude())
         .longitude(restaurant.getLongitude())

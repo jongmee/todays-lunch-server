@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.dto;
 
 import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -26,15 +27,16 @@ public class RestaurantDto {
   private String address;
   private Double rating;
   private Long reviewCount;
-  private String nickname;
-  public static RestaurantDto fromEntity(Restaurant restaurant){
+  private ContributorDto registrant;
+  private List<ContributorDto> contributors;
+  public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors){
     String image = null;
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
     }
-    String nickname = null;
-    if(restaurant.getMember() != null){
-      nickname = restaurant.getMember().getNickname();
+    ContributorDto registrant = null;
+    if(restaurant.getRegistrant() != null){
+      registrant = ContributorDto.fromEntity(restaurant.getRegistrant());
     }
     return RestaurantDto.builder()
         .id(restaurant.getId())
@@ -53,6 +55,8 @@ public class RestaurantDto {
         .address(restaurant.getAddress())
         .rating(restaurant.getRating())
         .reviewCount(restaurant.getReviewCount())
-        .nickname(nickname).build();
+        .registrant(registrant)
+        .contributors(contributors)
+        .build();
   }
 }

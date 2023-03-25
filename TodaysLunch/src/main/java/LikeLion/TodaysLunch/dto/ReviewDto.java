@@ -14,17 +14,13 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReviewDto {
   private Long id;
+  private ReviewProfileDto member;
   @NotBlank(message = "리뷰 내용은 Null과 공백일 수 없습니다!")
   private String reviewContent;
   @NotBlank(message = "별점은 Null과 공백일 수 없습니다!")
   private Integer rating;
   private LocalDate createdDate;
   private Long likeCount;
-  @Builder
-  public ReviewDto(String reviewContent, Integer rating){
-    this.rating = rating;
-    this.reviewContent = reviewContent;
-  }
 
   public Review toEntity(){
     return Review.builder().rating(rating).reviewContent(reviewContent).build();
@@ -37,6 +33,7 @@ public class ReviewDto {
         .reviewContent(review.getReviewContent())
         .createdDate(review.getCreatedDate())
         .likeCount(review.getLikeCount().get())
+        .member(ReviewProfileDto.fromEntity(review.getMember()))
         .build();
   }
 
