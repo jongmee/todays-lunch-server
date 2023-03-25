@@ -27,16 +27,16 @@ public class RestaurantDto {
   private String address;
   private Double rating;
   private Long reviewCount;
-  private String nickname;
+  private ContributorDto registrant;
   private List<ContributorDto> contributors;
   public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors){
     String image = null;
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
     }
-    String nickname = null;
-    if(restaurant.getMember() != null){
-      nickname = restaurant.getMember().getNickname();
+    ContributorDto registrant = null;
+    if(restaurant.getRegistrant() != null){
+      registrant = ContributorDto.fromEntity(restaurant.getRegistrant());
     }
     return RestaurantDto.builder()
         .id(restaurant.getId())
@@ -55,7 +55,7 @@ public class RestaurantDto {
         .address(restaurant.getAddress())
         .rating(restaurant.getRating())
         .reviewCount(restaurant.getReviewCount())
-        .nickname(nickname)
+        .registrant(registrant)
         .contributors(contributors)
         .build();
   }

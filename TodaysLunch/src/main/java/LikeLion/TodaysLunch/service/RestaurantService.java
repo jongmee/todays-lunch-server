@@ -109,7 +109,7 @@ RestaurantService {
         .introduction(createDto.getIntroduction())
         .longitude(createDto.getLongitude())
         .latitude(createDto.getLatitude())
-        .member(member)
+        .registrant(member)
         .build();
 
     if(!restaurantImage.isEmpty()) {

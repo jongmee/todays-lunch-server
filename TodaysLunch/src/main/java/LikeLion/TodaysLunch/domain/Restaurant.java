@@ -56,14 +56,14 @@ public class Restaurant {
   private String bestReview;
   @OneToOne
   @JoinColumn
-  private Member member;
+  private Member registrant;
 
   // 맛집 심사를 위한 등록에서 쓰임
   @Builder
   public Restaurant(String restaurantName, FoodCategory foodCategory,
       LocationCategory locationCategory, LocationTag locationTag,
       String address, String introduction, Double longitude, Double latitude,
-      Member member) {
+      Member registrant) {
     this.restaurantName = restaurantName;
     this.foodCategory = foodCategory;
     this.locationCategory = locationCategory;
@@ -75,7 +75,7 @@ public class Restaurant {
     this.endDate = LocalDate.now().plusDays(7);
     this.longitude = longitude;
     this.latitude = latitude;
-    this.member = member;
+    this.registrant = registrant;
     this.agreementCount = new AtomicLong(0);
   }
   public void setId(Long id) {
@@ -90,7 +90,7 @@ public class Restaurant {
   public void setReviewCount(Long reviewCount) {
     this.reviewCount = reviewCount;
   }
-  public void setMember(Member member) { this.member = member; }
+  public void setRegistrant(Member member) { this.registrant = member; }
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
   public void setAgreementCount(AtomicLong agreementCount) { this.agreementCount = agreementCount; }
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
