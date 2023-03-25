@@ -23,6 +23,7 @@ public class TodaysLunchConfig {
     private final RestRecmdRelRepository restRecmdRelRepository;
     private final ReviewLikeRepository reviewLikeRepository;
     private final RestaurantContributorRepository restaurantContributorRepository;
+    private final MyStoreRepository myStoreRepository;
 
     @Autowired
     public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
@@ -36,7 +37,8 @@ public class TodaysLunchConfig {
                             RecommendCategoryRepository recommendCategoryRepository,
                             RestRecmdRelRepository restRecmdRelRepository,
                             ReviewLikeRepository reviewLikeRepository,
-                            RestaurantContributorRepository restaurantContributorRepository) {
+                            RestaurantContributorRepository restaurantContributorRepository,
+                            MyStoreRepository myStoreRepository) {
         this.restaurantRepository = restaurantRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.locationCategoryRepository = locationCategoryRepository;
@@ -51,6 +53,7 @@ public class TodaysLunchConfig {
         this.restRecmdRelRepository = restRecmdRelRepository;
         this.reviewLikeRepository = reviewLikeRepository;
         this.restaurantContributorRepository = restaurantContributorRepository;
+        this.myStoreRepository = myStoreRepository;
     }
 
     @Bean
@@ -60,7 +63,7 @@ public class TodaysLunchConfig {
             locationCategoryRepository, imageUrlRepository,
             memberRepository, agreementRepository,
             recommendCategoryRepository, restRecmdRelRepository,
-            restaurantContributorRepository);
+            restaurantContributorRepository, myStoreRepository);
     }
 
     @Bean

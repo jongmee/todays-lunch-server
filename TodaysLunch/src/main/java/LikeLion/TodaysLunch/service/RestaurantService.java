@@ -8,6 +8,7 @@ import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.RecommendCategory;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.domain.relation.MyStore;
 import LikeLion.TodaysLunch.domain.relation.RestaurantContributor;
 import LikeLion.TodaysLunch.domain.relation.RestaurantRecommendCategoryRelation;
 import LikeLion.TodaysLunch.dto.ContributorDto;
@@ -24,6 +25,7 @@ import LikeLion.TodaysLunch.repository.ImageUrlRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
+import LikeLion.TodaysLunch.repository.MyStoreRepository;
 import LikeLion.TodaysLunch.repository.RecommendCategoryRepository;
 import LikeLion.TodaysLunch.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.repository.RestaurantContributorRepository;
@@ -58,6 +60,7 @@ RestaurantService {
   private final RecommendCategoryRepository recommendCategoryRepository;
   private final RestRecmdRelRepository restRecmdRelRepository;
   private final RestaurantContributorRepository restaurantContributorRepository;
+  private final MyStoreRepository myStoreRepository;
 
   @Autowired
   private S3UploadService s3UploadService;
@@ -221,6 +224,21 @@ RestaurantService {
     finalList.addAll(recmdResult.getContent());
     finalList.addAll(rest);
     return finalList;
+  }
+
+  public void addMyStore(Long restaurantId, Member member){
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    if(isNotAlreadyMyStore(member, restaurant)){
+      myStoreRepository.save(new MyStore(member, restaurant));
+    } else{
+      MyStore myStore = myStoreRepository.findByMemberAndRestaurant(member, restaurant).get();
+      myStoreRepository.delete(myStore);
+    }
+  }
+
+  private boolean isNotAlreadyMyStore(Member member, Restaurant restaurant){
+    return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
   }
 
   public Pageable determineSort(int page, int size, String sort, String order){

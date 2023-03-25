@@ -116,4 +116,10 @@ public class RestaurantController {
     List<Restaurant> restaurants = restaurantService.recommendation(userId);
     return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
+
+  @PostMapping("/{restaurantId}/mystore")
+  public ResponseEntity<Void> addMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    restaurantService.addMyStore(restaurantId, member);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
 }
