@@ -237,6 +237,16 @@ RestaurantService {
     }
   }
 
+  public String isAlreadyMyStore(Member member, Long restaurantId){
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+
+    if(isNotAlreadyMyStore(member, restaurant))
+      return "false";
+    else
+      return "true";
+  }
+
   private boolean isNotAlreadyMyStore(Member member, Restaurant restaurant){
     return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
   }

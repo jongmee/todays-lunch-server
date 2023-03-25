@@ -122,4 +122,9 @@ public class RestaurantController {
     restaurantService.addMyStore(restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
+
+  @GetMapping("/{restaurantId}/mystore")
+  public ResponseEntity<String> isAlreadyMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyMyStore(member, restaurantId));
+  }
 }
