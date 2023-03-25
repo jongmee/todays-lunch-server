@@ -8,7 +8,9 @@ import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.RecommendCategory;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.domain.relation.RestaurantContributor;
 import LikeLion.TodaysLunch.domain.relation.RestaurantRecommendCategoryRelation;
+import LikeLion.TodaysLunch.dto.ContributorDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.dto.JudgeRestaurantListDto;
@@ -24,12 +26,14 @@ import LikeLion.TodaysLunch.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.repository.RecommendCategoryRepository;
 import LikeLion.TodaysLunch.repository.RestRecmdRelRepository;
+import LikeLion.TodaysLunch.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.repository.RestaurantSpecification;
 import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +57,7 @@ RestaurantService {
   private final AgreementRepository agreementRepository;
   private final RecommendCategoryRepository recommendCategoryRepository;
   private final RestRecmdRelRepository restRecmdRelRepository;
+  private final RestaurantContributorRepository restaurantContributorRepository;
 
   @Autowired
   private S3UploadService s3UploadService;
@@ -73,7 +78,15 @@ RestaurantService {
   public RestaurantDto restaurantDetail(Long id){
     Restaurant restaurant = restaurantRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("맛집"));
-    return RestaurantDto.fromEntity(restaurant);
+
+    List<ContributorDto> contributors =
+        restaurantContributorRepository.findAllByRestaurant(restaurant)
+        .stream()
+        .map(c->c.getMember())
+        .map(ContributorDto::fromEntity)
+        .collect(Collectors.toList());
+
+    return RestaurantDto.fromEntity(restaurant, contributors);
   }
 
   public void createJudgeRestaurant(JudgeRestaurantCreateDto createDto,

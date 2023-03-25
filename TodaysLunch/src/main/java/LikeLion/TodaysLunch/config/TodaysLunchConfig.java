@@ -59,7 +59,8 @@ public class TodaysLunchConfig {
             foodCategoryRepository, locationTagRepository,
             locationCategoryRepository, imageUrlRepository,
             memberRepository, agreementRepository,
-            recommendCategoryRepository, restRecmdRelRepository);
+            recommendCategoryRepository, restRecmdRelRepository,
+            restaurantContributorRepository);
     }
 
     @Bean
