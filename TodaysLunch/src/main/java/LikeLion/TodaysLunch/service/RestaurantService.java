@@ -230,10 +230,18 @@ RestaurantService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
     if(isNotAlreadyMyStore(member, restaurant)){
+      Long count = member.getMyStoreCount();
+      member.setMyStoreCount(++count);
+      memberRepository.save(member);
+
       myStoreRepository.save(new MyStore(member, restaurant));
     } else{
       MyStore myStore = myStoreRepository.findByMemberAndRestaurant(member, restaurant).get();
       myStoreRepository.delete(myStore);
+
+      Long count = member.getMyStoreCount();
+      member.setMyStoreCount(--count);
+      memberRepository.save(member);
     }
   }
 
