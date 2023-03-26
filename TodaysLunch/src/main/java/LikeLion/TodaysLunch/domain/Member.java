@@ -42,6 +42,9 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private Long myStoreCount;
+
     @ManyToOne
     @JoinColumn
     private LocationCategory locationCategory;
@@ -59,13 +62,9 @@ public class Member implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
 
-    public Member(String nickname, String password, FoodCategory foodCategory, LocationCategory locationCategory) {
-        this.nickname = nickname;
-        this.password = password;
-        this.foodCategory = foodCategory;
-        this.locationCategory = locationCategory;
+    public void setMyStoreCount(Long myStoreCount) {
+        this.myStoreCount = myStoreCount;
     }
-
 
     public Long getId() {
         return id;

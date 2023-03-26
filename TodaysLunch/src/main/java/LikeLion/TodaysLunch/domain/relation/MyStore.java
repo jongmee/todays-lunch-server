@@ -8,13 +8,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.NoArgsConstructor;
 
 @Entity
-public class MemberRestaurantRelation {
+@NoArgsConstructor
+public class MyStore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn
     private Member member;
@@ -22,4 +23,8 @@ public class MemberRestaurantRelation {
     @JoinColumn
     private Restaurant restaurant;
 
+    public MyStore(Member member, Restaurant restaurant){
+        this.member = member;
+        this.restaurant = restaurant;
+    }
 }

@@ -33,6 +33,7 @@ public class MemberJoinDto {
         .foodCategory(foodCategory)
         .locationCategory(locationCategory)
         .roles(Collections.singletonList("ROLE_USER"))
+        .myStoreCount(0L)
         .build();
   }
 }

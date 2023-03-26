@@ -116,4 +116,15 @@ public class RestaurantController {
     List<Restaurant> restaurants = restaurantService.recommendation(userId);
     return ResponseEntity.status(HttpStatus.OK).body(restaurants);
   }
+
+  @PostMapping("/{restaurantId}/mystore")
+  public ResponseEntity<Void> addMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    restaurantService.addMyStore(restaurantId, member);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @GetMapping("/{restaurantId}/mystore")
+  public ResponseEntity<String> isAlreadyMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyMyStore(member, restaurantId));
+  }
 }
