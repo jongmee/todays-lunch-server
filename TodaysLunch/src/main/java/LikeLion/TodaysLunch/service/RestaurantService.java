@@ -65,6 +65,7 @@ RestaurantService {
   @Autowired
   private S3UploadService s3UploadService;
 
+  private final Double EARTH_RADIUS = 6370d; // 지구 반지름(km)
 
   public Page<RestaurantListDto> restaurantList(
       String foodCategory, String locationCategory,
@@ -98,10 +99,31 @@ RestaurantService {
 
     FoodCategory foodCategory = foodCategoryRepository.findByName(createDto.getFoodCategoryName())
         .orElseThrow(() -> new NotFoundException("음식 카테고리"));
-    LocationCategory locationCategory = locationCategoryRepository.findByName(createDto.getLocationCategoryName())
-        .orElseThrow(() -> new NotFoundException("위치 카테고리"));
-    LocationTag locationTag = locationTagRepository.findByName(createDto.getLocationTagName())
-        .orElseThrow(() -> new NotFoundException("위치 태그"));
+
+    Double latitude = createDto.getLatitude();
+    Double longitude = createDto.getLongitude();
+    Double diff = 10000d; // 좌표 상 거리 차이
+
+    List<LocationTag> locationTagList = locationTagRepository.findAll();
+    LocationTag locationTag = new LocationTag();
+    for(LocationTag tag: locationTagList){
+      Double tmpDiff = getDistance(latitude, longitude, tag.getLatitude(), tag.getLongitude());
+      if(diff > tmpDiff) {
+        diff = tmpDiff;
+        locationTag = tag;
+      }
+    }
+
+    diff = 10000d;
+    List<LocationCategory> locationCategoryList = locationCategoryRepository.findAll();
+    LocationCategory locationCategory = new LocationCategory();
+    for(LocationCategory category: locationCategoryList){
+      Double tmpDiff = getDistance(latitude, longitude, category.getLatitude(), category.getLongitude());
+      if(diff > tmpDiff){
+        diff = tmpDiff;
+        locationCategory = category;
+      }
+    }
 
     Restaurant restaurant = Restaurant.builder()
         .foodCategory(foodCategory)
@@ -110,8 +132,8 @@ RestaurantService {
         .address(createDto.getAddress())
         .restaurantName(createDto.getRestaurantName())
         .introduction(createDto.getIntroduction())
-        .longitude(createDto.getLongitude())
-        .latitude(createDto.getLatitude())
+        .longitude(longitude)
+        .latitude(latitude)
         .registrant(member)
         .build();
 
@@ -299,5 +321,13 @@ RestaurantService {
     }
 
     return spec.and(RestaurantSpecification.equalJudgement(judgement));
+  }
+
+  private Double getDistance(Double latitude1, Double longitude1, Double latitude2, Double longitude2){
+    Double diffLat = Math.toRadians(latitude2-latitude1);
+    Double diffLon = Math.toRadians(longitude2-longitude1);
+    Double raw = Math.pow(Math.sin(diffLat/2), 2)
+        +Math.cos(Math.toRadians(latitude1))*Math.cos(Math.toRadians(latitude2))*Math.pow(Math.sin(diffLon),2);
+    return EARTH_RADIUS*2*Math.atan2(Math.sqrt(raw), Math.sqrt(1-raw));
   }
 }

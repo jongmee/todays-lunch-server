@@ -13,8 +13,6 @@ public class JudgeRestaurantCreateDto {
   private String introduction;
   @NotBlank(message = "음식 카테고리 이름은 Null과 공백일 수 없습니다!")
   private String foodCategoryName;
-  private String locationCategoryName;
-  private String locationTagName;
   private List<Long> recommendCategoryIds;
   @NotBlank(message = "위도는 Null과 공백일 수 없습니다!")
   private Double latitude;
