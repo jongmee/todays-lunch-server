@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.Member;
 import java.util.Collections;
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,17 +22,13 @@ public class MemberJoinDto {
   private String email;
   @NotBlank(message = "비밀번호는 Null과 공백일 수 없습니다!")
   private String password;
-  @NotBlank(message = "음식 카테고리는 Null과 공백일 수 없습니다!")
-  private String foodCategory;
-  @NotBlank(message = "위치 카테고리는 Null과 공백일 수 없습니다!")
-  private String locationCategory;
-  public Member toEntity(FoodCategory foodCategory, LocationCategory locationCategory, String encodedPassword){
+  private List<String> foodCategoryList;
+  private List<String> locationCategoryList;
+  public Member toEntity(String encodedPassword){
     return Member.builder()
         .nickname(nickname)
         .email(email)
         .password(encodedPassword)
-        .foodCategory(foodCategory)
-        .locationCategory(locationCategory)
         .roles(Collections.singletonList("ROLE_USER"))
         .myStoreCount(0L)
         .build();

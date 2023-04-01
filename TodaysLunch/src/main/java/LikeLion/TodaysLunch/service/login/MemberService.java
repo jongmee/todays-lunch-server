@@ -3,6 +3,8 @@ package LikeLion.TodaysLunch.service.login;
 import LikeLion.TodaysLunch.domain.FoodCategory;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.Member;
+import LikeLion.TodaysLunch.domain.relation.MemberFoodCategory;
+import LikeLion.TodaysLunch.domain.relation.MemberLocationCategory;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.MemberDtoMapper;
 import LikeLion.TodaysLunch.dto.MemberJoinDto;
@@ -13,10 +15,14 @@ import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.exception.UnauthorizedException;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
+import LikeLion.TodaysLunch.repository.MemberFoodCategoryRepository;
+import LikeLion.TodaysLunch.repository.MemberLocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.token.JwtTokenProvider;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -33,20 +39,46 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final FoodCategoryRepository foodCategoryRepository;
     private final LocationCategoryRepository locationCategoryRepository;
+    private final MemberFoodCategoryRepository memberFoodCategoryRepository;
+    private final MemberLocationCategoryRepository memberLocationCategoryRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
-    public Long join(MemberJoinDto memberDto) {
+    public void join(MemberJoinDto memberDto) {
         validateDuplication(memberDto);
 
-        FoodCategory foodCategory = foodCategoryRepository.findByName(memberDto.getFoodCategory())
-            .orElseThrow(() -> new NotFoundException("음식 카테고리"));
-        LocationCategory locationCategory = locationCategoryRepository.findByName(memberDto.getLocationCategory())
-            .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+        List<FoodCategory> foodCategoryList = memberDto.getFoodCategoryList()
+            .stream()
+            .map(f->foodCategoryRepository.findByName(f)
+                .orElseThrow(() -> new NotFoundException("음식 카테고리")))
+            .collect(Collectors.toList());
 
-        Member member = memberDto.toEntity(foodCategory, locationCategory, passwordEncoder.encode(memberDto.getPassword()));
+        List<LocationCategory> locationCategoryList = memberDto.getLocationCategoryList()
+            .stream()
+            .map(l->locationCategoryRepository.findByName(l)
+                .orElseThrow(() -> new NotFoundException("위치 카테고리")))
+            .collect(Collectors.toList());
 
-        return memberRepository.save(member).getId();
+        Member member = memberDto.toEntity(passwordEncoder.encode(memberDto.getPassword()));
+
+        memberRepository.save(member);
+
+        for(FoodCategory foodCategory: foodCategoryList){
+            MemberFoodCategory memberFoodCategory = MemberFoodCategory.builder()
+                .foodCategory(foodCategory)
+                .member(member)
+                .build();
+            memberFoodCategoryRepository.save(memberFoodCategory);
+        }
+
+        for(LocationCategory locationCategory: locationCategoryList){
+            MemberLocationCategory memberLocationCategory = MemberLocationCategory.builder()
+                .locationCategory(locationCategory)
+                .member(member)
+                .build();
+            memberLocationCategoryRepository.save(memberLocationCategory);
+        }
+
     }
 
     private void validateDuplication(MemberJoinDto memberDto) {
