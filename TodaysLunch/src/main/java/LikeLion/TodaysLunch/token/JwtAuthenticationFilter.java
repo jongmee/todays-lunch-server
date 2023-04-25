@@ -39,15 +39,16 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            String isLogout = (String) redisTemplate.opsForValue().get(token);
-
-            if (ObjectUtils.isEmpty(isLogout)) {
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            if(redisTemplate.opsForValue().get(authentication.getName())==null){
+                throw new IllegalArgumentException("이미 로그아웃된 토큰입니다.");
             }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
             chain.doFilter(request, response);
         } catch (SignatureException e) {
+            setErrorResponse(response, e.getMessage());
+        } catch (Exception e) {
             setErrorResponse(response, e.getMessage());
         }
 
@@ -58,6 +59,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletResponse httpResponse = (HttpServletResponse)response;
         httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        httpResponse.setCharacterEncoding("UTF-8");
         ErrorResponse errorResponse = new ErrorResponse(errorMessage, HttpStatus.UNAUTHORIZED.value());
         try{
             httpResponse.getWriter().write(objectMapper.writeValueAsString(errorResponse));
