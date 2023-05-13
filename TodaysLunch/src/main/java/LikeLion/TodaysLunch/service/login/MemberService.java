@@ -5,19 +5,26 @@ import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.relation.MemberFoodCategory;
 import LikeLion.TodaysLunch.domain.relation.MemberLocationCategory;
+import LikeLion.TodaysLunch.dto.FoodCategoryDto;
+import LikeLion.TodaysLunch.dto.LocationCategoryDto;
 import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.MemberDtoMapper;
 import LikeLion.TodaysLunch.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.dto.MemberLoginDto;
+import LikeLion.TodaysLunch.dto.MyPageDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.exception.DuplicationException;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.exception.UnauthorizedException;
+import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberFoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberLocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberRepository;
+import LikeLion.TodaysLunch.repository.MyStoreRepository;
+import LikeLion.TodaysLunch.repository.RestaurantContributorRepository;
+import LikeLion.TodaysLunch.repository.ReviewRepository;
 import LikeLion.TodaysLunch.token.JwtTokenProvider;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +48,10 @@ public class MemberService {
     private final LocationCategoryRepository locationCategoryRepository;
     private final MemberFoodCategoryRepository memberFoodCategoryRepository;
     private final MemberLocationCategoryRepository memberLocationCategoryRepository;
+    private final DataJpaRestaurantRepository restaurantRepository;
+    private final RestaurantContributorRepository restaurantContributorRepository;
+    private final MyStoreRepository myStoreRepository;
+    private final ReviewRepository reviewRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
@@ -113,6 +124,24 @@ public class MemberService {
         if (redisTemplate.opsForValue().get(authentication.getName()) != null) {
             redisTemplate.delete(authentication.getName());
         }
+    }
+
+    @Transactional
+    public MyPageDto myPage(Member member) {
+        List<LocationCategoryDto> locationCategoryList = memberLocationCategoryRepository.findAllByMember(member)
+            .stream()
+            .map(s->LocationCategoryDto.fromEntity(s.getLocationCategory()))
+            .collect(Collectors.toList());
+        List<FoodCategoryDto> foodCategoryList = memberFoodCategoryRepository.findAllByMember(member)
+            .stream()
+            .map(s->FoodCategoryDto.fromEntity(s.getFoodCategory()))
+            .collect(Collectors.toList());
+        Integer myJudgeCount = restaurantRepository.findAllByRegistrantAndJudgement(member, true).size();
+        Integer participationCount = restaurantRepository.findAllByRegistrantAndJudgement(member, false).size();
+        Integer contributionCount = restaurantContributorRepository.findAllByMember(member).size();
+        Integer myStoreCount = myStoreRepository.findAllByMember(member).size();
+        Integer reviewCount = reviewRepository.findAllByMember(member).size();
+        return MyPageDto.fromEntity(member, foodCategoryList, locationCategoryList, myJudgeCount, participationCount, myStoreCount, reviewCount, contributionCount);
     }
 
     public MemberDto getAuthenticatedMember(@AuthenticationPrincipal Member member) {
