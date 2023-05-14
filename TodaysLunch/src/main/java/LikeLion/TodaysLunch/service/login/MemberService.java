@@ -144,6 +144,29 @@ public class MemberService {
         return MyPageDto.fromEntity(member, foodCategoryList, locationCategoryList, myJudgeCount, participationCount, myStoreCount, reviewCount, contributionCount);
     }
 
+    @Transactional
+    public void myFoodCategoryEdit(Member member, List<FoodCategoryDto> categoryList) {;
+        List<FoodCategory> newCategoryList = categoryList.stream()
+            .map(f->f.toEntity())
+            .collect(Collectors.toList());
+        List<FoodCategory> existingCategoryList = memberFoodCategoryRepository.findAllByMember(member)
+                .stream()
+                .map(f->f.getFoodCategory())
+                .collect(Collectors.toList());
+        existingCategoryList.removeAll(newCategoryList);
+        for(FoodCategory obj: existingCategoryList){
+            MemberFoodCategory memberFoodCategory = memberFoodCategoryRepository.findByFoodCategoryAndMember(obj, member).get();
+            memberFoodCategoryRepository.delete(memberFoodCategory);
+        }
+        for(FoodCategory obj: newCategoryList){
+            MemberFoodCategory memberFoodCategory = MemberFoodCategory.builder()
+                .foodCategory(obj)
+                .member(member)
+                .build();
+            memberFoodCategoryRepository.save(memberFoodCategory);
+        }
+    }
+
     public MemberDto getAuthenticatedMember(@AuthenticationPrincipal Member member) {
         if (member != null) {
             return MemberDtoMapper.toDto(member);
