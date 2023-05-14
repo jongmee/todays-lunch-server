@@ -2,12 +2,17 @@ package LikeLion.TodaysLunch.domain;
 
 import com.sun.istack.NotNull;
 import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class FoodCategory {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -19,4 +19,11 @@ public class FoodCategoryDto {
         .name(foodCategory.getName())
         .build();
   }
+
+  public FoodCategory toEntity(){
+    return FoodCategory.builder()
+        .id(id)
+        .name(name)
+        .build();
+  }
 }
