@@ -167,6 +167,29 @@ public class MemberService {
         }
     }
 
+    @Transactional
+    public void myLocationCategoryEdit(Member member, List<LocationCategoryDto> categoryList) {
+        List<LocationCategory> newCategoryList = categoryList.stream()
+            .map(f->f.toEntity())
+            .collect(Collectors.toList());
+        List<LocationCategory> existingCategoryList = memberLocationCategoryRepository.findAllByMember(member)
+            .stream()
+            .map(f->f.getLocationCategory())
+            .collect(Collectors.toList());
+        existingCategoryList.removeAll(newCategoryList);
+        for(LocationCategory obj: existingCategoryList){
+            MemberLocationCategory memberLocationCategory = memberLocationCategoryRepository.findByLocationCategoryAndMember(obj, member).get();
+            memberLocationCategoryRepository.delete(memberLocationCategory);
+        }
+        for(LocationCategory obj: newCategoryList){
+            MemberLocationCategory memberLocationCategory = MemberLocationCategory.builder()
+                .locationCategory(obj)
+                .member(member)
+                .build();
+            memberLocationCategoryRepository.save(memberLocationCategory);
+        }
+    }
+
     public MemberDto getAuthenticatedMember(@AuthenticationPrincipal Member member) {
         if (member != null) {
             return MemberDtoMapper.toDto(member);

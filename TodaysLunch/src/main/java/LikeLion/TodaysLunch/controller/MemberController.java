@@ -6,6 +6,7 @@ import LikeLion.TodaysLunch.dto.MemberDto;
 import LikeLion.TodaysLunch.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.dto.MyFoodCategoryEditDto;
+import LikeLion.TodaysLunch.dto.MyLocationCategoryEditDto;
 import LikeLion.TodaysLunch.dto.MyPageDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
 import LikeLion.TodaysLunch.service.login.MemberService;
@@ -56,9 +57,16 @@ public class MemberController {
     }
 
     @PatchMapping("/mypage/food-category")
-    public ResponseEntity<Void> myCategoryEdit(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> myFoodCategoryEdit(@AuthenticationPrincipal Member member,
         @RequestBody MyFoodCategoryEditDto categoryList){
         memberService.myFoodCategoryEdit(member, categoryList.getCategoryList());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/mypage/location-category")
+    public ResponseEntity<Void> myLocationCategoryEdit(@AuthenticationPrincipal Member member,
+        @RequestBody MyLocationCategoryEditDto categoryList){
+        memberService.myLocationCategoryEdit(member, categoryList.getCategoryList());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
