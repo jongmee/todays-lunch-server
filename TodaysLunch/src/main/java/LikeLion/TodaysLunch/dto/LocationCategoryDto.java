@@ -19,4 +19,10 @@ public class LocationCategoryDto {
         .name(locationCategory.getName())
         .build();
   }
+  public LocationCategory toEntity(){
+    return LocationCategory.builder()
+        .id(id)
+        .name(name)
+        .build();
+  }
 }
