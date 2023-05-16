@@ -190,6 +190,11 @@ public class MemberService {
         }
     }
 
+    public void nicknameEdit(Member member, String nickname) {
+        member.updateNickname(nickname);
+        memberRepository.save(member);
+    }
+
     public MemberDto getAuthenticatedMember(@AuthenticationPrincipal Member member) {
         if (member != null) {
             return MemberDtoMapper.toDto(member);

@@ -60,6 +60,8 @@ public class Member implements UserDetails {
         this.myStoreCount = myStoreCount;
     }
 
+    public void updateNickname(String nickname) { this.nickname = nickname; }
+
     public Long getId() {
         return id;
     }

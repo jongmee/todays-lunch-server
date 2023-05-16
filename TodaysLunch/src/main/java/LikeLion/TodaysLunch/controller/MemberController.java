@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -67,6 +68,13 @@ public class MemberController {
     public ResponseEntity<Void> myLocationCategoryEdit(@AuthenticationPrincipal Member member,
         @RequestBody MyLocationCategoryEditDto categoryList){
         memberService.myLocationCategoryEdit(member, categoryList.getCategoryList());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/mypage/nickname")
+    public ResponseEntity<Void> nicknameEdit(@AuthenticationPrincipal Member member,
+        @RequestParam String nickname){
+        memberService.nicknameEdit(member, nickname);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
