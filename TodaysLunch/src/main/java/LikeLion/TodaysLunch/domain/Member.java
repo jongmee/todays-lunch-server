@@ -61,6 +61,7 @@ public class Member implements UserDetails {
     }
 
     public void updateNickname(String nickname) { this.nickname = nickname; }
+    public void updateIcon(ImageUrl icon) { this.icon = icon; }
 
     public Long getId() {
         return id;

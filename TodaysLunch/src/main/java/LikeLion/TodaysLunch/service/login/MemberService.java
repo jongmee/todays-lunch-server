@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.service.login;
 
 import LikeLion.TodaysLunch.domain.FoodCategory;
+import LikeLion.TodaysLunch.domain.ImageUrl;
 import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.Member;
 import LikeLion.TodaysLunch.domain.relation.MemberFoodCategory;
@@ -18,6 +19,7 @@ import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.exception.UnauthorizedException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
+import LikeLion.TodaysLunch.repository.ImageUrlRepository;
 import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberFoodCategoryRepository;
 import LikeLion.TodaysLunch.repository.MemberLocationCategoryRepository;
@@ -25,22 +27,28 @@ import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.repository.MyStoreRepository;
 import LikeLion.TodaysLunch.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
+import LikeLion.TodaysLunch.s3.S3UploadService;
 import LikeLion.TodaysLunch.token.JwtTokenProvider;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+    @Autowired
+    private S3UploadService s3UploadService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
@@ -52,6 +60,7 @@ public class MemberService {
     private final RestaurantContributorRepository restaurantContributorRepository;
     private final MyStoreRepository myStoreRepository;
     private final ReviewRepository reviewRepository;
+    private final ImageUrlRepository imageUrlRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
@@ -127,7 +136,7 @@ public class MemberService {
     }
 
     @Transactional
-    public MyPageDto myPage(Member member) {
+    public MyPageDto  myPage(Member member) {
         List<LocationCategoryDto> locationCategoryList = memberLocationCategoryRepository.findAllByMember(member)
             .stream()
             .map(s->LocationCategoryDto.fromEntity(s.getLocationCategory()))
@@ -193,6 +202,38 @@ public class MemberService {
     public void nicknameEdit(Member member, String nickname) {
         member.updateNickname(nickname);
         memberRepository.save(member);
+    }
+
+    public void iconEdit(Member member, MultipartFile icon) throws IOException {
+        // 기존 아이콘 삭제
+        ImageUrl imageUrl = member.getIcon();
+        if(imageUrl != null){
+            s3UploadService.delete(imageUrl.getImageUrl());
+            Long id = imageUrl.getId();
+            ImageUrl del = imageUrlRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("유저의 아이콘"));
+            member.updateIcon(null);
+            memberRepository.save(member);
+            imageUrlRepository.delete(del);
+        }
+
+        // 새 아이콘 등록
+        if(icon != null && !icon.isEmpty()){
+            // s3에 이미지 저장
+            String savedUrl = s3UploadService.upload(icon, "user");
+            // image url을 db에 저장
+            String originalName = icon.getOriginalFilename();
+            ImageUrl userImage = ImageUrl.builder()
+                .originalName(originalName)
+                .imageUrl(savedUrl)
+                .member(member)
+                .build();
+
+            imageUrlRepository.save(userImage);
+            // 멤버에 저장
+            member.updateIcon(userImage);
+            memberRepository.save(member);
+        }
     }
 
     public MemberDto getAuthenticatedMember(@AuthenticationPrincipal Member member) {
