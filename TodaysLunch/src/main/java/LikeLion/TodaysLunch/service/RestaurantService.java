@@ -70,11 +70,16 @@ RestaurantService {
   public Page<RestaurantListDto> restaurantList(
       String foodCategory, String locationCategory,
       String locationTag, Long recommendCategoryId, String keyword,
-      int page, int size, String sort, String order) {
+      int page, int size, String sort, String order, Long registrantId, Member member) {
+
+    Member registrant = null;
+    if (registrantId != null){
+      registrant = memberRepository.findById(registrantId).get();
+    }
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false);
+    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false, registrant);
 
     return restaurantRepository.findAll(spec, pageable).map(RestaurantListDto::fromEntity);
   }
@@ -165,11 +170,16 @@ RestaurantService {
 
   public Page<JudgeRestaurantListDto> judgeRestaurantList(
       String foodCategory, String locationCategory, String locationTag, Long recommendCategoryId,
-      int page, int size, String sort, String order) {
+      int page, int size, String sort, String order, Long registrantId, Member member) {
+
+    Member registrant = null;
+    if (registrantId != null){
+      registrant = memberRepository.findById(registrantId).get();
+    }
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, null, true);
+    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, null, true, registrant);
 
     return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
   }
@@ -292,7 +302,7 @@ RestaurantService {
   }
 
   public Specification<Restaurant> determineSpecification(String foodCategory, String locationCategory,
-      String locationTag, Long recommendCategoryId, String keyword, Boolean judgement){
+      String locationTag, Long recommendCategoryId, String keyword, Boolean judgement, Member member){
     FoodCategory foodCategoryObj;
     LocationCategory locationCategoryObj;
     LocationTag locationTagObj;
@@ -318,6 +328,9 @@ RestaurantService {
     }
     if (keyword != null) {
       spec = spec.and(RestaurantSpecification.likeRestaurantName(keyword));
+    }
+    if (member != null) {
+      spec = spec.and(RestaurantSpecification.equalRegistrant(member));
     }
 
     return spec.and(RestaurantSpecification.equalJudgement(judgement));

@@ -5,6 +5,7 @@ import LikeLion.TodaysLunch.domain.LocationCategory;
 import LikeLion.TodaysLunch.domain.LocationTag;
 import LikeLion.TodaysLunch.domain.RecommendCategory;
 import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.domain.Member;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -14,6 +15,15 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RestaurantSpecification {
+  public static Specification<Restaurant> equalRegistrant(Member registrant){
+    return new Specification<Restaurant>() {
+      @Override
+      public Predicate toPredicate(Root<Restaurant> root, CriteriaQuery<?> query,
+          CriteriaBuilder criteriaBuilder) {
+        return criteriaBuilder.equal(root.get("registrant"), registrant);
+      }
+    };
+  }
 
   public static Specification<Restaurant> equalJudgement(Boolean judgement){
     return new Specification<Restaurant>() {
