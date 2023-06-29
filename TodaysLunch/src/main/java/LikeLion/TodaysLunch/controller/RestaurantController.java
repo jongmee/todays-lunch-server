@@ -110,12 +110,12 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyAgree(member, restaurantId));
   }
 
-  // 임시로 유저의 ID 값을 경로 변수로 받기
-  @GetMapping("/recommendation/{userId}")
-  public ResponseEntity<List<Restaurant>> recommendation(@PathVariable Long userId){
-    List<Restaurant> restaurants = restaurantService.recommendation(userId);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
-  }
+////   임시로 유저의 ID 값을 경로 변수로 받기
+//  @GetMapping("/recommendation/{userId}")
+//  public ResponseEntity<List<Restaurant>> recommendation(@PathVariable Long userId){
+//    List<Restaurant> restaurants = restaurantService.recommendation(userId);
+//    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
+//  }
 
   @PostMapping("/{restaurantId}/mystore")
   public ResponseEntity<Void> addMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){

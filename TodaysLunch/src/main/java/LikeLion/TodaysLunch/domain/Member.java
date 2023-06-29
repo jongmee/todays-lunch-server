@@ -44,6 +44,7 @@ public class Member implements UserDetails {
 
     @Column(nullable = false)
     private Long myStoreCount;
+    private Boolean verified;
 
     @OneToOne
     @JoinColumn
@@ -58,6 +59,9 @@ public class Member implements UserDetails {
     public void setMyStoreCount(Long myStoreCount) {
         this.myStoreCount = myStoreCount;
     }
+
+    public void updateNickname(String nickname) { this.nickname = nickname; }
+    public void updateIcon(ImageUrl icon) { this.icon = icon; }
 
     public Long getId() {
         return id;
