@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -65,27 +64,30 @@ public class ReviewService {
     reviewRepository.save(review);
   }
 
-  public Page<ReviewDto> reviewsList(Long restaurantId, int page, int size, String sort, String order, Member member){
+  public HashMap<String, Object> reviewsList(Long restaurantId, int page, int size, String sort, String order, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
     Pageable pageable = determineSort(page, size, sort, order);
-    List<Review> reviews = reviewRepository.findAllByRestaurant(restaurant, pageable).stream().collect(Collectors.toList());
-    List<ReviewDto> reviewDtos = new ArrayList<ReviewDto>(reviews.size());
+    Page<Review> reviews = reviewRepository.findAllByRestaurant(restaurant, pageable);
+    List<Review> reviewList = reviews.stream().collect(Collectors.toList());
+    List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
     String liked;
-    for(Review review: reviews){
+    for(Review review: reviewList){
       if(isNotAlreadyLike(member, review))
         liked = "false";
       else
         liked = "true";
       reviewDtos.add(ReviewDto.fromEntity(review, liked));
     }
-    return new PageImpl<>(reviewDtos);
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", reviewDtos);
+    responseMap.put("totalPages", reviews.getTotalPages());
+    return responseMap;
   }
 
   public HashMap<String, Object> myReviewList(Long reviewerId, Pageable pageable){
     Member reviewer = memberRepository.findById(reviewerId)
         .orElseThrow(() -> new NotFoundException("유저"));
     Page<Review> reviews = reviewRepository.findAllByMember(reviewer, pageable);
-    int totalPages = reviews.getTotalPages();
     List<Review> reviewList = reviews.stream().collect(Collectors.toList());
     List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
     String liked;

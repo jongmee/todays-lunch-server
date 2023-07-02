@@ -47,11 +47,7 @@ public class ReviewController {
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order,
       @AuthenticationPrincipal Member member){
-    Page<ReviewDto> reviews = reviewService.reviewsList(restaurantId, page, size, sort, order, member);
-    HashMap<String, Object> responseMap = new HashMap<>();
-    responseMap.put("data", reviews.getContent());
-    responseMap.put("totalPages", reviews.getTotalPages());
-    responseMap.put("totalReviewCount", reviewService.totalReviewCount(restaurantId));
+    HashMap<String, Object> responseMap = reviewService.reviewsList(restaurantId, page, size, sort, order, member);
     return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
