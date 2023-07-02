@@ -40,6 +40,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -70,11 +71,16 @@ RestaurantService {
   public Page<RestaurantListDto> restaurantList(
       String foodCategory, String locationCategory,
       String locationTag, Long recommendCategoryId, String keyword,
-      int page, int size, String sort, String order) {
+      int page, int size, String sort, String order, Long registrantId, Member member) {
+
+    Member registrant = null;
+    if (registrantId != null){
+      registrant = memberRepository.findById(registrantId).get();
+    }
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false);
+    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false, registrant);
 
     return restaurantRepository.findAll(spec, pageable).map(RestaurantListDto::fromEntity);
   }
@@ -165,11 +171,16 @@ RestaurantService {
 
   public Page<JudgeRestaurantListDto> judgeRestaurantList(
       String foodCategory, String locationCategory, String locationTag, Long recommendCategoryId,
-      int page, int size, String sort, String order) {
+      int page, int size, String sort, String order, Long registrantId, Member member) {
+
+    Member registrant = null;
+    if (registrantId != null){
+      registrant = memberRepository.findById(registrantId).get();
+    }
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, null, true);
+    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, null, true, registrant);
 
     return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
   }
@@ -281,6 +292,18 @@ RestaurantService {
     return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
   }
 
+  public Page<RestaurantListDto> myStoreList(
+      int page, int size, Member member) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    return new PageImpl<>(myStoreRepository.findAllByMember(member,pageable)
+        .stream()
+        .map(s->s.getRestaurant())
+        .map(RestaurantListDto::fromEntity)
+        .collect(Collectors.toList()));
+
+  }
+
   public Pageable determineSort(int page, int size, String sort, String order){
     Pageable pageable = PageRequest.of(page, size);
     if(order.equals("ascending")){
@@ -292,7 +315,7 @@ RestaurantService {
   }
 
   public Specification<Restaurant> determineSpecification(String foodCategory, String locationCategory,
-      String locationTag, Long recommendCategoryId, String keyword, Boolean judgement){
+      String locationTag, Long recommendCategoryId, String keyword, Boolean judgement, Member member){
     FoodCategory foodCategoryObj;
     LocationCategory locationCategoryObj;
     LocationTag locationTagObj;
@@ -318,6 +341,9 @@ RestaurantService {
     }
     if (keyword != null) {
       spec = spec.and(RestaurantSpecification.likeRestaurantName(keyword));
+    }
+    if (member != null) {
+      spec = spec.and(RestaurantSpecification.equalRegistrant(member));
     }
 
     return spec.and(RestaurantSpecification.equalJudgement(judgement));
