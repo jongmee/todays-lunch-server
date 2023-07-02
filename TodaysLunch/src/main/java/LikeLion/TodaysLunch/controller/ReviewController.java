@@ -41,6 +41,7 @@ public class ReviewController {
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviews.getContent());
     responseMap.put("totalPages", reviews.getTotalPages());
+    responseMap.put("totalReviewCount", reviewService.totalReviewCount(restaurantId));
     return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 

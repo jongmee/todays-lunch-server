@@ -65,6 +65,10 @@ public class ReviewService {
     return reviewRepository.findAllByRestaurant(restaurant, pageable).map(ReviewDto::fromEntity);
   }
 
+  public Long totalReviewCount(Long restaurantId){
+    return restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException("맛집")).getReviewCount();
+  }
+
   public void update(Long reviewId, Long restaurantId, ReviewDto reviewDto){
     Review review = reviewRepository.findById(reviewId)
         .orElseThrow(() -> new IllegalArgumentException("리뷰 수정 실패! 대상 리뷰가 없습니다."));
