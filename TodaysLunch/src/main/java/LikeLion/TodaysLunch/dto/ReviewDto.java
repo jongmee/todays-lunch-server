@@ -21,12 +21,13 @@ public class ReviewDto {
   private Integer rating;
   private LocalDate createdDate;
   private Long likeCount;
+  private String liked;
 
   public Review toEntity(){
     return Review.builder().rating(rating).reviewContent(reviewContent).build();
   }
 
-  public static ReviewDto fromEntity(Review review){
+  public static ReviewDto fromEntity(Review review, String liked){
     return ReviewDto.builder()
         .id(review.getId())
         .rating(review.getRating())
@@ -34,6 +35,7 @@ public class ReviewDto {
         .createdDate(review.getCreatedDate())
         .likeCount(review.getLikeCount().get())
         .member(ReviewProfileDto.fromEntity(review.getMember()))
+        .liked(liked)
         .build();
   }
 

@@ -11,13 +11,16 @@ import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
 import LikeLion.TodaysLunch.repository.ReviewLikeRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -60,9 +63,20 @@ public class ReviewService {
     reviewRepository.save(review);
   }
 
-  public Page<ReviewDto> reviewsList(Long restaurantId, Pageable pageable){
+  public Page<ReviewDto> reviewsList(Long restaurantId, Pageable pageable, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-    return reviewRepository.findAllByRestaurant(restaurant, pageable).map(ReviewDto::fromEntity);
+
+    List<Review> reviews = reviewRepository.findAllByRestaurant(restaurant, pageable).stream().collect(Collectors.toList());
+    List<ReviewDto> reviewDtos = new ArrayList<ReviewDto>(reviews.size());
+    String liked;
+    for(Review review: reviews){
+      if(isNotAlreadyLike(member, review))
+        liked = "false";
+      else
+        liked = "true";
+      reviewDtos.add(ReviewDto.fromEntity(review, liked));
+    }
+    return new PageImpl<>(reviewDtos);
   }
 
   public Long totalReviewCount(Long restaurantId){
@@ -140,16 +154,6 @@ public class ReviewService {
       restaurant.setBestReview(review.getReviewContent());
       restaurantRepository.save(restaurant);
     }
-  }
-
-  public String isAlreadyLike(Member member, Long reviewId){
-    Review review = reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new NotFoundException("리뷰"));
-
-    if(isNotAlreadyLike(member, review))
-      return "false";
-    else
-      return "true";
   }
 
   // 유저가 이미 추천한 리뷰인지 체크

@@ -36,8 +36,11 @@ public class ReviewController {
   }
 
   @GetMapping("/restaurants/{restaurantId}/reviews")
-  public ResponseEntity<HashMap<String, Object>> allReviewList(@PathVariable Long restaurantId, Pageable pageable){
-    Page<ReviewDto> reviews = reviewService.reviewsList(restaurantId, pageable);
+  public ResponseEntity<HashMap<String, Object>> allReviewList(
+      @PathVariable Long restaurantId,
+      Pageable pageable,
+      @AuthenticationPrincipal Member member){
+    Page<ReviewDto> reviews = reviewService.reviewsList(restaurantId, pageable, member);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviews.getContent());
     responseMap.put("totalPages", reviews.getTotalPages());
@@ -64,12 +67,6 @@ public class ReviewController {
       @PathVariable Long reviewId, @AuthenticationPrincipal Member member){
     reviewService.addOrCancelLike(restaurantId, reviewId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
-  }
-
-  @GetMapping("/reviews/{reviewId}/like")
-  public  ResponseEntity<String>isAlreadyLike(
-      @PathVariable Long reviewId, @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(reviewService.isAlreadyLike(member, reviewId));
   }
 
 }
