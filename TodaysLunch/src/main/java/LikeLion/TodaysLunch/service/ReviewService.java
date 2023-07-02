@@ -81,6 +81,27 @@ public class ReviewService {
     return new PageImpl<>(reviewDtos);
   }
 
+  public HashMap<String, Object> myReviewList(Long reviewerId, Pageable pageable){
+    Member reviewer = memberRepository.findById(reviewerId)
+        .orElseThrow(() -> new NotFoundException("유저"));
+    Page<Review> reviews = reviewRepository.findAllByMember(reviewer, pageable);
+    int totalPages = reviews.getTotalPages();
+    List<Review> reviewList = reviews.stream().collect(Collectors.toList());
+    List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
+    String liked;
+    for(Review review: reviewList){
+      if(isNotAlreadyLike(reviewer, review))
+        liked = "false";
+      else
+        liked = "true";
+      reviewDtos.add(ReviewDto.fromEntity(review, liked));
+    }
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", reviewDtos);
+    responseMap.put("totalPages", reviews.getTotalPages());
+    return responseMap;
+  }
+
   public Long totalReviewCount(Long restaurantId){
     return restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException("맛집")).getReviewCount();
   }

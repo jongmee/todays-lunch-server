@@ -76,4 +76,10 @@ public class ReviewController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
+  @GetMapping("/myreviews")
+  public ResponseEntity<HashMap<String, Object>> myReviewList(@RequestParam(value = "reviewer-id") Long reviewerID, Pageable pageable){
+    HashMap<String, Object> responseMap = reviewService.myReviewList(reviewerID, pageable);
+    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+  }
+
 }
