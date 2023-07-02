@@ -33,6 +33,7 @@ import LikeLion.TodaysLunch.repository.RestaurantSpecification;
 import LikeLion.TodaysLunch.s3.S3UploadService;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -292,15 +293,18 @@ RestaurantService {
     return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
   }
 
-  public Page<RestaurantListDto> myStoreList(
+  public HashMap<String, Object> myStoreList(
       int page, int size, Member member) {
     Pageable pageable = PageRequest.of(page, size);
-
-    return new PageImpl<>(myStoreRepository.findAllByMember(member,pageable)
-        .stream()
+    Page<MyStore> myStores = myStoreRepository.findAllByMember(member,pageable);
+    List<RestaurantListDto> restaurantDtos = myStores.stream()
         .map(s->s.getRestaurant())
         .map(RestaurantListDto::fromEntity)
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList());
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", restaurantDtos);
+    responseMap.put("totalPages", myStores.getTotalPages());
+    return responseMap;
 
   }
 

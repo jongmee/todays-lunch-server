@@ -137,10 +137,6 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @AuthenticationPrincipal Member member){
-    Page<RestaurantListDto> restaurants = restaurantService.myStoreList(page, size, member);
-    HashMap<String, Object> responseMap = new HashMap<>();
-    responseMap.put("data", restaurants.getContent());
-    responseMap.put("totalPages", restaurants.getTotalPages());
-    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.myStoreList(page, size, member));
   }
 }
