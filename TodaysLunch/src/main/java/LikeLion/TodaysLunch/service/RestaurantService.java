@@ -40,6 +40,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -289,6 +290,18 @@ RestaurantService {
 
   private boolean isNotAlreadyMyStore(Member member, Restaurant restaurant){
     return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
+  }
+
+  public Page<RestaurantListDto> myStoreList(
+      int page, int size, Member member) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    return new PageImpl<>(myStoreRepository.findAllByMember(member,pageable)
+        .stream()
+        .map(s->s.getRestaurant())
+        .map(RestaurantListDto::fromEntity)
+        .collect(Collectors.toList()));
+
   }
 
   public Pageable determineSort(int page, int size, String sort, String order){

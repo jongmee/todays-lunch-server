@@ -131,4 +131,16 @@ public class RestaurantController {
   public ResponseEntity<String> isAlreadyMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyMyStore(member, restaurantId));
   }
+
+  @GetMapping("/mystore")
+  public ResponseEntity<HashMap<String, Object>> myStore(
+      @RequestParam(defaultValue = PAGE_VALUE) int page,
+      @RequestParam(defaultValue = PAGE_SIZE) int size,
+      @AuthenticationPrincipal Member member){
+    Page<RestaurantListDto> restaurants = restaurantService.myStoreList(page, size, member);
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", restaurants.getContent());
+    responseMap.put("totalPages", restaurants.getTotalPages());
+    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+  }
 }
