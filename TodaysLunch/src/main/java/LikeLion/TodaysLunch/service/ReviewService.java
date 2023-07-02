@@ -8,6 +8,7 @@ import LikeLion.TodaysLunch.domain.ReviewLike;
 import LikeLion.TodaysLunch.dto.ReviewDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
+import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
 import LikeLion.TodaysLunch.repository.ReviewLikeRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
@@ -30,6 +31,7 @@ import org.springframework.data.domain.Sort.Direction;
 @Transactional
 @RequiredArgsConstructor
 public class ReviewService {
+  private final MemberRepository memberRepository;
   private final ReviewRepository reviewRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
   private final ReviewLikeRepository reviewLikeRepository;
@@ -63,9 +65,9 @@ public class ReviewService {
     reviewRepository.save(review);
   }
 
-  public Page<ReviewDto> reviewsList(Long restaurantId, Pageable pageable, Member member){
+  public Page<ReviewDto> reviewsList(Long restaurantId, int page, int size, String sort, String order, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-
+    Pageable pageable = determineSort(page, size, sort, order);
     List<Review> reviews = reviewRepository.findAllByRestaurant(restaurant, pageable).stream().collect(Collectors.toList());
     List<ReviewDto> reviewDtos = new ArrayList<ReviewDto>(reviews.size());
     String liked;
@@ -159,6 +161,15 @@ public class ReviewService {
   // 유저가 이미 추천한 리뷰인지 체크
   private boolean isNotAlreadyLike(Member member, Review review){
     return reviewLikeRepository.findByReviewAndMember(review, member).isEmpty();
+  }
+  public Pageable determineSort(int page, int size, String sort, String order){
+    Pageable pageable = PageRequest.of(page, size);
+    if(order.equals("ascending")){
+      pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
+    } else if(order.equals("descending")){
+      pageable = PageRequest.of(page, size, Sort.by(sort).descending());
+    }
+    return pageable;
   }
 
 }

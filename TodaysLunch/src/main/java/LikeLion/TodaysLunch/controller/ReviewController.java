@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ReviewController {
+  static final String PAGE_VALUE = "0";
+  static final String PAGE_SIZE = "100";
+  static final String SORT = "createdDate";
+  static final String ORDER = "descending";
   private final ReviewService reviewService;
   @Autowired
   public ReviewController(ReviewService reviewService) {
@@ -38,9 +42,12 @@ public class ReviewController {
   @GetMapping("/restaurants/{restaurantId}/reviews")
   public ResponseEntity<HashMap<String, Object>> allReviewList(
       @PathVariable Long restaurantId,
-      Pageable pageable,
+      @RequestParam(defaultValue = PAGE_VALUE) int page,
+      @RequestParam(defaultValue = PAGE_SIZE) int size,
+      @RequestParam(defaultValue = SORT) String sort,
+      @RequestParam(defaultValue = ORDER) String order,
       @AuthenticationPrincipal Member member){
-    Page<ReviewDto> reviews = reviewService.reviewsList(restaurantId, pageable, member);
+    Page<ReviewDto> reviews = reviewService.reviewsList(restaurantId, page, size, sort, order, member);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviews.getContent());
     responseMap.put("totalPages", reviews.getTotalPages());
