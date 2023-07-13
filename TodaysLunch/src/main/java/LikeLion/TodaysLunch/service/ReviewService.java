@@ -81,6 +81,7 @@ public class ReviewService {
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviewDtos);
     responseMap.put("totalPages", reviews.getTotalPages());
+    responseMap.put("totalReviewCount", totalReviewCount(restaurantId));
     return responseMap;
   }
 
