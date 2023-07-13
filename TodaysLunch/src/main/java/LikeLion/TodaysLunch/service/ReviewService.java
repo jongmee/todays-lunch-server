@@ -84,9 +84,10 @@ public class ReviewService {
     return responseMap;
   }
 
-  public HashMap<String, Object> myReviewList(Long reviewerId, Pageable pageable){
+  public HashMap<String, Object> myReviewList(Long reviewerId, int page, int size, String sort, String order){
     Member reviewer = memberRepository.findById(reviewerId)
         .orElseThrow(() -> new NotFoundException("유저"));
+    Pageable pageable = determineSort(page, size, sort, order);
     Page<Review> reviews = reviewRepository.findAllByMember(reviewer, pageable);
     List<Review> reviewList = reviews.stream().collect(Collectors.toList());
     List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());

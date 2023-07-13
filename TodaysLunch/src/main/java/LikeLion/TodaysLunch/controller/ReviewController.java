@@ -73,8 +73,13 @@ public class ReviewController {
   }
 
   @GetMapping("/myreviews")
-  public ResponseEntity<HashMap<String, Object>> myReviewList(@RequestParam(value = "reviewer-id") Long reviewerID, Pageable pageable){
-    HashMap<String, Object> responseMap = reviewService.myReviewList(reviewerID, pageable);
+  public ResponseEntity<HashMap<String, Object>> myReviewList(
+      @RequestParam(value = "reviewer-id") Long reviewerID,
+      @RequestParam(defaultValue = PAGE_VALUE) int page,
+      @RequestParam(defaultValue = PAGE_SIZE) int size,
+      @RequestParam(defaultValue = SORT) String sort,
+      @RequestParam(defaultValue = ORDER) String order){
+    HashMap<String, Object> responseMap = reviewService.myReviewList(reviewerID, page, size, sort, order);
     return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
