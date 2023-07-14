@@ -2,26 +2,23 @@ package LikeLion.TodaysLunch.dto;
 
 
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@Getter
 public class TokenDto {
 
     @NotNull
-    private String token;
+    private String accessToken;
     @NotNull
-    private long tokenExpiresTime;
+    private String refreshToken;
+    @NotNull
+    private long refreshTokenExpiresTime;
 
-    public TokenDto(String token, long tokenExpiresTime) {
-        this.token = token;
-        this.tokenExpiresTime = tokenExpiresTime;
-    }
-
-    public String getToken() {
-        return this.token;
-    }
-
-    public long getTokenExpiresTime() {
-        return this.tokenExpiresTime;
+    public TokenDto(String accessToken, String refreshToken, long tokenExpiresTime) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.refreshTokenExpiresTime = tokenExpiresTime;
     }
 }

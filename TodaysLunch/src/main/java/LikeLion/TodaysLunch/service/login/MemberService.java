@@ -40,6 +40,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,9 +118,8 @@ public class MemberService {
         }
 
         TokenDto tokenDto = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
-        long expiration = JwtTokenProvider.getExpirationTime(tokenDto.getToken()).getTime();
         redisTemplate.opsForValue()
-                .set(member.getEmail(), tokenDto.getToken(), expiration, TimeUnit.MILLISECONDS);
+                .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
 
         return tokenDto;
     }
