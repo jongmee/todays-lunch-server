@@ -79,7 +79,7 @@ public class TodaysLunchConfig {
 
     @Bean
     public ReviewService reviewService() {
-        return new ReviewService(reviewRepository, restaurantRepository, reviewLikeRepository);
+        return new ReviewService(memberRepository, reviewRepository, restaurantRepository, reviewLikeRepository);
     }
 
     @Bean SaleService saleService(){

@@ -8,13 +8,16 @@ import LikeLion.TodaysLunch.domain.ReviewLike;
 import LikeLion.TodaysLunch.dto.ReviewDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
+import LikeLion.TodaysLunch.repository.MemberRepository;
 import LikeLion.TodaysLunch.repository.MenuRepository;
 import LikeLion.TodaysLunch.repository.ReviewLikeRepository;
 import LikeLion.TodaysLunch.repository.ReviewRepository;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +30,7 @@ import org.springframework.data.domain.Sort.Direction;
 @Transactional
 @RequiredArgsConstructor
 public class ReviewService {
+  private final MemberRepository memberRepository;
   private final ReviewRepository reviewRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
   private final ReviewLikeRepository reviewLikeRepository;
@@ -60,9 +64,50 @@ public class ReviewService {
     reviewRepository.save(review);
   }
 
-  public Page<ReviewDto> reviewsList(Long restaurantId, Pageable pageable){
+  public HashMap<String, Object> reviewsList(Long restaurantId, int page, int size, String sort, String order, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-    return reviewRepository.findAllByRestaurant(restaurant, pageable).map(ReviewDto::fromEntity);
+    Pageable pageable = determineSort(page, size, sort, order);
+    Page<Review> reviews = reviewRepository.findAllByRestaurant(restaurant, pageable);
+    List<Review> reviewList = reviews.stream().collect(Collectors.toList());
+    List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
+    String liked;
+    for(Review review: reviewList){
+      if(isNotAlreadyLike(member, review))
+        liked = "false";
+      else
+        liked = "true";
+      reviewDtos.add(ReviewDto.fromEntity(review, liked));
+    }
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", reviewDtos);
+    responseMap.put("totalPages", reviews.getTotalPages());
+    responseMap.put("totalReviewCount", totalReviewCount(restaurantId));
+    return responseMap;
+  }
+
+  public HashMap<String, Object> myReviewList(Long reviewerId, int page, int size, String sort, String order){
+    Member reviewer = memberRepository.findById(reviewerId)
+        .orElseThrow(() -> new NotFoundException("유저"));
+    Pageable pageable = determineSort(page, size, sort, order);
+    Page<Review> reviews = reviewRepository.findAllByMember(reviewer, pageable);
+    List<Review> reviewList = reviews.stream().collect(Collectors.toList());
+    List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
+    String liked;
+    for(Review review: reviewList){
+      if(isNotAlreadyLike(reviewer, review))
+        liked = "false";
+      else
+        liked = "true";
+      reviewDtos.add(ReviewDto.fromEntity(review, liked));
+    }
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", reviewDtos);
+    responseMap.put("totalPages", reviews.getTotalPages());
+    return responseMap;
+  }
+
+  public Long totalReviewCount(Long restaurantId){
+    return restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException("맛집")).getReviewCount();
   }
 
   public void update(Long reviewId, Long restaurantId, ReviewDto reviewDto){
@@ -138,19 +183,18 @@ public class ReviewService {
     }
   }
 
-  public String isAlreadyLike(Member member, Long reviewId){
-    Review review = reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new NotFoundException("리뷰"));
-
-    if(isNotAlreadyLike(member, review))
-      return "false";
-    else
-      return "true";
-  }
-
   // 유저가 이미 추천한 리뷰인지 체크
   private boolean isNotAlreadyLike(Member member, Review review){
     return reviewLikeRepository.findByReviewAndMember(review, member).isEmpty();
+  }
+  public Pageable determineSort(int page, int size, String sort, String order){
+    Pageable pageable = PageRequest.of(page, size);
+    if(order.equals("ascending")){
+      pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
+    } else if(order.equals("descending")){
+      pageable = PageRequest.of(page, size, Sort.by(sort).descending());
+    }
+    return pageable;
   }
 
 }
