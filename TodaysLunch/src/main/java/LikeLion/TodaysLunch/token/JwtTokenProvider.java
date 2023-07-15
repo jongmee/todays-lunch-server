@@ -35,7 +35,7 @@ public class JwtTokenProvider {
     }
 
 
-    public TokenDto createToken(String userPk, List<String> roles) {
+    public TokenDto.LoginToken createToken(String userPk, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(userPk);
         claims.put("roles", roles);
         Date now = new Date();
@@ -52,7 +52,10 @@ public class JwtTokenProvider {
             .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
             .compact();
 
-        return new TokenDto(accessToken, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        return TokenDto.LoginToken.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .refreshTokenExpiresTime(REFRESH_TOKEN_EXPIRE_TIME).build();
     }
 
     public Authentication getAuthentication(String token) {

@@ -109,7 +109,7 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenDto login(MemberLoginDto memberDto) {
+    public TokenDto.LoginToken login(MemberLoginDto memberDto) {
         Member member = memberRepository.findByEmail(memberDto.getEmail())
             .orElseThrow(() -> new NotFoundException("이메일"));
 
@@ -117,7 +117,7 @@ public class MemberService {
             throw new UnauthorizedException("회원정보의 비밀번호와 일치하지 않습니다.");
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
+        TokenDto.LoginToken tokenDto = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
         redisTemplate.opsForValue()
             .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
         tokenDto.setId(member.getId());
