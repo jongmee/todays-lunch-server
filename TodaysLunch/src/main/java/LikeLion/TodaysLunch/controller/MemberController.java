@@ -43,7 +43,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody MemberLoginDto memberDto) {
-        TokenDto tokenDto = memberService.login(memberDto);
+        TokenDto.LoginToken tokenDto = memberService.login(memberDto);
         return ResponseEntity.ok(tokenDto);
     }
 
@@ -85,5 +85,10 @@ public class MemberController {
         @RequestParam MultipartFile icon) throws IOException {
         memberService.iconEdit(member, icon);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody TokenDto.Refresh memberDto) {
+        TokenDto.LoginToken tokenDto = memberService.refresh(memberDto);
+        return ResponseEntity.ok(tokenDto);
     }
 }

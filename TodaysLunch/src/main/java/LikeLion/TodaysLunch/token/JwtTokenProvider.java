@@ -25,7 +25,8 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
     private static String secretKey = "todayslunch";
     private static String SECRET_KEY = Base64.getEncoder().encodeToString(secretKey.getBytes());
-    private long tokenValidTime = 24 * 60 * 60 * 1000L;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000L; // 1일
     private final CustomUserDetailService customUserDetailService;
 
     @Autowired
@@ -34,17 +35,27 @@ public class JwtTokenProvider {
     }
 
 
-    public TokenDto createToken(String userPk, List<String> roles) {
+    public TokenDto.LoginToken createToken(String userPk, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(userPk);
         claims.put("roles", roles);
         Date now = new Date();
-        long expiration = now.getTime() + tokenValidTime;
-        return new TokenDto(Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(expiration))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact(),expiration);
+
+        String accessToken = Jwts.builder()
+            .setClaims(claims)
+            .setIssuedAt(now)
+            .setExpiration(new Date(now.getTime()+ACCESS_TOKEN_EXPIRE_TIME))
+            .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+            .compact();
+
+        String refreshToken = Jwts.builder()
+            .setExpiration(new Date(now.getTime()+REFRESH_TOKEN_EXPIRE_TIME))
+            .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+            .compact();
+
+        return TokenDto.LoginToken.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .refreshTokenExpiresTime(REFRESH_TOKEN_EXPIRE_TIME).build();
     }
 
     public Authentication getAuthentication(String token) {

@@ -40,6 +40,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,19 +109,35 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenDto login(MemberLoginDto memberDto) {
+    public TokenDto.LoginToken login(MemberLoginDto memberDto) {
         Member member = memberRepository.findByEmail(memberDto.getEmail())
-                .orElseThrow(() -> new NotFoundException("이메일"));
+            .orElseThrow(() -> new NotFoundException("이메일"));
 
         if (!passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {
             throw new UnauthorizedException("회원정보의 비밀번호와 일치하지 않습니다.");
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
-        long expiration = JwtTokenProvider.getExpirationTime(tokenDto.getToken()).getTime();
+        TokenDto.LoginToken tokenDto = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
         redisTemplate.opsForValue()
-                .set(member.getEmail(), tokenDto.getToken(), expiration, TimeUnit.MILLISECONDS);
+            .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
+        tokenDto.setId(member.getId());
+        return tokenDto;
+    }
+    @Transactional
+    public TokenDto.LoginToken refresh(TokenDto.Refresh refreshDto) {
+        jwtTokenProvider.validateToken(refreshDto.getRefreshToken());
 
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshDto.getAccessToken());
+        String refreshToken = (String)redisTemplate.opsForValue().get(authentication.getName());
+        if(!refreshToken.equals(refreshDto.getRefreshToken())){
+            throw new UnauthorizedException("Refresh Token 정보가 일치하지 않습니다.");
+        }
+        Member member = memberRepository.findByEmail(authentication.getName())
+            .orElseThrow(() -> new NotFoundException("유저"));
+        TokenDto.LoginToken tokenDto = jwtTokenProvider.createToken(authentication.getName(), member.getRoles());
+        redisTemplate.opsForValue()
+            .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
+        tokenDto.setId(member.getId());
         return tokenDto;
     }
 
@@ -159,9 +176,9 @@ public class MemberService {
             .map(f->f.toEntity())
             .collect(Collectors.toList());
         List<FoodCategory> existingCategoryList = memberFoodCategoryRepository.findAllByMember(member)
-                .stream()
-                .map(f->f.getFoodCategory())
-                .collect(Collectors.toList());
+            .stream()
+            .map(f->f.getFoodCategory())
+            .collect(Collectors.toList());
         existingCategoryList.removeAll(newCategoryList);
         for(FoodCategory obj: existingCategoryList){
             MemberFoodCategory memberFoodCategory = memberFoodCategoryRepository.findByFoodCategoryAndMember(obj, member).get();
