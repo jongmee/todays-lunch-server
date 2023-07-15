@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class TokenDto {
-
+    private Long id;
     @NotNull
     private String accessToken;
     @NotNull
@@ -20,5 +20,9 @@ public class TokenDto {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.refreshTokenExpiresTime = tokenExpiresTime;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

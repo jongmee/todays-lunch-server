@@ -120,7 +120,7 @@ public class MemberService {
         TokenDto tokenDto = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
         redisTemplate.opsForValue()
                 .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
-
+        tokenDto.setId(member.getId());
         return tokenDto;
     }
 
@@ -147,7 +147,7 @@ public class MemberService {
             .collect(Collectors.toList());
         Integer myJudgeCount = restaurantRepository.findAllByRegistrantAndJudgement(member, true).size();
         Integer participationCount = restaurantRepository.findAllByRegistrantAndJudgement(member, false).size();
-        Integer contributionCount = restaurantContributorRepository.findAllByMember(member).size();
+        Integer contributionCount = restaurantContributogrRepository.findAllByMember(member).size();
         Integer myStoreCount = myStoreRepository.findAllByMember(member).size();
         Integer reviewCount = reviewRepository.findAllByMember(member).size();
         return MyPageDto.fromEntity(member, foodCategoryList, locationCategoryList, myJudgeCount, participationCount, myStoreCount, reviewCount, contributionCount);
