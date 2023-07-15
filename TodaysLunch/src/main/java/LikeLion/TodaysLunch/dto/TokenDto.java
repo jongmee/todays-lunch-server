@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.dto;
 
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,12 @@ public class TokenDto {
             this.id = id;
         }
 
+    }
+    @Getter
+    public static class Refresh {
+        @NotEmpty(message="accessToken을 입력해주세요.")
+        private String accessToken;
+        @NotEmpty(message="refreshToken을 입력해주세요")
+        private String refreshToken;
     }
 }

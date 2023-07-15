@@ -86,4 +86,9 @@ public class MemberController {
         memberService.iconEdit(member, icon);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody TokenDto.Refresh memberDto) {
+        TokenDto.LoginToken tokenDto = memberService.refresh(memberDto);
+        return ResponseEntity.ok(tokenDto);
+    }
 }

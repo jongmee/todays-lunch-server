@@ -123,6 +123,23 @@ public class MemberService {
         tokenDto.setId(member.getId());
         return tokenDto;
     }
+    @Transactional
+    public TokenDto.LoginToken refresh(TokenDto.Refresh refreshDto) {
+        jwtTokenProvider.validateToken(refreshDto.getRefreshToken());
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshDto.getAccessToken());
+        String refreshToken = (String)redisTemplate.opsForValue().get(authentication.getName());
+        if(!refreshToken.equals(refreshDto.getRefreshToken())){
+            throw new UnauthorizedException("Refresh Token 정보가 일치하지 않습니다.");
+        }
+        Member member = memberRepository.findByEmail(authentication.getName())
+            .orElseThrow(() -> new NotFoundException("유저"));
+        TokenDto.LoginToken tokenDto = jwtTokenProvider.createToken(authentication.getName(), member.getRoles());
+        redisTemplate.opsForValue()
+            .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
+        tokenDto.setId(member.getId());
+        return tokenDto;
+    }
 
     @Transactional
     public void logout(String token) {
