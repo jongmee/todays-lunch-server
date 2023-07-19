@@ -86,6 +86,11 @@ public class TodaysLunchConfig {
         return new SaleService(menuRepository, saleRepository);
     }
 
-    @Bean CategoryService categoryService() { return new CategoryService(foodCategoryRepository, locationCategoryRepository, locationTagRepository, recommendCategoryRepository); }
+    @Bean CategoryService categoryService() {
+        return new CategoryService(foodCategoryRepository,
+            locationCategoryRepository, locationTagRepository,
+            recommendCategoryRepository, restRecmdRelRepository,
+            restaurantRepository);
+    }
 
 }
