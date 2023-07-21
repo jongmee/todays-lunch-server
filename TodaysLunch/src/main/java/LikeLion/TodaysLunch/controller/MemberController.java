@@ -9,6 +9,7 @@ import LikeLion.TodaysLunch.dto.MyFoodCategoryEditDto;
 import LikeLion.TodaysLunch.dto.MyLocationCategoryEditDto;
 import LikeLion.TodaysLunch.dto.MyPageDto;
 import LikeLion.TodaysLunch.dto.TokenDto;
+import LikeLion.TodaysLunch.service.EmailService;
 import LikeLion.TodaysLunch.service.login.MemberService;
 import java.io.IOException;
 import java.util.List;
@@ -29,10 +30,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class MemberController {
     private final MemberService memberService;
+    private final EmailService emailService;
 
     @Autowired
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, EmailService emailService) {
         this.memberService = memberService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/join")
@@ -90,5 +93,9 @@ public class MemberController {
     public ResponseEntity<?> refresh(@RequestBody TokenDto.Refresh memberDto) {
         TokenDto.LoginToken tokenDto = memberService.refresh(memberDto);
         return ResponseEntity.ok(tokenDto);
+    }
+    @PostMapping("/email-verification/send-code")
+    public ResponseEntity<?> sendEmailCode(@RequestParam String email) throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.sendEmail(email));
     }
 }
