@@ -70,7 +70,6 @@ public class RestaurantController {
       @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
-    memberService.getAuthenticatedMember(member);
     restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -101,14 +100,12 @@ public class RestaurantController {
 
   @PostMapping("/judges/{restaurantId}/agree")
   public ResponseEntity<Void> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
-    memberService.getAuthenticatedMember(member);
     restaurantService.addOrCancelAgreement(member, restaurantId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @GetMapping("/judges/{restaurantId}/agree")
   public ResponseEntity<String> isAlreadyAgree(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
-    memberService.getAuthenticatedMember(member);
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyAgree(member, restaurantId));
   }
 

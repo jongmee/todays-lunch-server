@@ -80,7 +80,6 @@ public class MenuController {
       @RequestParam MultipartFile menuImage,
       @PathVariable Long menuId,
       @AuthenticationPrincipal Member member) throws IOException {
-    memberService.getAuthenticatedMember(member);
     menuService.createImage(menuImage, menuId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }

@@ -250,12 +250,4 @@ public class MemberService {
             memberRepository.save(member);
         }
     }
-
-    public MemberDto getAuthenticatedMember(@AuthenticationPrincipal Member member) {
-        if (member != null) {
-            return MemberDtoMapper.toDto(member);
-        } else {
-            throw new UnauthorizedException("인가 되지 않은 사용자입니다.");
-        }
-    }
 }

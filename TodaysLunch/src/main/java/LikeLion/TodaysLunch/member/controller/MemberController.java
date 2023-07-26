@@ -56,7 +56,6 @@ public class MemberController {
 
     @GetMapping("/mypage")
     public ResponseEntity<MyPageDto> myPage(@AuthenticationPrincipal Member member){
-        MemberDto memberDto = memberService.getAuthenticatedMember(member);
         return ResponseEntity.ok(memberService.myPage(member));
     }
 
