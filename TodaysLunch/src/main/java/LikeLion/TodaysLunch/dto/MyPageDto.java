@@ -39,7 +39,6 @@ public class MyPageDto {
         .id(member.getId())
         .nickname(member.getNickname())
         .icon(image)
-        .verified(member.getVerified())
         .foodCategoryList(foodCategoryList)
         .locationCategoryList(locationCategoryList)
         .myJudgeCount(myJudgeCount)

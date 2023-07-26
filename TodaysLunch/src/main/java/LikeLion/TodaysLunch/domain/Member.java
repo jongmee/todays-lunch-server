@@ -44,7 +44,6 @@ public class Member implements UserDetails {
 
     @Column(nullable = false)
     private Long myStoreCount;
-    private Boolean verified;
 
     @OneToOne
     @JoinColumn
