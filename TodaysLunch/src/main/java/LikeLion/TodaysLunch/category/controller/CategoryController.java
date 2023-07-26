@@ -4,6 +4,9 @@ import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
+import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
+import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
+import LikeLion.TodaysLunch.category.dto.LocationTagDto;
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
 import LikeLion.TodaysLunch.category.service.CategoryService;
 import java.util.List;
@@ -24,19 +27,19 @@ public class CategoryController {
     this.categoryService = categoryService;
   }
   @GetMapping("/food-category")
-  ResponseEntity<List<FoodCategory>> foodCategoryList(){
+  ResponseEntity<List<FoodCategoryDto>> foodCategoryList(){
     return ResponseEntity.status(HttpStatus.OK).body(categoryService.foodCategoryList());
   }
   @GetMapping("/location-category")
-  ResponseEntity<List<LocationCategory>> locationCategoryList(){
+  ResponseEntity<List<LocationCategoryDto>> locationCategoryList(){
     return ResponseEntity.status(HttpStatus.OK).body(categoryService.locationCategoryList());
   }
   @GetMapping("/location-tag")
-  ResponseEntity<List<LocationTag>> locationTagList(){
+  ResponseEntity<List<LocationTagDto>> locationTagList(){
     return ResponseEntity.status(HttpStatus.OK).body(categoryService.locationTagList());
   }
   @GetMapping("/recommend-category")
-  ResponseEntity<List<RecommendCategory>> recommendCategoryList(){
+  ResponseEntity<List<RecommendCategoryDto.CategoryList>> recommendCategoryList(){
     return ResponseEntity.status(HttpStatus.OK).body(categoryService.recommendCategoryList());
   }
   @PatchMapping("/restaurants/{restaurantId}/recommend-category")

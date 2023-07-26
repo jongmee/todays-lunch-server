@@ -4,6 +4,9 @@ import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
+import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
+import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
+import LikeLion.TodaysLunch.category.dto.LocationTagDto;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.domain.RestaurantRecommendCategoryRelation;
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -31,17 +35,25 @@ public class CategoryService {
   private final RestRecmdRelRepository restRecmdRelRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
 
-  public List<FoodCategory> foodCategoryList(){
-    return foodCategoryRepository.findAll();
+  public List<FoodCategoryDto> foodCategoryList(){
+    return foodCategoryRepository.findAll()
+        .stream().map(c-> FoodCategoryDto.fromEntity(c))
+        .collect(Collectors.toList());
   }
-  public List<LocationCategory> locationCategoryList(){
-    return locationCategoryRepository.findAll();
+  public List<LocationCategoryDto> locationCategoryList(){
+    return locationCategoryRepository.findAll()
+        .stream().map(c->LocationCategoryDto.fromEntity(c))
+        .collect(Collectors.toList());
   }
-  public List<LocationTag> locationTagList(){
-    return locationTagRepository.findAll();
+  public List<LocationTagDto> locationTagList(){
+    return locationTagRepository.findAll()
+        .stream().map(c->LocationTagDto.fromEntity(c))
+        .collect(Collectors.toList());
   }
-  public List<RecommendCategory> recommendCategoryList(){
-    return recommendCategoryRepository.findAll();
+  public List<RecommendCategoryDto.CategoryList> recommendCategoryList(){
+    return recommendCategoryRepository.findAll()
+        .stream().map(c->RecommendCategoryDto.CategoryList.fromEntity(c))
+        .collect(Collectors.toList());
   }
   public void recommendCategoryEdit(Long restaurantId, RecommendCategoryDto.Edit editDto){
     Map<RecommendCategory, RestaurantRecommendCategoryRelation> pair = new HashMap<>();
