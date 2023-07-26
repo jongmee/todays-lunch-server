@@ -75,6 +75,22 @@ public abstract class ServiceTest {
 
     return tr;
   }
+  public TestRestaurant makeTestJudgeRestaurant(String foodCategoryName, String locationCategoryName,
+      String locationTagName, String address, String restaurantName, String introduction,
+      Double longitude, Double latitude, Member registrant) {
+    TestRestaurant tr = new TestRestaurant(testRestaurantEnviron);
+
+    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
+        .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
+        .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+    LocationTag locationTag = locationTagRepository.findByName(locationTagName)
+        .orElseThrow(() -> new NotFoundException("위치 태그"));
+
+    tr.심사맛집_등록하기(foodCategory, locationCategory, locationTag, address, restaurantName, introduction, longitude, latitude, registrant);
+
+    return tr;
+  }
   void 카테고리_등록하기() {
     LocationCategory locationCategory1 = 위치카테고리_생성하기("서강대",37.550940, 126.941136);
     LocationTag locationTag1 = 위치태그_생성하기("정문", 37.551691, 126.937659);

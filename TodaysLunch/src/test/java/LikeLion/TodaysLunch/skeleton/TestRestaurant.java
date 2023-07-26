@@ -32,6 +32,24 @@ public class TestRestaurant {
     this.restaurant = environ.restaurantRepository().save(restaurant);
     return this;
   }
+  public TestRestaurant 심사맛집_등록하기(FoodCategory foodCategory,
+      LocationCategory locationCategory, LocationTag locationTag,
+      String address, String restaurantName, String introduction,
+      Double longitude, Double latitude, Member registrant) {
+    Restaurant restaurant = Restaurant.builder()
+        .foodCategory(foodCategory)
+        .locationCategory(locationCategory)
+        .locationTag(locationTag)
+        .address(address)
+        .restaurantName(restaurantName)
+        .introduction(introduction)
+        .longitude(longitude)
+        .latitude(latitude)
+        .registrant(registrant)
+        .build();
+    this.restaurant = environ.restaurantRepository().save(restaurant);
+    return this;
+  }
   public TestRestaurant 메뉴_등록하기(String name, Long price) {
     Menu menu = Menu.builder().name(name).price(price).build();
     Long originalPrice = this.restaurant.getLowestPrice();
