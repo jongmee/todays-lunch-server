@@ -20,7 +20,7 @@ public class EmailService {
   private String senderEmail;
   public static final String code = createKey();
 
-  private MimeMessage createMessage(String to)throws Exception{
+  private MimeMessage createEmailVerifyMessage(String to)throws Exception{
     MimeMessage  message = emailSender.createMimeMessage();
 
     message.addRecipients(RecipientType.TO, to);
@@ -46,7 +46,7 @@ public class EmailService {
     return message;
   }
 
-  public static String createKey() {
+  public static String createEmailKey() {
     StringBuffer key = new StringBuffer();
     Random rnd = new Random();
 
@@ -69,8 +69,8 @@ public class EmailService {
     return key.toString();
   }
 
-  public String sendEmail(String to)throws Exception {
-    MimeMessage message = createMessage(to);
+  public String sendEmailMessage(String to)throws Exception {
+    MimeMessage message = createEmailVerifyMessage(to);
     try{
       emailSender.send(message);
     }catch(MailException es){

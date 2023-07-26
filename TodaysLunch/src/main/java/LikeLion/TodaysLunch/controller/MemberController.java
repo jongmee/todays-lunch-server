@@ -96,6 +96,6 @@ public class MemberController {
     }
     @PostMapping("/email-verification/send-code")
     public ResponseEntity<?> sendEmailCode(@RequestParam String email) throws Exception {
-        return ResponseEntity.status(HttpStatus.OK).body(emailService.sendEmail(email));
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.sendEmailMessage(email));
     }
 }
