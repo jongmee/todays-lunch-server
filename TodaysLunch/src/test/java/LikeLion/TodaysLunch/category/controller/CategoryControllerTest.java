@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.controller;
+package LikeLion.TodaysLunch.category.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -9,12 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-import LikeLion.TodaysLunch.dto.RecommendCategoryDto;
+import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
 import LikeLion.TodaysLunch.skeleton.ControllerTest;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;

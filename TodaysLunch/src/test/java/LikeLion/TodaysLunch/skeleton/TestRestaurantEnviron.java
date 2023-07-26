@@ -1,7 +1,7 @@
 package LikeLion.TodaysLunch.skeleton;
 
-import LikeLion.TodaysLunch.repository.DataJpaRestaurantRepository;
-import LikeLion.TodaysLunch.repository.MenuRepository;
+import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
+import LikeLion.TodaysLunch.menu.repository.MenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,5 +1,6 @@
-package LikeLion.TodaysLunch.s3;
+package LikeLion.TodaysLunch.external;
 
+import LikeLion.TodaysLunch.external.S3UploadService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

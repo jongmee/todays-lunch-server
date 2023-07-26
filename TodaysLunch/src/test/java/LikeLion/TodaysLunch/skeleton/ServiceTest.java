@@ -1,15 +1,15 @@
 package LikeLion.TodaysLunch.skeleton;
 
-import LikeLion.TodaysLunch.domain.FoodCategory;
-import LikeLion.TodaysLunch.domain.LocationCategory;
-import LikeLion.TodaysLunch.domain.LocationTag;
-import LikeLion.TodaysLunch.domain.Member;
-import LikeLion.TodaysLunch.domain.RecommendCategory;
+import LikeLion.TodaysLunch.category.domain.FoodCategory;
+import LikeLion.TodaysLunch.category.domain.LocationCategory;
+import LikeLion.TodaysLunch.category.domain.LocationTag;
+import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.exception.NotFoundException;
-import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
-import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
-import LikeLion.TodaysLunch.repository.LocationTagRepository;
-import LikeLion.TodaysLunch.repository.RecommendCategoryRepository;
+import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
+import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
+import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
+import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -21,17 +21,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Transactional
 public abstract class ServiceTest {
   @Autowired
-  private FoodCategoryRepository foodCategoryRepository;
+  protected FoodCategoryRepository foodCategoryRepository;
   @Autowired
-  private LocationCategoryRepository locationCategoryRepository;
+  protected LocationCategoryRepository locationCategoryRepository;
   @Autowired
-  private LocationTagRepository locationTagRepository;
+  protected LocationTagRepository locationTagRepository;
   @Autowired
-  private RecommendCategoryRepository recommendCategoryRepository;
+  protected RecommendCategoryRepository recommendCategoryRepository;
   @Autowired
-  private TestUserEnviron testUserEnviron;
+  protected TestUserEnviron testUserEnviron;
   @Autowired
-  private TestRestaurantEnviron testRestaurantEnviron;
+  protected TestRestaurantEnviron testRestaurantEnviron;
   @BeforeEach
   void beforeEach() {
     카테고리_등록하기();

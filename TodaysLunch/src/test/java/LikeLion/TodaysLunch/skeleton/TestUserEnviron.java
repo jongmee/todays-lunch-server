@@ -1,8 +1,8 @@
 package LikeLion.TodaysLunch.skeleton;
 
-import LikeLion.TodaysLunch.repository.MemberFoodCategoryRepository;
-import LikeLion.TodaysLunch.repository.MemberLocationCategoryRepository;
-import LikeLion.TodaysLunch.repository.MemberRepository;
+import LikeLion.TodaysLunch.customized.repository.MemberFoodCategoryRepository;
+import LikeLion.TodaysLunch.customized.repository.MemberLocationCategoryRepository;
+import LikeLion.TodaysLunch.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

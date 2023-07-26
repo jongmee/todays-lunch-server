@@ -1,17 +1,11 @@
-package LikeLion.TodaysLunch.service;
+package LikeLion.TodaysLunch.category.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import LikeLion.TodaysLunch.domain.Member;
-import LikeLion.TodaysLunch.domain.RecommendCategory;
-import LikeLion.TodaysLunch.domain.Restaurant;
-import LikeLion.TodaysLunch.domain.relation.RestaurantRecommendCategoryRelation;
-import LikeLion.TodaysLunch.dto.RecommendCategoryDto;
-import LikeLion.TodaysLunch.exception.NotFoundException;
-import LikeLion.TodaysLunch.repository.RestRecmdRelRepository;
+import LikeLion.TodaysLunch.category.domain.RecommendCategory;
+import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
+import LikeLion.TodaysLunch.category.service.CategoryService;
+import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.skeleton.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.TestRestaurant;
-import LikeLion.TodaysLunch.skeleton.TestUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

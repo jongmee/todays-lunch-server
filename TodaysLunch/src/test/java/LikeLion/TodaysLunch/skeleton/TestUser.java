@@ -1,10 +1,10 @@
 package LikeLion.TodaysLunch.skeleton;
 
-import LikeLion.TodaysLunch.domain.FoodCategory;
-import LikeLion.TodaysLunch.domain.LocationCategory;
-import LikeLion.TodaysLunch.domain.Member;
-import LikeLion.TodaysLunch.domain.relation.MemberFoodCategory;
-import LikeLion.TodaysLunch.domain.relation.MemberLocationCategory;
+import LikeLion.TodaysLunch.category.domain.FoodCategory;
+import LikeLion.TodaysLunch.category.domain.LocationCategory;
+import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.customized.domain.MemberFoodCategory;
+import LikeLion.TodaysLunch.customized.domain.MemberLocationCategory;
 import java.util.List;
 
 public class TestUser {

@@ -1,11 +1,10 @@
 package LikeLion.TodaysLunch.skeleton;
 
 
-import LikeLion.TodaysLunch.config.WebSecurityConfig;
-import LikeLion.TodaysLunch.controller.CategoryController;
-import LikeLion.TodaysLunch.service.CategoryService;
-import LikeLion.TodaysLunch.token.JwtAuthenticationFilter;
-import LikeLion.TodaysLunch.token.JwtTokenProvider;
+import LikeLion.TodaysLunch.member.config.WebSecurityConfig;
+import LikeLion.TodaysLunch.category.controller.CategoryController;
+import LikeLion.TodaysLunch.category.service.CategoryService;
+import LikeLion.TodaysLunch.external.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
