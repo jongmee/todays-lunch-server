@@ -1,11 +1,11 @@
 package LikeLion.TodaysLunch.skeleton;
 
-import LikeLion.TodaysLunch.domain.FoodCategory;
-import LikeLion.TodaysLunch.domain.LocationCategory;
-import LikeLion.TodaysLunch.domain.LocationTag;
-import LikeLion.TodaysLunch.domain.Member;
-import LikeLion.TodaysLunch.domain.Menu;
-import LikeLion.TodaysLunch.domain.Restaurant;
+import LikeLion.TodaysLunch.category.domain.FoodCategory;
+import LikeLion.TodaysLunch.category.domain.LocationCategory;
+import LikeLion.TodaysLunch.category.domain.LocationTag;
+import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.menu.domain.Menu;
+import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 
 public class TestRestaurant {
   private final TestRestaurantEnviron environ;
@@ -29,6 +29,24 @@ public class TestRestaurant {
         .registrant(registrant)
         .build();
     restaurant.setJudgement(false);
+    this.restaurant = environ.restaurantRepository().save(restaurant);
+    return this;
+  }
+  public TestRestaurant 심사맛집_등록하기(FoodCategory foodCategory,
+      LocationCategory locationCategory, LocationTag locationTag,
+      String address, String restaurantName, String introduction,
+      Double longitude, Double latitude, Member registrant) {
+    Restaurant restaurant = Restaurant.builder()
+        .foodCategory(foodCategory)
+        .locationCategory(locationCategory)
+        .locationTag(locationTag)
+        .address(address)
+        .restaurantName(restaurantName)
+        .introduction(introduction)
+        .longitude(longitude)
+        .latitude(latitude)
+        .registrant(registrant)
+        .build();
     this.restaurant = environ.restaurantRepository().save(restaurant);
     return this;
   }

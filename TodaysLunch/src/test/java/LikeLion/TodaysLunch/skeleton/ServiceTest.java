@@ -1,15 +1,15 @@
 package LikeLion.TodaysLunch.skeleton;
 
-import LikeLion.TodaysLunch.domain.FoodCategory;
-import LikeLion.TodaysLunch.domain.LocationCategory;
-import LikeLion.TodaysLunch.domain.LocationTag;
-import LikeLion.TodaysLunch.domain.Member;
-import LikeLion.TodaysLunch.domain.RecommendCategory;
+import LikeLion.TodaysLunch.category.domain.FoodCategory;
+import LikeLion.TodaysLunch.category.domain.LocationCategory;
+import LikeLion.TodaysLunch.category.domain.LocationTag;
+import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.exception.NotFoundException;
-import LikeLion.TodaysLunch.repository.FoodCategoryRepository;
-import LikeLion.TodaysLunch.repository.LocationCategoryRepository;
-import LikeLion.TodaysLunch.repository.LocationTagRepository;
-import LikeLion.TodaysLunch.repository.RecommendCategoryRepository;
+import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
+import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
+import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
+import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -21,17 +21,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Transactional
 public abstract class ServiceTest {
   @Autowired
-  private FoodCategoryRepository foodCategoryRepository;
+  protected FoodCategoryRepository foodCategoryRepository;
   @Autowired
-  private LocationCategoryRepository locationCategoryRepository;
+  protected LocationCategoryRepository locationCategoryRepository;
   @Autowired
-  private LocationTagRepository locationTagRepository;
+  protected LocationTagRepository locationTagRepository;
   @Autowired
-  private RecommendCategoryRepository recommendCategoryRepository;
+  protected RecommendCategoryRepository recommendCategoryRepository;
   @Autowired
-  private TestUserEnviron testUserEnviron;
+  protected TestUserEnviron testUserEnviron;
   @Autowired
-  private TestRestaurantEnviron testRestaurantEnviron;
+  protected TestRestaurantEnviron testRestaurantEnviron;
   @BeforeEach
   void beforeEach() {
     카테고리_등록하기();
@@ -72,6 +72,22 @@ public abstract class ServiceTest {
         .orElseThrow(() -> new NotFoundException("위치 태그"));
 
     tr.정식맛집_등록하기(foodCategory, locationCategory, locationTag, address, restaurantName, introduction, longitude, latitude, registrant);
+
+    return tr;
+  }
+  public TestRestaurant makeTestJudgeRestaurant(String foodCategoryName, String locationCategoryName,
+      String locationTagName, String address, String restaurantName, String introduction,
+      Double longitude, Double latitude, Member registrant) {
+    TestRestaurant tr = new TestRestaurant(testRestaurantEnviron);
+
+    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName)
+        .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName)
+        .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+    LocationTag locationTag = locationTagRepository.findByName(locationTagName)
+        .orElseThrow(() -> new NotFoundException("위치 태그"));
+
+    tr.심사맛집_등록하기(foodCategory, locationCategory, locationTag, address, restaurantName, introduction, longitude, latitude, registrant);
 
     return tr;
   }
