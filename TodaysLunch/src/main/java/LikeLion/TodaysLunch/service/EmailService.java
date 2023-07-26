@@ -18,7 +18,7 @@ public class EmailService {
   JavaMailSender emailSender;
   @Value("${AdminMail.id}")
   private String senderEmail;
-  public static final String code = createKey();
+  public static final String code = createEmailKey();
 
   private MimeMessage createEmailVerifyMessage(String to)throws Exception{
     MimeMessage  message = emailSender.createMimeMessage();
