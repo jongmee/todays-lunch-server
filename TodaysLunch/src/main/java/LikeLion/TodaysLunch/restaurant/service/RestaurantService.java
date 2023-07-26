@@ -140,7 +140,7 @@ RestaurantService {
         .registrant(member)
         .build();
 
-    if(!restaurantImage.isEmpty()) {
+    if(restaurantImage != null && !restaurantImage.isEmpty()) {
       ImageUrl imageUrl = new ImageUrl();
       String originalName = restaurantImage.getOriginalFilename();
       String savedUrl = s3UploadService.upload(restaurantImage, "judge_restaurant");
