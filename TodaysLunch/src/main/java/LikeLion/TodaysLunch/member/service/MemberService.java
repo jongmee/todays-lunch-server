@@ -8,8 +8,6 @@ import LikeLion.TodaysLunch.customized.domain.MemberFoodCategory;
 import LikeLion.TodaysLunch.customized.domain.MemberLocationCategory;
 import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
-import LikeLion.TodaysLunch.member.dto.MemberDto;
-import LikeLion.TodaysLunch.member.dto.MemberDtoMapper;
 import LikeLion.TodaysLunch.member.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.member.dto.MyPageDto;

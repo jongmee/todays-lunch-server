@@ -1,7 +1,6 @@
 package LikeLion.TodaysLunch.member.controller;
 
 import LikeLion.TodaysLunch.member.domain.Member;
-import LikeLion.TodaysLunch.member.dto.MemberDto;
 import LikeLion.TodaysLunch.member.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.customized.dto.MyFoodCategoryEditDto;
