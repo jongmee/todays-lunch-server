@@ -29,6 +29,7 @@ public class RestaurantDto {
   private Long reviewCount;
   private ContributorDto registrant;
   private List<ContributorDto> contributors;
+  private String bestReview;
   public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors){
     String image = null;
     if (restaurant.getImageUrl() != null){
@@ -57,6 +58,7 @@ public class RestaurantDto {
         .reviewCount(restaurant.getReviewCount())
         .registrant(registrant)
         .contributors(contributors)
+        .bestReview(restaurant.getBestReview())
         .build();
   }
 }
