@@ -157,15 +157,15 @@ public class ReviewService {
     if (isNotAlreadyLike(member, review)){
       reviewLikeRepository.save(new ReviewLike(member, review));
 
-      AtomicLong likeCount = review.getLikeCount();
-      likeCount.incrementAndGet();
+      Long likeCount = review.getLikeCount();
+      likeCount += 1L;
       review.setLikeCount(likeCount);
 
       reviewRepository.save(review);
     } else {
       ReviewLike like = reviewLikeRepository.findByReviewAndMember(review, member).get();
-      AtomicLong likeCount = review.getLikeCount();
-      likeCount.decrementAndGet();
+      Long likeCount = review.getLikeCount();
+      likeCount -= 1L;
       review.setLikeCount(likeCount);
       reviewRepository.save(review);
       reviewLikeRepository.delete(like);
@@ -173,7 +173,7 @@ public class ReviewService {
 
     Pageable pageable = PageRequest.of(0, (int)reviewRepository.count(), Sort.by("likeCount").descending());
     Review bestReview = reviewRepository.findAllByRestaurant(restaurant, pageable).getContent().get(0);
-    if(bestReview.getLikeCount().get() <= review.getLikeCount().get()){
+    if(bestReview.getLikeCount() <= review.getLikeCount()){
       restaurant.setBestReview(review.getReviewContent());
       restaurantRepository.save(restaurant);
     }

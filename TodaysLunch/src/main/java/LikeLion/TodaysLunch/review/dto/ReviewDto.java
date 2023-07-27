@@ -33,7 +33,7 @@ public class ReviewDto {
         .rating(review.getRating())
         .reviewContent(review.getReviewContent())
         .createdDate(review.getCreatedDate())
-        .likeCount(review.getLikeCount().get())
+        .likeCount(review.getLikeCount())
         .member(ReviewProfileDto.fromEntity(review.getMember()))
         .liked(liked)
         .build();
