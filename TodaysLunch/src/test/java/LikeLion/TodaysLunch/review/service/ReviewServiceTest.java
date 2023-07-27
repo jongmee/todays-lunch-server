@@ -126,6 +126,21 @@ class ReviewServiceTest extends ServiceTest {
     Assertions.assertEquals((5.0+2.0+5.0)/3, 기존평점);
     Assertions.assertEquals((2.0+5.0)/2, 수정된평점);
   }
+  @Test
+  void 리뷰_좋아요_누르고_취소하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저1.getMember());
+    Review 리뷰 = 리뷰_생성하기(유저1.getMember(), 맛집.getRestaurant(), "아주맛잇군", 2);
+
+    // when
+    reviewService.addOrCancelLike(1L, 1L, 유저1.getMember());
+    reviewService.addOrCancelLike(1L, 1L, 유저1.getMember());
+
+    // then
+    Long 리뷰의_좋아요_수 = 리뷰.getLikeCount();
+    Assertions.assertEquals(0L, 리뷰의_좋아요_수);
+  }
 
   Review 리뷰_생성하기(Member member, Restaurant restaurant, String reviewContent, Integer rating){
     Review review = new Review(reviewContent, rating);
