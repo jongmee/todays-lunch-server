@@ -144,6 +144,28 @@ class ReviewServiceTest extends ServiceTest {
     Assertions.assertEquals(0L, 리뷰의_좋아요_수);
   }
   @Test
+  void 유저가_좋아요한_리뷰_구분하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestUser 유저2 = makeTestUser("qwer1@naver.com", "1234", "유저2", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저1.getMember());
+    Review 리뷰1 = 리뷰_생성하기(유저1.getMember(), 맛집.getRestaurant(), "아주맛잇군!", 5);
+    Review 리뷰2 = 리뷰_생성하기(유저1.getMember(), 맛집.getRestaurant(), "맛잇군!", 2);
+
+    // when
+    reviewService.addOrCancelLike(1L, 1L, 유저2.getMember());
+    Map 응답값 = reviewService.reviewsList(1L, 0, 5, "rating", "ascending", 유저2.getMember());
+    List<ReviewDto> 전체_리뷰들 = (List<ReviewDto>) 응답값.get("data");
+
+        // then
+    ReviewDto 조회한_리뷰1 = 전체_리뷰들.get(0);
+    ReviewDto 조회한_리뷰2 = 전체_리뷰들.get(1);
+    Assertions.assertEquals(1L, 조회한_리뷰2.getId());
+    Assertions.assertEquals(2L, 조회한_리뷰1.getId());
+    Assertions.assertEquals("false", 조회한_리뷰1.getLiked());
+    Assertions.assertEquals("true", 조회한_리뷰2.getLiked());
+  }
+  @Test
   void 유저가_쓴_리뷰_모아보기(){
     // given
     TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
