@@ -105,6 +105,27 @@ class ReviewServiceTest extends ServiceTest {
     Assertions.assertEquals((5.0+2.0+5.0)/3, 기존평점);
     Assertions.assertEquals((1.0+2.0+5.0)/3, 수정된평점);
   }
+  @Test
+  void 리뷰를_삭제하고_맛집_평점에_반영하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저1.getMember());
+    ReviewDto 작성한_리뷰 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(5).build();
+    ReviewDto 작성한_리뷰2 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(2).build();
+    ReviewDto 작성한_리뷰3 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(5).build();
+
+    reviewService.create(1L, 작성한_리뷰, 유저1.getMember());
+    reviewService.create(1L, 작성한_리뷰2, 유저1.getMember());
+    reviewService.create(1L, 작성한_리뷰3, 유저1.getMember());
+    Double 기존평점 = 맛집.getRestaurant().getRating();
+
+    // when
+    reviewService.delete(1L, 1L);
+    Double 수정된평점 = 맛집.getRestaurant().getRating();
+    Assertions.assertEquals((5.0+2.0+5.0)/3, 기존평점);
+    Assertions.assertEquals((2.0+5.0)/2, 수정된평점);
+  }
 
   Review 리뷰_생성하기(Member member, Restaurant restaurant, String reviewContent, Integer rating){
     Review review = new Review(reviewContent, rating);
