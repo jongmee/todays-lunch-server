@@ -29,7 +29,7 @@ public class Review extends BaseTimeEntity {
   private String reviewContent;
   @Column(nullable = false)
   private Integer rating;
-  private AtomicLong likeCount;
+  private Long likeCount;
   @ManyToOne
   @JoinColumn
   private Restaurant restaurant;
@@ -41,14 +41,14 @@ public class Review extends BaseTimeEntity {
   public Review(String reviewContent, Integer rating) {
     this.reviewContent = reviewContent;
     this.rating = rating;
-    this.likeCount = new AtomicLong(0);
+    this.likeCount = 0L;
   }
 
   public void setRestaurant(Restaurant restaurant) {
     this.restaurant = restaurant;
   }
   public void setMember(Member member) { this.member = member; }
-  public void setLikeCount(AtomicLong likeCount) { this.likeCount = likeCount; }
+  public void setLikeCount(Long likeCount) { this.likeCount = likeCount; }
 
   public void update(ReviewDto reviewDto) {
     if (reviewDto.getReviewContent() != null) {
