@@ -47,6 +47,8 @@ public class Member implements UserDetails {
     @JoinColumn
     private ImageUrl icon;
 
+    @Column(nullable = false)
+    private Boolean temporaryPw;
 
     @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
     @Builder.Default

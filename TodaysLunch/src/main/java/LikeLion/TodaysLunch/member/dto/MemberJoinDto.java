@@ -29,6 +29,7 @@ public class MemberJoinDto {
         .password(encodedPassword)
         .roles(Collections.singletonList("ROLE_USER"))
         .myStoreCount(0L)
+        .temporaryPw(false)
         .build();
   }
 }
