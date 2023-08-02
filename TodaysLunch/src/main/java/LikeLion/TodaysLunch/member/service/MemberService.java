@@ -212,11 +212,13 @@ public class MemberService {
         }
     }
 
+    @Transactional
     public void nicknameEdit(Member member, String nickname) {
         member.updateNickname(nickname);
         memberRepository.save(member);
     }
 
+    @Transactional
     public void iconEdit(Member member, MultipartFile icon) throws IOException {
         // 기존 아이콘 삭제
         ImageUrl imageUrl = member.getIcon();
