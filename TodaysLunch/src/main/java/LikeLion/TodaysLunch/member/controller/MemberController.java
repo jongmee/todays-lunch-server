@@ -92,6 +92,14 @@ public class MemberController {
     }
     @PostMapping("/email-verification/send-code")
     public ResponseEntity<?> sendEmailCode(@RequestParam String email) throws Exception {
-        return ResponseEntity.status(HttpStatus.OK).body(emailService.sendEmailMessage(email));
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.sendEmailVerifyMessage(email));
+    }
+
+    @PostMapping("/find-pw")
+    public ResponseEntity<Void> sendTemporaryPw(@RequestParam String email) throws Exception {
+        Member member = memberService.checkExistingEmail(email);
+        String password = emailService.sendTemporaryPassword(email);
+        memberService.changePassword(member, password, true);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -58,9 +58,10 @@ public class Member implements UserDetails {
     public void setMyStoreCount(Long myStoreCount) {
         this.myStoreCount = myStoreCount;
     }
-
+    public void setTemporaryPw(Boolean temporaryPw) { this.temporaryPw = temporaryPw; }
     public void updateNickname(String nickname) { this.nickname = nickname; }
     public void updateIcon(ImageUrl icon) { this.icon = icon; }
+    public void updatePassword(String password) { this.password = password; }
 
     public Long getId() {
         return id;

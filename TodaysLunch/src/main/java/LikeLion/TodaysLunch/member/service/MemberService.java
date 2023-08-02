@@ -248,4 +248,20 @@ public class MemberService {
             memberRepository.save(member);
         }
     }
+
+    @Transactional
+    public Member checkExistingEmail(String email){
+        return memberRepository.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
+    }
+
+    @Transactional
+    public void changePassword(Member member, String password, Boolean isTemporary){
+        if(isTemporary){
+            member.setTemporaryPw(true);
+        }
+        member.updatePassword(passwordEncoder.encode(password));
+        memberRepository.save(member);
+    }
+
 }
