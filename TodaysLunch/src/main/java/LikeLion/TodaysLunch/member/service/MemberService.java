@@ -134,6 +134,7 @@ public class MemberService {
         redisTemplate.opsForValue()
             .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
         tokenDto.setId(member.getId());
+        tokenDto.setTemporaryPw(member.getTemporaryPw());
         return tokenDto;
     }
 

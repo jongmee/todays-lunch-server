@@ -12,6 +12,7 @@ public class TokenDto {
     @Getter
     public static class LoginToken {
         private Long id;
+        private Boolean temporaryPw;
         @NotNull
         private String accessToken;
         @NotNull
@@ -27,6 +28,10 @@ public class TokenDto {
 
         public void setId(Long id) {
             this.id = id;
+        }
+
+        public void setTemporaryPw(Boolean temporaryPw){
+            this.temporaryPw = temporaryPw;
         }
 
     }
