@@ -260,6 +260,9 @@ public class MemberService {
         if(isTemporary){
             member.setTemporaryPw(true);
         }
+        else if(member.getTemporaryPw()){
+            member.setTemporaryPw(false);
+        }
         member.updatePassword(passwordEncoder.encode(password));
         memberRepository.save(member);
     }

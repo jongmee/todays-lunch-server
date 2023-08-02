@@ -102,4 +102,11 @@ public class MemberController {
         memberService.changePassword(member, password, true);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PatchMapping("/change-pw")
+    public ResponseEntity<Void> passwordEdit(@AuthenticationPrincipal Member member,
+        @RequestParam String password){
+        memberService.changePassword(member, password, false);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
