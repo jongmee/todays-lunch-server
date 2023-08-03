@@ -16,6 +16,7 @@ public class TestUser {
   public TestUser 유저_등록하기(String email, String password, String nickname) {
     Member member = Member.builder().email(email).password(password).nickname(nickname).build();
     member.setMyStoreCount(0L);
+    member.setTemporaryPw(false);
     this.member = environ.memberRepository().save(member);
     return this;
   }
