@@ -109,4 +109,10 @@ public class MemberController {
         memberService.changePassword(member, password, false);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping("/check-pw")
+    public ResponseEntity<Boolean> checkPassword(@AuthenticationPrincipal Member member,
+        @RequestParam String password) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.checkPassword(member, password));
+    }
 }

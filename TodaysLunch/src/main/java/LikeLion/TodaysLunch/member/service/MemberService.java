@@ -270,4 +270,12 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    public Boolean checkPassword(Member member, String password){
+        if(passwordEncoder.matches(password, member.getPassword())){
+            return true;
+        }
+        return false;
+    }
+
 }
