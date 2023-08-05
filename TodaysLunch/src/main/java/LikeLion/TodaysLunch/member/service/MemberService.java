@@ -134,6 +134,7 @@ public class MemberService {
         redisTemplate.opsForValue()
             .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
         tokenDto.setId(member.getId());
+        tokenDto.setTemporaryPw(member.getTemporaryPw());
         return tokenDto;
     }
 
@@ -212,11 +213,13 @@ public class MemberService {
         }
     }
 
+    @Transactional
     public void nicknameEdit(Member member, String nickname) {
         member.updateNickname(nickname);
         memberRepository.save(member);
     }
 
+    @Transactional
     public void iconEdit(Member member, MultipartFile icon) throws IOException {
         // 기존 아이콘 삭제
         ImageUrl imageUrl = member.getIcon();
@@ -248,4 +251,31 @@ public class MemberService {
             memberRepository.save(member);
         }
     }
+
+    @Transactional
+    public Member checkExistingEmail(String email){
+        return memberRepository.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
+    }
+
+    @Transactional
+    public void changePassword(Member member, String password, Boolean isTemporary){
+        if(isTemporary){
+            member.setTemporaryPw(true);
+        }
+        else if(member.getTemporaryPw()){
+            member.setTemporaryPw(false);
+        }
+        member.updatePassword(passwordEncoder.encode(password));
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public Boolean checkPassword(Member member, String password){
+        if(passwordEncoder.matches(password, member.getPassword())){
+            return true;
+        }
+        return false;
+    }
+
 }

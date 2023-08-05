@@ -2,8 +2,14 @@ package LikeLion.TodaysLunch.member.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 public class MemberLoginDto {
   @NotBlank(message = "로그인을 위해 이메일을 입력해주세요")
