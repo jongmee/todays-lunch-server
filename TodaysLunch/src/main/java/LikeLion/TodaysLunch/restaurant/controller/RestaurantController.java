@@ -48,10 +48,9 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order,
-      @RequestParam(value = "registrant-id", required = false) Long registrantId,
       @AuthenticationPrincipal Member member) {
     Page<RestaurantListDto> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
-        locationTag, recommendCategoryId, keyword, page, size, sort, order, registrantId, member);
+        locationTag, recommendCategoryId, keyword, page, size, sort, order, member);
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurants.getContent());
     responseMap.put("totalPages", restaurants.getTotalPages());
@@ -133,5 +132,10 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @AuthenticationPrincipal Member member){
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.myStoreList(page, size, member));
+  }
+
+  @GetMapping("/participate-restaurant")
+  public ResponseEntity<HashMap<String, Object>> participateRestaurantList (@AuthenticationPrincipal Member member){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.participateRestaurantList(member));
   }
 }

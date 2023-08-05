@@ -9,11 +9,13 @@ import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.customized.domain.MyStore;
+import LikeLion.TodaysLunch.restaurant.domain.RestaurantContributor;
 import LikeLion.TodaysLunch.restaurant.domain.RestaurantRecommendCategoryRelation;
 import LikeLion.TodaysLunch.restaurant.dto.ContributorDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.ParticipateRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
@@ -32,6 +34,7 @@ import LikeLion.TodaysLunch.external.S3UploadService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -68,16 +71,13 @@ RestaurantService {
   public Page<RestaurantListDto> restaurantList(
       String foodCategory, String locationCategory,
       String locationTag, Long recommendCategoryId, String keyword,
-      int page, int size, String sort, String order, Long registrantId, Member member) {
+      int page, int size, String sort, String order, Member member) {
 
     Member registrant = null;
-    if (registrantId != null){
-      registrant = memberRepository.findById(registrantId).get();
-    }
 
     Pageable pageable = determineSort(page, size, sort, order);
 
-    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false, registrant);
+    Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false, null);
 
     return restaurantRepository.findAll(spec, pageable).map(RestaurantListDto::fromEntity);
   }
@@ -302,6 +302,24 @@ RestaurantService {
     responseMap.put("totalPages", myStores.getTotalPages());
     return responseMap;
 
+  }
+
+  public HashMap<String, Object> participateRestaurantList(Member member) {
+    List<ParticipateRestaurantDto> participation = restaurantRepository.findAllByRegistrantAndJudgement(member, false)
+        .stream().map(ParticipateRestaurantDto::fromEntity).collect(Collectors.toList());
+    Integer participationCount = participation.size();
+
+    List<ParticipateRestaurantDto> contribution = restaurantContributorRepository.findAllByMember(member)
+        .stream().map(RestaurantContributor::getRestaurant).map(ParticipateRestaurantDto::fromEntity).collect(Collectors.toList());
+    Integer contributionCount = contribution.size();
+
+    HashMap response = new HashMap<>();
+    response.put("participation", participation);
+    response.put("participationCount", participationCount);
+    response.put("contribution", contribution);
+    response.put("contributionCount", contributionCount);
+
+    return response;
   }
 
   public Pageable determineSort(int page, int size, String sort, String order){
