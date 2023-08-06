@@ -28,11 +28,15 @@ public class JudgeRestaurantDto {
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
     }
+    String registrant = null;
+    if(restaurant.getRegistrant() != null){
+      registrant = restaurant.getRegistrant().getNickname();
+    }
     return JudgeRestaurantDto.builder()
         .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())
         .introduction(restaurant.getIntroduction())
-        .registrant(restaurant.getRegistrant().getNickname())
+        .registrant(registrant)
         .imageUrl(image)
         .latitude(restaurant.getLatitude())
         .longitude(restaurant.getLongitude())
