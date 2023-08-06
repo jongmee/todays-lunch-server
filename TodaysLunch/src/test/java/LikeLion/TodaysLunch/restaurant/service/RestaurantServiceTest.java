@@ -1,5 +1,8 @@
 package LikeLion.TodaysLunch.restaurant.service;
 
+import LikeLion.TodaysLunch.menu.domain.Menu;
+import LikeLion.TodaysLunch.menu.dto.MenuDto;
+import LikeLion.TodaysLunch.menu.service.MenuService;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
@@ -9,6 +12,7 @@ import LikeLion.TodaysLunch.skeleton.TestUser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 class RestaurantServiceTest extends ServiceTest {
   @Autowired
   private RestaurantService restaurantService;
+  @Autowired
+  private MenuService menuService;
   @Test
   void 맛집_심사_등록하기() throws IOException {
     // given
@@ -79,5 +85,21 @@ class RestaurantServiceTest extends ServiceTest {
     // then
     Assertions.assertEquals(true, previousJudge);
     Assertions.assertEquals(false, restaurantForTest.getJudgement());
+  }
+  @Test
+  void 유저가_참여한_맛집_목록보기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    MenuDto 메뉴_생성_요청 = MenuDto.builder().name("사케동").price(15000L).build();
+    menuService.create(메뉴_생성_요청, 정식맛집.getRestaurant().getId(), 유저.getMember());
+
+    // when
+    HashMap 응답값 = restaurantService.participateRestaurantList(유저.getMember());
+
+    // then
+    Assertions.assertEquals(1, 응답값.get("participationCount"));
+    Assertions.assertEquals(1, 응답값.get("contributionCount"));
   }
 }

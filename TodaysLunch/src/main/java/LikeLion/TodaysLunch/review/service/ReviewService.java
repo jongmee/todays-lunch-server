@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.review.domain.Review;
 import LikeLion.TodaysLunch.review.domain.ReviewLike;
+import LikeLion.TodaysLunch.review.dto.MyReviewDto;
 import LikeLion.TodaysLunch.review.dto.ReviewDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
@@ -87,14 +88,14 @@ public class ReviewService {
     Pageable pageable = determineSort(page, size, sort, order);
     Page<Review> reviews = reviewRepository.findAllByMember(reviewer, pageable);
     List<Review> reviewList = reviews.stream().collect(Collectors.toList());
-    List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
+    List<MyReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
     String liked;
     for(Review review: reviewList){
       if(isNotAlreadyLike(reviewer, review))
         liked = "false";
       else
         liked = "true";
-      reviewDtos.add(ReviewDto.fromEntity(review, liked));
+      reviewDtos.add(MyReviewDto.fromEntity(review, liked));
     }
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviewDtos);
