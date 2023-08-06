@@ -60,12 +60,11 @@ public class MenuController {
 
   @PatchMapping("restaurants/{restaurantId}/menus/{menuId}")
   public ResponseEntity<Void> updateMenu(
-      @RequestParam(required = false) String name,
-      @RequestParam(required = false) Long price,
+      @RequestBody MenuDto menuDto,
       @PathVariable Long restaurantId,
       @PathVariable Long menuId,
       @AuthenticationPrincipal Member member) {
-    menuService.update(name, price, restaurantId, menuId, member);
+    menuService.update(menuDto, restaurantId, menuId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 public class Menu {
@@ -24,15 +23,33 @@ public class Menu {
   private Long id;
   @Column(nullable = false)
   private String name;
+  @Column(nullable = false)
   private Long price;
+  private Long salePrice;
+  private String saleExplain;
   private Long imageCount;
   @ManyToOne
   @JoinColumn
   private Restaurant restaurant;
   @Builder
-  public Menu(String name, Long price){
+  public Menu(String name, Long price, Long salePrice, String saleExplain){
     this.name = name;
     this.price = price;
     this.imageCount = 0L;
+    this.salePrice = salePrice;
+    this.saleExplain = saleExplain;
+  }
+  public Menu updateMenu(String name, Long price, Long salePrice, String saleExplain){
+    this.name = name;
+    this.price = price;
+    this.salePrice = salePrice;
+    this.saleExplain = saleExplain;
+    return this;
+  }
+  public void setImageCount(Long imageCount) {
+    this.imageCount = imageCount;
+  }
+  public void setRestaurant(Restaurant restaurant) {
+    this.restaurant = restaurant;
   }
 }
