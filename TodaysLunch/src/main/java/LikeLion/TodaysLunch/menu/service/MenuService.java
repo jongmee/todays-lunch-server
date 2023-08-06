@@ -127,6 +127,8 @@ public class MenuService {
                           .build();
 
       imageUrlRepository.save(imageUrl);
+
+      createRestaurantContributor(menu.getRestaurant(), member);
     }
   }
 
