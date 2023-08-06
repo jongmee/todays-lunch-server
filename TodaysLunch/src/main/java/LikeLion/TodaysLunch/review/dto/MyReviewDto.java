@@ -24,11 +24,15 @@ public class MyReviewDto {
   private String liked;
 
   public static MyReviewDto fromEntity(Review review, String liked) {
+    String image = null;
+    if(review.getRestaurant().getImageUrl() != null){
+      image = review.getRestaurant().getImageUrl().getImageUrl();
+    }
     return MyReviewDto.builder()
         .reviewId(review.getId())
         .restaurantId(review.getRestaurant().getId())
         .restaurantName(review.getRestaurant().getRestaurantName())
-        .imageUrl(review.getRestaurant().getImageUrl().getImageUrl())
+        .imageUrl(image)
         .reviewContent(review.getReviewContent())
         .rating(review.getRating())
         .createdDate(review.getCreatedDate())
