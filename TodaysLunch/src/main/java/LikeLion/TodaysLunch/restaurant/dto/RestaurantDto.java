@@ -29,7 +29,8 @@ public class RestaurantDto {
   private ContributorDto registrant;
   private List<ContributorDto> contributors;
   private String bestReview;
-  public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors){
+  private Boolean liked;
+  public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors, Boolean liked){
     String image = null;
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
@@ -58,6 +59,7 @@ public class RestaurantDto {
         .registrant(registrant)
         .contributors(contributors)
         .bestReview(restaurant.getBestReview())
+        .liked(liked)
         .build();
   }
 }

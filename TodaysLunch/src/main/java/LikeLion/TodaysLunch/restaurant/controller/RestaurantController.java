@@ -49,17 +49,13 @@ public class RestaurantController {
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order,
       @AuthenticationPrincipal Member member) {
-    Page<RestaurantListDto> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
-        locationTag, recommendCategoryId, keyword, page, size, sort, order, member);
-    HashMap<String, Object> responseMap = new HashMap<>();
-    responseMap.put("data", restaurants.getContent());
-    responseMap.put("totalPages", restaurants.getTotalPages());
-    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+      return ResponseEntity.status(HttpStatus.OK).body(restaurantService.restaurantList(foodCategory, locationCategory,
+        locationTag, recommendCategoryId, keyword, page, size, sort, order, member));
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<RestaurantDto> detail(@PathVariable Long restaurantId) {
-    RestaurantDto restaurantDto = restaurantService.restaurantDetail(restaurantId);
+  public ResponseEntity<RestaurantDto> detail(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member) {
+    RestaurantDto restaurantDto = restaurantService.restaurantDetail(restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).body(restaurantDto);
   }
 
@@ -119,11 +115,6 @@ public class RestaurantController {
   public ResponseEntity<Void> addMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     restaurantService.addMyStore(restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
-  }
-
-  @GetMapping("/{restaurantId}/mystore")
-  public ResponseEntity<String> isAlreadyMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyMyStore(member, restaurantId));
   }
 
   @GetMapping("/mystore")
