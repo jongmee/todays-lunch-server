@@ -32,6 +32,7 @@ import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.external.S3UploadService;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,21 +69,33 @@ RestaurantService {
 
   private final Double EARTH_RADIUS = 6370d; // 지구 반지름(km)
 
-  public Page<RestaurantListDto> restaurantList(
+  public HashMap<String, Object> restaurantList(
       String foodCategory, String locationCategory,
       String locationTag, Long recommendCategoryId, String keyword,
       int page, int size, String sort, String order, Member member) {
-
-    Member registrant = null;
 
     Pageable pageable = determineSort(page, size, sort, order);
 
     Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, keyword, false, null);
 
-    return restaurantRepository.findAll(spec, pageable).map(RestaurantListDto::fromEntity);
+    Page<Restaurant> restaurantList = restaurantRepository.findAll(spec, pageable);
+    List<RestaurantListDto> restaurantDtos = new ArrayList<>(restaurantList.getSize());
+    Boolean liked;
+    for(Restaurant restaurant: restaurantList){
+      if(isNotAlreadyMyStore(member, restaurant))
+        liked = false;
+      else
+        liked = true;
+      restaurantDtos.add(RestaurantListDto.fromEntity(restaurant, liked));
+    }
+
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", restaurantDtos);
+    responseMap.put("totalPages", restaurantList.getTotalPages());
+    return responseMap;
   }
 
-  public RestaurantDto restaurantDetail(Long id){
+  public RestaurantDto restaurantDetail(Long id, Member member){
     Restaurant restaurant = restaurantRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
@@ -93,7 +106,13 @@ RestaurantService {
         .map(ContributorDto::fromEntity)
         .collect(Collectors.toList());
 
-    return RestaurantDto.fromEntity(restaurant, contributors);
+    Boolean liked;
+    if(isNotAlreadyMyStore(member, restaurant))
+      liked = false;
+    else
+      liked = true;
+
+    return RestaurantDto.fromEntity(restaurant, contributors, liked);
   }
 
   public void createJudgeRestaurant(JudgeRestaurantCreateDto createDto,
@@ -166,7 +185,7 @@ RestaurantService {
     }
   }
 
-  public Page<JudgeRestaurantListDto> judgeRestaurantList(
+  public HashMap<String, Object> judgeRestaurantList(
       String foodCategory, String locationCategory, String locationTag, Long recommendCategoryId,
       int page, int size, String sort, String order, Long registrantId, Member member) {
 
@@ -179,11 +198,33 @@ RestaurantService {
 
     Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, null, true, registrant);
 
-    return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
+    Page<Restaurant> restaurantList = restaurantRepository.findAll(spec, pageable);
+    List<JudgeRestaurantListDto> restaurantDtos = new ArrayList<>(restaurantList.getSize());
+    Boolean agreed;
+    for(Restaurant restaurant: restaurantList){
+      if(isNotAlreadyAgree(member, restaurant))
+        agreed = false;
+      else
+        agreed = true;
+      restaurantDtos.add(JudgeRestaurantListDto.fromEntity(restaurant, agreed));
+    }
+
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", restaurantDtos);
+    responseMap.put("totalPages", restaurantList.getTotalPages());
+
+    return responseMap;
   }
 
-  public JudgeRestaurantDto judgeRestaurantDetail(Long id){
-    return JudgeRestaurantDto.fromEntity(restaurantRepository.findById(id).get());
+  public JudgeRestaurantDto judgeRestaurantDetail(Long id, Member member){
+    Restaurant restaurant = restaurantRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Boolean agreed;
+    if(isNotAlreadyAgree(member, restaurant))
+      agreed = false;
+    else
+      agreed = true;
+    return JudgeRestaurantDto.fromEntity(restaurant, agreed);
   }
 
   public void addOrCancelAgreement(Member member, Long restaurantId){
@@ -210,22 +251,6 @@ RestaurantService {
       agreementRepository.delete(agreement);
     }
   }
-
-  public String isAlreadyAgree(Member member, Long restaurantId){
-    Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new NotFoundException("맛집"));
-
-    if(isNotAlreadyAgree(member, restaurant))
-      return "false";
-    else
-      return "true";
-  }
-
-  // 유저가 이미 동의한 심사 레스토랑인지 체크
-  private boolean isNotAlreadyAgree(Member member, Restaurant restaurant){
-    return agreementRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
-  }
-
 
   // 추후 개선 사항 : 새로 고침할 때마다 추천 메뉴가 바뀌도록 구현하기 (랜덤으로?)
 //  public List<Restaurant> recommendation(Long userId){
@@ -256,16 +281,16 @@ RestaurantService {
 //    return finalList;
 //  }
 
-  public void addMyStore(Long restaurantId, Member member){
+  public void addMyStore(Long restaurantId, Member member) {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
-    if(isNotAlreadyMyStore(member, restaurant)){
+    if (isNotAlreadyMyStore(member, restaurant)) {
       Long count = member.getMyStoreCount();
       member.setMyStoreCount(++count);
       memberRepository.save(member);
 
       myStoreRepository.save(new MyStore(member, restaurant));
-    } else{
+    } else {
       MyStore myStore = myStoreRepository.findByMemberAndRestaurant(member, restaurant).get();
       myStoreRepository.delete(myStore);
 
@@ -275,28 +300,20 @@ RestaurantService {
     }
   }
 
-  public String isAlreadyMyStore(Member member, Long restaurantId){
-    Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new NotFoundException("맛집"));
-
-    if(isNotAlreadyMyStore(member, restaurant))
-      return "false";
-    else
-      return "true";
-  }
-
-  private boolean isNotAlreadyMyStore(Member member, Restaurant restaurant){
-    return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
-  }
-
   public HashMap<String, Object> myStoreList(
       int page, int size, Member member) {
     Pageable pageable = PageRequest.of(page, size);
     Page<MyStore> myStores = myStoreRepository.findAllByMember(member,pageable);
-    List<RestaurantListDto> restaurantDtos = myStores.stream()
-        .map(s->s.getRestaurant())
-        .map(RestaurantListDto::fromEntity)
-        .collect(Collectors.toList());
+    List<Restaurant> restaurantList = myStores.stream().map(s->s.getRestaurant()).collect(Collectors.toList());
+    List<RestaurantListDto> restaurantDtos = new ArrayList<>(restaurantList.size());
+    Boolean liked;
+    for(Restaurant restaurant: restaurantList){
+      if(isNotAlreadyMyStore(member, restaurant))
+        liked = false;
+      else
+        liked = true;
+      restaurantDtos.add(RestaurantListDto.fromEntity(restaurant, liked));
+    }
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurantDtos);
     responseMap.put("totalPages", myStores.getTotalPages());
@@ -305,13 +322,29 @@ RestaurantService {
   }
 
   public HashMap<String, Object> participateRestaurantList(Member member) {
-    List<ParticipateRestaurantDto> participation = restaurantRepository.findAllByRegistrantAndJudgement(member, false)
-        .stream().map(ParticipateRestaurantDto::fromEntity).collect(Collectors.toList());
-    Integer participationCount = participation.size();
+    List<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false);
+    Integer participationCount = participateRestaurant.size();
+    List<ParticipateRestaurantDto> participation = new ArrayList<>(participationCount);
+    Boolean liked;
+    for(Restaurant restaurant: participateRestaurant){
+      if(isNotAlreadyMyStore(member, restaurant))
+        liked = false;
+      else
+        liked = true;
+      participation.add(ParticipateRestaurantDto.fromEntity(restaurant, liked));
+    }
 
-    List<ParticipateRestaurantDto> contribution = restaurantContributorRepository.findAllByMember(member)
-        .stream().map(RestaurantContributor::getRestaurant).map(ParticipateRestaurantDto::fromEntity).collect(Collectors.toList());
-    Integer contributionCount = contribution.size();
+    List<Restaurant> contributionRestaurant = restaurantContributorRepository.findAllByMember(member)
+        .stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
+    Integer contributionCount = contributionRestaurant.size();
+    List<ParticipateRestaurantDto> contribution = new ArrayList<>(contributionCount);
+    for(Restaurant restaurant: contributionRestaurant){
+      if(isNotAlreadyMyStore(member, restaurant))
+        liked = false;
+      else
+        liked = true;
+      contribution.add(ParticipateRestaurantDto.fromEntity(restaurant, liked));
+    }
 
     HashMap response = new HashMap<>();
     response.put("participation", participation);
@@ -320,6 +353,14 @@ RestaurantService {
     response.put("contributionCount", contributionCount);
 
     return response;
+  }
+
+  private boolean isNotAlreadyMyStore(Member member, Restaurant restaurant){
+    return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
+  }
+
+  private boolean isNotAlreadyAgree(Member member, Restaurant restaurant){
+    return agreementRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
   }
 
   public Pageable determineSort(int page, int size, String sort, String order){

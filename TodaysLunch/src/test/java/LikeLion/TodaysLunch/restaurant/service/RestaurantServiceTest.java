@@ -6,6 +6,8 @@ import LikeLion.TodaysLunch.menu.service.MenuService;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
+import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.skeleton.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.TestRestaurant;
 import LikeLion.TodaysLunch.skeleton.TestUser;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,5 +104,67 @@ class RestaurantServiceTest extends ServiceTest {
     // then
     Assertions.assertEquals(1, 응답값.get("participationCount"));
     Assertions.assertEquals(1, 응답값.get("contributionCount"));
+  }
+  @Test
+  void 맛집_조회시_찜한여부_포함시키기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집2 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    restaurantService.addMyStore(정식맛집.getRestaurant().getId(), 유저.getMember());
+
+    // when
+    HashMap 응답 = restaurantService.restaurantList(null, null, null, null, null, 0, 2, "rating", "descending", 유저.getMember());
+
+    // then
+    List<RestaurantListDto> 맛집목록 = (List<RestaurantListDto>) 응답.get("data");
+    Boolean 찜한여부1 = 맛집목록.get(0).getLiked();
+    Boolean 찜한여부2 = 맛집목록.get(1).getLiked();
+    Assertions.assertEquals(true, 찜한여부1);
+    Assertions.assertEquals(false, 찜한여부2);
+  }
+  @Test
+  void 로그아웃시_찜한여부_false로_포함하기(){
+    // given
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+
+    // when
+    HashMap 응답 = restaurantService.restaurantList(null, null, null, null, null, 0, 2, "rating", "descending", null);
+
+    // then
+    List<RestaurantListDto> 맛집목록 = (List<RestaurantListDto>) 응답.get("data");
+    Boolean 찜한여부 = 맛집목록.get(0).getLiked();
+    Assertions.assertEquals(false, 찜한여부);
+  }
+  @Test
+  void 심사맛집_조회시_동의여부_포함시키기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 심사맛집 = makeTestJudgeRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저.getMember());
+    restaurantService.addOrCancelAgreement(유저.getMember(), 심사맛집.getRestaurant().getId());
+
+    // when
+    HashMap 응답 = restaurantService.judgeRestaurantList(null, null, null, null, 0, 3, "rating", "descending", null, 유저.getMember());
+
+    // then
+    List<JudgeRestaurantListDto> 맛집목록 = (List<JudgeRestaurantListDto>) 응답.get("data");
+    Boolean 동의여부 = 맛집목록.get(0).getAgreed();
+    Assertions.assertEquals(true, 동의여부);
+  }
+  @Test
+  void 로그아웃시_동의여부_false로_포함하기(){
+    // given
+    TestRestaurant 심사맛집 = makeTestJudgeRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, null);
+
+    // when
+    HashMap 응답 = restaurantService.judgeRestaurantList(null, null, null, null, 0, 3, "rating", "descending", null, null);
+
+    // then
+    List<JudgeRestaurantListDto> 맛집목록 = (List<JudgeRestaurantListDto>) 응답.get("data");
+    Boolean 동의여부 = 맛집목록.get(0).getAgreed();
+    Assertions.assertEquals(false, 동의여부);
   }
 }

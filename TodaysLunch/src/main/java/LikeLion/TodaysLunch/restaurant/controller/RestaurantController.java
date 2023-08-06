@@ -49,17 +49,13 @@ public class RestaurantController {
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order,
       @AuthenticationPrincipal Member member) {
-    Page<RestaurantListDto> restaurants = restaurantService.restaurantList(foodCategory, locationCategory,
-        locationTag, recommendCategoryId, keyword, page, size, sort, order, member);
-    HashMap<String, Object> responseMap = new HashMap<>();
-    responseMap.put("data", restaurants.getContent());
-    responseMap.put("totalPages", restaurants.getTotalPages());
-    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+      return ResponseEntity.status(HttpStatus.OK).body(restaurantService.restaurantList(foodCategory, locationCategory,
+        locationTag, recommendCategoryId, keyword, page, size, sort, order, member));
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<RestaurantDto> detail(@PathVariable Long restaurantId) {
-    RestaurantDto restaurantDto = restaurantService.restaurantDetail(restaurantId);
+  public ResponseEntity<RestaurantDto> detail(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member) {
+    RestaurantDto restaurantDto = restaurantService.restaurantDetail(restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).body(restaurantDto);
   }
 
@@ -85,27 +81,18 @@ public class RestaurantController {
       @RequestParam(defaultValue = ORDER) String order,
       @RequestParam(value = "registrant-id", required = false) Long registrantId,
       @AuthenticationPrincipal Member member){
-    Page<JudgeRestaurantListDto> restaurants = restaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, recommendCategoryId, page, size, sort, order, registrantId, member);
-    HashMap<String, Object> responseMap = new HashMap<>();
-    responseMap.put("data", restaurants.getContent());
-    responseMap.put("totalPages", restaurants.getTotalPages());
-    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, recommendCategoryId, page, size, sort, order, registrantId, member));
   }
 
   @GetMapping("/judges/{restaurantId}")
-  public ResponseEntity<JudgeRestaurantDto> judgeRestaurantDetail(@PathVariable Long restaurantId){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantDetail(restaurantId));
+  public ResponseEntity<JudgeRestaurantDto> judgeRestaurantDetail(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantDetail(restaurantId, member));
   }
 
   @PostMapping("/judges/{restaurantId}/agree")
   public ResponseEntity<Void> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     restaurantService.addOrCancelAgreement(member, restaurantId);
     return ResponseEntity.status(HttpStatus.OK).build();
-  }
-
-  @GetMapping("/judges/{restaurantId}/agree")
-  public ResponseEntity<String> isAlreadyAgree(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyAgree(member, restaurantId));
   }
 
 ////   임시로 유저의 ID 값을 경로 변수로 받기
@@ -119,11 +106,6 @@ public class RestaurantController {
   public ResponseEntity<Void> addMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
     restaurantService.addMyStore(restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
-  }
-
-  @GetMapping("/{restaurantId}/mystore")
-  public ResponseEntity<String> isAlreadyMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.isAlreadyMyStore(member, restaurantId));
   }
 
   @GetMapping("/mystore")

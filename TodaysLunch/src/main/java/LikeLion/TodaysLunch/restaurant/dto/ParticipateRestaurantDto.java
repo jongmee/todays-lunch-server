@@ -18,8 +18,9 @@ public class ParticipateRestaurantDto {
   private String locationCategory;
   private Double rating;
   private String bestReview;
+  private Boolean liked;
 
-  public static ParticipateRestaurantDto fromEntity(Restaurant restaurant){
+  public static ParticipateRestaurantDto fromEntity(Restaurant restaurant, Boolean liked){
     String image = null;
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
@@ -32,6 +33,7 @@ public class ParticipateRestaurantDto {
         .locationCategory(restaurant.getLocationCategory().getName())
         .rating(restaurant.getRating())
         .bestReview(restaurant.getBestReview())
+        .liked(liked)
         .build();
   }
 }

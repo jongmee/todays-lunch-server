@@ -22,16 +22,21 @@ public class JudgeRestaurantDto {
   private String foodCategory;
   private String locationCategory;
   private String locationTag;
-  public static JudgeRestaurantDto fromEntity(Restaurant restaurant){
+  private Boolean agreed;
+  public static JudgeRestaurantDto fromEntity(Restaurant restaurant, Boolean agreed){
     String image = null;
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
+    }
+    String registrant = null;
+    if(restaurant.getRegistrant() != null){
+      registrant = restaurant.getRegistrant().getNickname();
     }
     return JudgeRestaurantDto.builder()
         .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())
         .introduction(restaurant.getIntroduction())
-        .registrant(restaurant.getRegistrant().getNickname())
+        .registrant(registrant)
         .imageUrl(image)
         .latitude(restaurant.getLatitude())
         .longitude(restaurant.getLongitude())
@@ -39,6 +44,7 @@ public class JudgeRestaurantDto {
         .foodCategory(restaurant.getFoodCategory().getName())
         .locationCategory(restaurant.getLocationCategory().getName())
         .locationTag(restaurant.getLocationTag().getName())
+        .agreed(agreed)
         .build();
   }
 }

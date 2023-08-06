@@ -21,7 +21,8 @@ public class RestaurantListDto {
   private Double longitude;
   private Double rating;
   private Long reviewCount;
-  public static RestaurantListDto fromEntity(Restaurant restaurant){
+  private Boolean liked;
+  public static RestaurantListDto fromEntity(Restaurant restaurant, Boolean liked){
     String image = null;
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
@@ -37,6 +38,7 @@ public class RestaurantListDto {
         .longitude(restaurant.getLongitude())
         .rating(restaurant.getRating())
         .reviewCount(restaurant.getReviewCount())
+        .liked(liked)
         .build();
   }
 
