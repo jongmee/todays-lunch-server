@@ -35,4 +35,6 @@ public abstract class ControllerTest {
   protected ReviewService reviewService;
   @MockBean
   protected MemberService memberService;
+  @MockBean
+  protected EmailService emailService;
 }
