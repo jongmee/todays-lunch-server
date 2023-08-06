@@ -22,7 +22,8 @@ public class JudgeRestaurantDto {
   private String foodCategory;
   private String locationCategory;
   private String locationTag;
-  public static JudgeRestaurantDto fromEntity(Restaurant restaurant){
+  private Boolean agreed;
+  public static JudgeRestaurantDto fromEntity(Restaurant restaurant, Boolean agreed){
     String image = null;
     if (restaurant.getImageUrl() != null){
       image = restaurant.getImageUrl().getImageUrl();
@@ -39,6 +40,7 @@ public class JudgeRestaurantDto {
         .foodCategory(restaurant.getFoodCategory().getName())
         .locationCategory(restaurant.getLocationCategory().getName())
         .locationTag(restaurant.getLocationTag().getName())
+        .agreed(agreed)
         .build();
   }
 }

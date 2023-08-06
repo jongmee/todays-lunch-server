@@ -185,7 +185,7 @@ RestaurantService {
     }
   }
 
-  public Page<JudgeRestaurantListDto> judgeRestaurantList(
+  public HashMap<String, Object> judgeRestaurantList(
       String foodCategory, String locationCategory, String locationTag, Long recommendCategoryId,
       int page, int size, String sort, String order, Long registrantId, Member member) {
 
@@ -198,11 +198,33 @@ RestaurantService {
 
     Specification<Restaurant> spec = determineSpecification(foodCategory, locationCategory, locationTag, recommendCategoryId, null, true, registrant);
 
-    return restaurantRepository.findAll(spec, pageable).map(JudgeRestaurantListDto::fromEntity);
+    Page<Restaurant> restaurantList = restaurantRepository.findAll(spec, pageable);
+    List<JudgeRestaurantListDto> restaurantDtos = new ArrayList<>(restaurantList.getSize());
+    Boolean agreed;
+    for(Restaurant restaurant: restaurantList){
+      if(isNotAlreadyAgree(member, restaurant))
+        agreed = false;
+      else
+        agreed = true;
+      restaurantDtos.add(JudgeRestaurantListDto.fromEntity(restaurant, agreed));
+    }
+
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", restaurantDtos);
+    responseMap.put("totalPages", restaurantList.getTotalPages());
+
+    return responseMap;
   }
 
-  public JudgeRestaurantDto judgeRestaurantDetail(Long id){
-    return JudgeRestaurantDto.fromEntity(restaurantRepository.findById(id).get());
+  public JudgeRestaurantDto judgeRestaurantDetail(Long id, Member member){
+    Restaurant restaurant = restaurantRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Boolean agreed;
+    if(isNotAlreadyAgree(member, restaurant))
+      agreed = false;
+    else
+      agreed = true;
+    return JudgeRestaurantDto.fromEntity(restaurant, agreed);
   }
 
   public void addOrCancelAgreement(Member member, Long restaurantId){
@@ -228,16 +250,6 @@ RestaurantService {
       restaurantRepository.save(restaurant);
       agreementRepository.delete(agreement);
     }
-  }
-
-  public String isAlreadyAgree(Member member, Long restaurantId){
-    Restaurant restaurant = restaurantRepository.findById(restaurantId)
-        .orElseThrow(() -> new NotFoundException("맛집"));
-
-    if(isNotAlreadyAgree(member, restaurant))
-      return "false";
-    else
-      return "true";
   }
 
   // 추후 개선 사항 : 새로 고침할 때마다 추천 메뉴가 바뀌도록 구현하기 (랜덤으로?)
