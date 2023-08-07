@@ -10,7 +10,9 @@ import LikeLion.TodaysLunch.member.service.MemberService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -40,7 +42,7 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.OK).body(menus);
   }
 
-  @GetMapping("restaurants/{restaurantId}/menus")
+  @GetMapping("/restaurants/{restaurantId}/menus")
   public ResponseEntity<HashMap<String, Object>> menuList(@PathVariable Long restaurantId, Pageable pageable) {
     Page<MenuDto> menus = menuService.findMenuByRestaurant(restaurantId, pageable);
     HashMap<String, Object> responseMap = new HashMap<>();
@@ -49,18 +51,18 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.OK).body(responseMap);
   }
 
-  @PostMapping("restaurants/{restaurantId}/menus")
+  @PostMapping("/restaurants/{restaurantId}/menus")
   public ResponseEntity<Void> createMenu(
-      @RequestBody MenuDto menuDto,
+      @Valid @RequestBody MenuDto menuDto,
       @PathVariable Long restaurantId,
       @AuthenticationPrincipal Member member){
     menuService.create(menuDto, restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
-  @PatchMapping("restaurants/{restaurantId}/menus/{menuId}")
+  @PatchMapping("/restaurants/{restaurantId}/menus/{menuId}")
   public ResponseEntity<Void> updateMenu(
-      @RequestBody MenuDto menuDto,
+      @Valid @RequestBody MenuDto menuDto,
       @PathVariable Long restaurantId,
       @PathVariable Long menuId,
       @AuthenticationPrincipal Member member) {
@@ -68,13 +70,13 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
-  @DeleteMapping("restaurants/{restaurantId}/menus/{menuId}")
+  @DeleteMapping("/restaurants/{restaurantId}/menus/{menuId}")
   public ResponseEntity<Menu> deleteMenu(@PathVariable Long restaurantId, @PathVariable Long menuId){
     Menu menu = menuService.delete(restaurantId, menuId);
     return ResponseEntity.status(HttpStatus.OK).body(menu);
   }
 
-  @PostMapping("menus/{menuId}/images")
+  @PostMapping("/menus/{menuId}/images")
   public ResponseEntity<Void> createMenuImage(
       @RequestParam MultipartFile menuImage,
       @PathVariable Long menuId,
@@ -83,13 +85,13 @@ public class MenuController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
-  @GetMapping("menus/{menuId}/images")
+  @GetMapping("/menus/{menuId}/images")
   public ResponseEntity<List<MenuImageDto>> menuImageList(@PathVariable Long menuId){
     List<MenuImageDto> menuImages = menuService.menuImageList(menuId);
     return ResponseEntity.status(HttpStatus.OK).body(menuImages);
   }
 
-  @DeleteMapping("menus/{menuId}/images/{imageId}")
+  @DeleteMapping("/menus/{menuId}/images/{imageId}")
   public ResponseEntity<Void> deleteMenuImage(
       @PathVariable Long menuId,
       @PathVariable Long imageId
