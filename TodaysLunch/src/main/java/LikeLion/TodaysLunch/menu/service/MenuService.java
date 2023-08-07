@@ -56,6 +56,10 @@ public class MenuService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
     Long price = menuDto.getPrice();
+    Long salePrice = menuDto.getSalePrice();
+    if(salePrice != null && salePrice < price)
+      price = salePrice;
+
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
     if (originalLowestPrice == null || originalLowestPrice > price){
@@ -70,11 +74,16 @@ public class MenuService {
     createRestaurantContributor(restaurant, member);
   }
 
-  public void update(String name, Long price, Long restaurantId, Long menuId, Member member){
+  public void update(MenuDto menuDto, Long restaurantId, Long menuId, Member member){
     Menu menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new NotFoundException("메뉴"));
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
+
+    Long price = menuDto.getPrice();
+    Long salePrice = menuDto.getSalePrice();
+    if(salePrice != null && salePrice < price)
+      price = salePrice;
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
@@ -83,8 +92,7 @@ public class MenuService {
       restaurantRepository.save(restaurant);
     }
 
-    if(name != null) menu.setName(name);
-    if(price != null) menu.setPrice(price);
+    menu = menuDto.updateMenu(menu);
 
     menuRepository.save(menu);
 

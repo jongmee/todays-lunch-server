@@ -9,6 +9,9 @@ import LikeLion.TodaysLunch.external.JwtAuthenticationFilter;
 import LikeLion.TodaysLunch.member.controller.MemberController;
 import LikeLion.TodaysLunch.member.service.MemberService;
 import LikeLion.TodaysLunch.member.service.EmailService;
+import LikeLion.TodaysLunch.menu.controller.MenuController;
+import LikeLion.TodaysLunch.menu.service.MenuService;
+import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
 import LikeLion.TodaysLunch.review.controller.ReviewController;
 import LikeLion.TodaysLunch.review.service.ReviewService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +24,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(
-    controllers = {CategoryController.class, ReviewController.class, MemberController.class},
+    controllers = {CategoryController.class, ReviewController.class, MemberController.class, MenuController.class},
     excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {WebSecurityConfig.class, JwtAuthenticationFilter.class}))
 @MockBean(JpaMetamodelMappingContext.class)
 public abstract class ControllerTest {
@@ -37,4 +40,8 @@ public abstract class ControllerTest {
   protected MemberService memberService;
   @MockBean
   protected EmailService emailService;
+  @MockBean
+  protected MenuService menuService;
+  @MockBean
+  protected RestaurantService restaurantService;
 }
