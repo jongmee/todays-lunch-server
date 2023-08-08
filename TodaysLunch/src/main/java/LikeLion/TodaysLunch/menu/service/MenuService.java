@@ -1,6 +1,8 @@
 package LikeLion.TodaysLunch.menu.service;
 
 import LikeLion.TodaysLunch.image.domain.ImageUrl;
+import LikeLion.TodaysLunch.image.domain.MenuImage;
+import LikeLion.TodaysLunch.image.repository.MenuImageRepository;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.menu.domain.Menu;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
@@ -30,15 +32,18 @@ public class MenuService {
   private final ImageUrlRepository imageUrlRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
   private final RestaurantContributorRepository restaurantContributorRepository;
+  private final MenuImageRepository menuImageRepository;
   @Autowired
   public MenuService(MenuRepository menuRepository,
       ImageUrlRepository imageUrlRepository,
       DataJpaRestaurantRepository restaurantRepository,
-      RestaurantContributorRepository restaurantContributorRepository) {
+      RestaurantContributorRepository restaurantContributorRepository,
+      MenuImageRepository menuImageRepository) {
     this.menuRepository = menuRepository;
     this.imageUrlRepository = imageUrlRepository;
     this.restaurantRepository = restaurantRepository;
     this.restaurantContributorRepository = restaurantContributorRepository;
+    this.menuImageRepository = menuImageRepository;
   }
 
   public Page<MenuDto> findMenuByRestaurant(Long restaurantId, Pageable pageable){
@@ -103,7 +108,14 @@ public class MenuService {
     Menu menu = menuRepository.findById(menuId).get();
 
     // 메뉴의 image가 있다면 s3와 db에서 삭제
-    List<ImageUrl> imageUrls = imageUrlRepository.findAllByMenu(menu);
+    List<MenuImage> relations = menuImageRepository.findAllByMenu(menu);
+    for(MenuImage relation: relations){
+      menuImageRepository.delete(relation);
+    }
+    List<ImageUrl> imageUrls = relations.stream()
+        .map(MenuImage::getImagePk)
+        .map(pk->imageUrlRepository.findById(pk).orElseThrow(() -> new NotFoundException("이미지")))
+        .collect(Collectors.toList());
     for(int i = 0 ; i < imageUrls.size() ; i++){
       ImageUrl deleteImage = imageUrls.get(i);
       s3UploadService.delete(deleteImage.getImageUrl());
@@ -128,13 +140,19 @@ public class MenuService {
       // image url을 db에 저장
       String originalName = image.getOriginalFilename();
       ImageUrl imageUrl = ImageUrl.builder()
-              .originalName(originalName)
-                  .imageUrl(savedUrl)
-                      .member(member)
-                        .menu(savedMenu)
-                          .build();
+          .originalName(originalName)
+          .imageUrl(savedUrl)
+          .member(member)
+          .build();
 
       imageUrlRepository.save(imageUrl);
+
+      MenuImage relation = MenuImage.builder()
+          .imagePk(imageUrl)
+          .menu(menu)
+          .build();
+
+      menuImageRepository.save(relation);
 
       createRestaurantContributor(menu.getRestaurant(), member);
     }
@@ -143,8 +161,11 @@ public class MenuService {
   public List<MenuImageDto> menuImageList(Long menuId){
     Menu menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new NotFoundException("메뉴"));
-    return imageUrlRepository.findAllByMenu(menu).stream()
-        .map(MenuImageDto::fromEntity).collect(Collectors.toList());
+    return menuImageRepository.findAllByMenu(menu).stream()
+        .map(MenuImage::getImagePk)
+        .map(pk->imageUrlRepository.findById(pk).orElseThrow(() -> new NotFoundException("이미지")))
+        .map(MenuImageDto::fromEntity)
+        .collect(Collectors.toList());
   }
 
   public void deleteImage(Long menuId, Long imageId){
@@ -152,6 +173,8 @@ public class MenuService {
         .orElseThrow(() -> new NotFoundException("메뉴"));
     ImageUrl imageUrl = imageUrlRepository.findById(imageId)
         .orElseThrow(() -> new NotFoundException("메뉴의 이미지"));
+    MenuImage relation = menuImageRepository.findById(imageUrl.getId())
+        .orElseThrow(() -> new NotFoundException("메뉴와 이미지의 관계"));
 
     Long count = menu.getImageCount();
     menu.setImageCount(--count);
@@ -159,6 +182,7 @@ public class MenuService {
 
     s3UploadService.delete(imageUrl.getImageUrl());
     imageUrlRepository.delete(imageUrl);
+    menuImageRepository.delete(relation);
   }
 
   private void createRestaurantContributor(Restaurant restaurant, Member member){
