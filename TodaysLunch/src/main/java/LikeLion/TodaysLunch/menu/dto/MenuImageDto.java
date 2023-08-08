@@ -13,11 +13,13 @@ import lombok.NoArgsConstructor;
 public class MenuImageDto {
   private Long id;
   private String imageUrl;
+  private Long userId;
   private String nickname;
   public static MenuImageDto fromEntity(ImageUrl image){
     return MenuImageDto.builder()
         .id(image.getId())
         .imageUrl(image.getImageUrl())
+        .userId(image.getMember().getId())
         .nickname(image.getMember().getNickname())
         .build();
   }

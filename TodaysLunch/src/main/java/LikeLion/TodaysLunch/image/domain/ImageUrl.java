@@ -28,19 +28,14 @@ public class ImageUrl {
   @Column(nullable = false)
   private String imageUrl;
 
-  @ManyToOne
-  @JoinColumn
-  private Menu menu;
-
   // 이미지 등록자
   @OneToOne
   @JoinColumn
   private Member member;
   @Builder
-  public ImageUrl(String originalName, String imageUrl, Member member, Menu menu){
+  public ImageUrl(String originalName, String imageUrl, Member member){
     this.originalName = originalName;
     this.imageUrl = imageUrl;
     this.member = member;
-    this.menu = menu;
   }
 }

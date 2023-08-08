@@ -9,6 +9,7 @@ import LikeLion.TodaysLunch.customized.repository.MemberFoodCategoryRepository;
 import LikeLion.TodaysLunch.customized.repository.MemberLocationCategoryRepository;
 import LikeLion.TodaysLunch.customized.repository.MyStoreRepository;
 import LikeLion.TodaysLunch.image.repository.ImageUrlRepository;
+import LikeLion.TodaysLunch.image.repository.MenuImageRepository;
 import LikeLion.TodaysLunch.member.repository.MemberRepository;
 import LikeLion.TodaysLunch.menu.repository.MenuRepository;
 import LikeLion.TodaysLunch.menu.service.MenuService;
@@ -42,6 +43,7 @@ public class TodaysLunchConfig {
     private final MyStoreRepository myStoreRepository;
     private final MemberFoodCategoryRepository memberFoodCategoryRepository;
     private final MemberLocationCategoryRepository memberLocationCategoryRepository;
+    private final MenuImageRepository menuImageRepository;
 
     @Autowired
     public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
@@ -58,7 +60,8 @@ public class TodaysLunchConfig {
                             RestaurantContributorRepository restaurantContributorRepository,
                             MyStoreRepository myStoreRepository,
                             MemberFoodCategoryRepository memberFoodCategoryRepository,
-                            MemberLocationCategoryRepository memberLocationCategoryRepository) {
+                            MemberLocationCategoryRepository memberLocationCategoryRepository,
+                            MenuImageRepository menuImageRepository) {
         this.restaurantRepository = restaurantRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.locationCategoryRepository = locationCategoryRepository;
@@ -75,6 +78,7 @@ public class TodaysLunchConfig {
         this.myStoreRepository = myStoreRepository;
         this.memberFoodCategoryRepository = memberFoodCategoryRepository;
         this.memberLocationCategoryRepository = memberLocationCategoryRepository;
+        this.menuImageRepository = menuImageRepository;
     }
 
     @Bean
@@ -89,7 +93,9 @@ public class TodaysLunchConfig {
 
     @Bean
     public MenuService menuService() {
-        return new MenuService(menuRepository, imageUrlRepository, restaurantRepository, restaurantContributorRepository);
+        return new MenuService(menuRepository,
+            imageUrlRepository, restaurantRepository,
+            restaurantContributorRepository, menuImageRepository);
     }
 
     @Bean
