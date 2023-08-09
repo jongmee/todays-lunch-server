@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Restaurant {
+public class Restaurant extends BaseTimeEntity {
   @PrePersist
   public void prePersist() {
     this.rating = this.rating == null? 0.0:this.rating;
