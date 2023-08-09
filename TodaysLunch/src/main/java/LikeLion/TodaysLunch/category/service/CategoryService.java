@@ -17,6 +17,7 @@ import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,10 +77,16 @@ public class CategoryService {
     existingCategories.removeAll(newCategories); // 삭제할 category들
     for(RecommendCategory category: existingCategories){
       restRecmdRelRepository.delete(pair.get(category));
+      restaurant.deleteRecommendCategoryRelation(pair.get(category));
     }
     for(RecommendCategory category: objCategories){
       RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, category);
       restRecmdRelRepository.save(relation);
+      restaurant.addRecommendCategoryRelation(relation);
+    }
+    if(objCategories.size()>0 || existingCategories.size()>0){
+      restaurant.setUpdatedDate(LocalDateTime.now());
+      restaurantRepository.save(restaurant);
     }
   }
 }

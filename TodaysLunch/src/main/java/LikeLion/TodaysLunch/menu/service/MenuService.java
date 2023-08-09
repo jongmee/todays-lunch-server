@@ -16,6 +16,7 @@ import LikeLion.TodaysLunch.menu.repository.MenuRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.external.S3UploadService;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -67,16 +68,17 @@ public class MenuService {
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
-    if (originalLowestPrice == null || originalLowestPrice > price){
+    if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
-      restaurantRepository.save(restaurant);
-    }
 
     Menu menu = menuDto.toEntity();
     menu.setRestaurant(restaurant);
     menuRepository.save(menu);
 
     createRestaurantContributor(restaurant, member);
+
+    restaurant.setUpdatedDate(LocalDateTime.now());
+    restaurantRepository.save(restaurant);
   }
 
   public void update(MenuDto menuDto, Long restaurantId, Long menuId, Member member){
@@ -92,16 +94,17 @@ public class MenuService {
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
-    if (originalLowestPrice == null || originalLowestPrice > price){
+    if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
-      restaurantRepository.save(restaurant);
-    }
 
     menu = menuDto.updateMenu(menu);
 
     menuRepository.save(menu);
 
     createRestaurantContributor(restaurant, member);
+
+    restaurant.setUpdatedDate(LocalDateTime.now());
+    restaurantRepository.save(restaurant);
   }
 
   public Menu delete(Long restaurantId, Long menuId){
@@ -133,6 +136,8 @@ public class MenuService {
     if(image != null && !image.isEmpty()){
       Long count = menu.getImageCount();
       menu.setImageCount(++count);
+      menu.getRestaurant().setUpdatedDate(LocalDateTime.now());
+      restaurantRepository.save(menu.getRestaurant());
       Menu savedMenu = menuRepository.save(menu);
 
       // s3에 이미지 저장

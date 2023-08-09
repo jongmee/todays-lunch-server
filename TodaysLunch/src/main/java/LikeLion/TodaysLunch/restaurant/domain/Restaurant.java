@@ -1,11 +1,13 @@
 package LikeLion.TodaysLunch.restaurant.domain;
 
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
+import LikeLion.TodaysLunch.common.BaseTimeEntity;
 import LikeLion.TodaysLunch.image.domain.ImageUrl;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.member.domain.Member;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
@@ -56,6 +58,7 @@ public class Restaurant {
   private Long reviewCount;
   private Long lowestPrice;
   private String bestReview;
+  private LocalDateTime updatedDate;
   @OneToOne
   @JoinColumn
   private Member registrant;
@@ -79,6 +82,7 @@ public class Restaurant {
     this.latitude = latitude;
     this.registrant = registrant;
     this.agreementCount = new AtomicLong(0);
+    this.updatedDate = LocalDateTime.now();
   }
   public void setId(Long id) {
     this.id = id;
@@ -100,4 +104,8 @@ public class Restaurant {
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);
   }
+  public void deleteRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
+    recommendCategoryRelations.remove(recommendCategoryRelation);
+  }
+  public void setUpdatedDate(LocalDateTime date) { this.updatedDate = date; }
 }
