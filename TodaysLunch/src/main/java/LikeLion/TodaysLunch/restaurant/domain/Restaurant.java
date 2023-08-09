@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.restaurant.domain;
 
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
+import LikeLion.TodaysLunch.common.BaseTimeEntity;
 import LikeLion.TodaysLunch.image.domain.ImageUrl;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
@@ -99,5 +100,8 @@ public class Restaurant {
   public void setBestReview(String bestReview) { this.bestReview = bestReview; }
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);
+  }
+  public void deleteRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
+    recommendCategoryRelations.remove(recommendCategoryRelation);
   }
 }

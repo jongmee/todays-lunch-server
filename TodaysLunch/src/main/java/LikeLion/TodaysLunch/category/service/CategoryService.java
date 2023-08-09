@@ -76,10 +76,12 @@ public class CategoryService {
     existingCategories.removeAll(newCategories); // 삭제할 category들
     for(RecommendCategory category: existingCategories){
       restRecmdRelRepository.delete(pair.get(category));
+      restaurant.deleteRecommendCategoryRelation(pair.get(category));
     }
     for(RecommendCategory category: objCategories){
       RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, category);
       restRecmdRelRepository.save(relation);
+      restaurant.addRecommendCategoryRelation(relation);
     }
   }
 }
