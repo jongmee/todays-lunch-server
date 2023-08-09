@@ -17,6 +17,7 @@ import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +83,10 @@ public class CategoryService {
       RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, category);
       restRecmdRelRepository.save(relation);
       restaurant.addRecommendCategoryRelation(relation);
+    }
+    if(objCategories.size()>0 || existingCategories.size()>0){
+      restaurant.setUpdatedDate(LocalDateTime.now());
+      restaurantRepository.save(restaurant);
     }
   }
 }
