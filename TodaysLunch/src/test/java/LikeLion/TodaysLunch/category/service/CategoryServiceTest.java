@@ -45,4 +45,17 @@ class CategoryServiceTest extends ServiceTest {
     Assertions.assertEquals(2, newCategories.size());
     Assertions.assertEquals(1, newCategories2.size());
   }
+  @Test
+  void 추천카테고리_수정을_맛집속성에_반영하기(){
+    // given
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+
+    // when
+    RecommendCategoryDto.Edit editDto1 = RecommendCategoryDto.Edit.builder().recommendCategoryIds(new ArrayList<>(Arrays.asList(1L, 2L))).build();
+    categoryService.recommendCategoryEdit(맛집.getRestaurant().getId(),editDto1);
+
+    // then
+    Assertions.assertEquals(2, 맛집.getRestaurant().getRecommendCategoryRelations().size());
+  }
 }
