@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.member.domain.Member;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Restaurant extends BaseTimeEntity {
+public class Restaurant {
   @PrePersist
   public void prePersist() {
     this.rating = this.rating == null? 0.0:this.rating;
@@ -57,6 +58,7 @@ public class Restaurant extends BaseTimeEntity {
   private Long reviewCount;
   private Long lowestPrice;
   private String bestReview;
+  private LocalDateTime updatedDate;
   @OneToOne
   @JoinColumn
   private Member registrant;
@@ -80,6 +82,7 @@ public class Restaurant extends BaseTimeEntity {
     this.latitude = latitude;
     this.registrant = registrant;
     this.agreementCount = new AtomicLong(0);
+    this.updatedDate = LocalDateTime.now();
   }
   public void setId(Long id) {
     this.id = id;
@@ -104,4 +107,5 @@ public class Restaurant extends BaseTimeEntity {
   public void deleteRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.remove(recommendCategoryRelation);
   }
+  public void setUpdatedDate(LocalDateTime date) { this.updatedDate = date; }
 }
