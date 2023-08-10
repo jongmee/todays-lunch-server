@@ -1,5 +1,7 @@
 package LikeLion.TodaysLunch.restaurant.service;
 
+import LikeLion.TodaysLunch.customized.domain.MemberLocationCategory;
+import LikeLion.TodaysLunch.customized.repository.MemberLocationCategoryRepository;
 import LikeLion.TodaysLunch.restaurant.domain.Agreement;
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.image.domain.ImageUrl;
@@ -19,6 +21,7 @@ import LikeLion.TodaysLunch.restaurant.dto.ParticipateRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.restaurant.repository.AgreementRepository;
 import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
@@ -32,6 +35,7 @@ import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.external.S3UploadService;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +67,7 @@ RestaurantService {
   private final RestRecmdRelRepository restRecmdRelRepository;
   private final RestaurantContributorRepository restaurantContributorRepository;
   private final MyStoreRepository myStoreRepository;
+  private final MemberLocationCategoryRepository memberLocationCategoryRepository;
 
   @Autowired
   private S3UploadService s3UploadService;
@@ -252,34 +257,43 @@ RestaurantService {
     }
   }
 
-  // 추후 개선 사항 : 새로 고침할 때마다 추천 메뉴가 바뀌도록 구현하기 (랜덤으로?)
-//  public List<Restaurant> recommendation(Long userId){
-//    Member member = memberRepository.findById(userId)
-//        .orElseThrow(() -> new IllegalArgumentException("맛집 추천을 위한 대상 유저 찾기 실패!"));
-//
-//    FoodCategory foodCategory = member.getFoodCategory();
-//    LocationCategory locationCategory = member.getLocationCategory();
-//    Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
-//    if (foodCategory != null){
-//      spec = spec.and(RestaurantSpecification.equalFoodCategory(foodCategory));
-//    }
-//    if (locationCategory != null){
-//      spec = spec.and(RestaurantSpecification.equalLocationCategory(locationCategory));
-//    }
-//    Pageable pageable = determineSort(0, 5, "rating", "descending");
-//    Page<Restaurant> recmdResult = restaurantRepository.findAll(spec, pageable);
-//
-//    // 추천 맛집 수가 5개보다 작을 경우, 전체 맛집에서 평점 높은 순으로 모자른 맛집 수를 채운다.
-//    List<Restaurant> rest =  new ArrayList<>();
-//    if(recmdResult.getNumberOfElements() < 5){
-//      pageable = determineSort(0, 5-recmdResult.getNumberOfElements(), "rating", "descending");
-//      rest = restaurantRepository.findAll((root, query, criteriaBuilder) -> null, pageable).getContent();
-//    }
-//    List<Restaurant> finalList =  new ArrayList<>();
-//    finalList.addAll(recmdResult.getContent());
-//    finalList.addAll(rest);
-//    return finalList;
-//  }
+  public List<RestaurantRecommendDto> recommendation(Member member){
+    List<LocationCategory> locationCategories = memberLocationCategoryRepository.findAllByMember(member)
+        .stream().map(MemberLocationCategory::getLocationCategory).collect(Collectors.toList());
+
+    Specification<Restaurant> spec =(root, query, criteriaBuilder) -> null;
+    for(LocationCategory locationCategory: locationCategories){
+      spec = spec.or(RestaurantSpecification.equalLocationCategory(locationCategory));
+    }
+    spec = spec.and(RestaurantSpecification.equalJudgement(false));
+    List<Restaurant> pool = restaurantRepository.findAll(spec);
+    int poolSize = pool.size();
+
+    int index = 0;
+    List<Restaurant> recommend = new ArrayList<>();
+
+    int today = LocalDate.now().getDayOfMonth();
+
+    int size = 5 > poolSize ? poolSize:5;
+    while(size>0){
+      index = (index + today) % poolSize;
+      recommend.add(pool.get(index));
+      size--;
+    }
+
+    List<RestaurantRecommendDto> recommendDtos = new ArrayList<>();
+
+    Boolean liked;
+    for(Restaurant restaurant: recommend){
+      if(isNotAlreadyMyStore(member, restaurant))
+        liked = false;
+      else
+        liked = true;
+      recommendDtos.add(RestaurantRecommendDto.fromEntity(restaurant, liked));
+    }
+
+    return recommendDtos;
+  }
 
   public void addMyStore(Long restaurantId, Member member) {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)

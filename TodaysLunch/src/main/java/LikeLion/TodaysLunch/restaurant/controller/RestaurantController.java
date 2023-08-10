@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
 import LikeLion.TodaysLunch.member.service.MemberService;
 import java.io.IOException;
@@ -95,12 +96,10 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
-////   임시로 유저의 ID 값을 경로 변수로 받기
-//  @GetMapping("/recommendation/{userId}")
-//  public ResponseEntity<List<Restaurant>> recommendation(@PathVariable Long userId){
-//    List<Restaurant> restaurants = restaurantService.recommendation(userId);
-//    return ResponseEntity.status(HttpStatus.OK).body(restaurants);
-//  }
+  @GetMapping("/recommendation")
+  public ResponseEntity<?> recommendation(@AuthenticationPrincipal Member member){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.recommendation(member));
+  }
 
   @PostMapping("/{restaurantId}/mystore")
   public ResponseEntity<Void> addMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){

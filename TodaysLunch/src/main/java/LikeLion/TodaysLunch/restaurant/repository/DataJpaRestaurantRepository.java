@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface DataJpaRestaurantRepository extends JpaRepository <Restaurant, Long>,
     JpaSpecificationExecutor<Restaurant> {
   Page<Restaurant> findAll(Specification<Restaurant> spec, Pageable pageable);
+  List<Restaurant> findAll(Specification<Restaurant> spec);
   List<Restaurant> findAllByRegistrantAndJudgement(Member registrant, Boolean judgement);
   Optional<Restaurant> findByRestaurantName(String restaurantName);
 }
