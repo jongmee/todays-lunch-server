@@ -93,6 +93,8 @@ public abstract class ServiceTest {
   }
   void 카테고리_등록하기() {
     LocationCategory locationCategory1 = 위치카테고리_생성하기("서강대",37.550940, 126.941136);
+    LocationCategory locationCategory2 = 위치카테고리_생성하기("연세대",37.565750, 126.938744);
+    LocationCategory locationCategory3 = 위치카테고리_생성하기("서울대",37.459992, 126.951466);
     LocationTag locationTag1 = 위치태그_생성하기("정문", 37.551691, 126.937659);
     LocationTag locationTag2 = 위치태그_생성하기("남문", 37.549549, 126.938950);
     LocationTag locationTag3 = 위치태그_생성하기("후문", 37.550793, 126.944010);
