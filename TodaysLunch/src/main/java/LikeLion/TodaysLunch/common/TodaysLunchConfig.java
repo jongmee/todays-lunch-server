@@ -88,7 +88,8 @@ public class TodaysLunchConfig {
             locationCategoryRepository, imageUrlRepository,
             memberRepository, agreementRepository,
             recommendCategoryRepository, restRecmdRelRepository,
-            restaurantContributorRepository, myStoreRepository);
+            restaurantContributorRepository, myStoreRepository,
+            memberLocationCategoryRepository);
     }
 
     @Bean

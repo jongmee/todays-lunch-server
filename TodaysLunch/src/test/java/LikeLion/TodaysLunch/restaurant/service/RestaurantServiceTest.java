@@ -8,6 +8,7 @@ import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.skeleton.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.TestRestaurant;
 import LikeLion.TodaysLunch.skeleton.TestUser;
@@ -28,6 +29,8 @@ class RestaurantServiceTest extends ServiceTest {
   @Test
   void 맛집_심사_등록하기() throws IOException {
     // given
+    Long recommendCategoryId = recommendCategoryRepository.findByName("혼밥하기 좋으니 가게🍚")
+        .orElseThrow(() -> new NotFoundException("추천 카테고리")).getId();
     JudgeRestaurantCreateDto createDto = JudgeRestaurantCreateDto
         .builder()
         .foodCategoryName("한식")
@@ -36,7 +39,7 @@ class RestaurantServiceTest extends ServiceTest {
         .longitude(126.940155)
         .address("서울시 마포구")
         .introduction("참 맛있어요!")
-        .recommendCategoryIds(new ArrayList<>(Arrays.asList(1L)))
+        .recommendCategoryIds(new ArrayList<>(Arrays.asList(recommendCategoryId)))
         .build();
     TestUser 유저 = makeTestUser("qwer1234@naver.com", "1234", "lee", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
 
@@ -166,5 +169,82 @@ class RestaurantServiceTest extends ServiceTest {
     List<JudgeRestaurantListDto> 맛집목록 = (List<JudgeRestaurantListDto>) 응답.get("data");
     Boolean 동의여부 = 맛집목록.get(0).getAgreed();
     Assertions.assertEquals(false, 동의여부);
+  }
+  @Test
+  void 로그인_상태에서_맛집_추천하기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집2 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집3 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집4 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집5 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집6 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집7 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+
+    // when
+    List<RestaurantRecommendDto> 추천된_맛집들 = restaurantService.recommendation(유저.getMember());
+
+    // then
+    Assertions.assertEquals(5, 추천된_맛집들.size());
+  }
+  @Test
+  void 여러위치카테고리_가진_유저에게_맛집_추천하기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대", "연세대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집2 = makeTestRestaurant("한식", "연세대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집3 = makeTestRestaurant("한식", "서울대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집4 = makeTestRestaurant("한식", "서울대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+
+    // when
+    List<RestaurantRecommendDto> 추천된_맛집들 = restaurantService.recommendation(유저.getMember());
+
+    // then
+    Assertions.assertEquals(2, 추천된_맛집들.size());
+  }
+  @Test
+  void 로그아웃_상태에서_맛집_추천하기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집2 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집3 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집4 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+
+    // when
+    List<RestaurantRecommendDto> 추천된_맛집들 = restaurantService.recommendation(null);
+
+    // then
+    Assertions.assertEquals(4, 추천된_맛집들.size());
+  }
+  @Test
+  void 심사맛집은_추천하지_않기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 심사맛집 = makeTestJudgeRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저.getMember());
+
+    // when
+    List<RestaurantRecommendDto> 추천된_맛집들 = restaurantService.recommendation(유저.getMember());
+
+    // then
+    Assertions.assertEquals(1, 추천된_맛집들.size());
   }
 }
