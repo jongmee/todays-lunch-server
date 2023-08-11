@@ -1,6 +1,5 @@
 package LikeLion.TodaysLunch.image.repository;
 
-import LikeLion.TodaysLunch.image.domain.ImageUrl;
 import LikeLion.TodaysLunch.image.domain.MenuImage;
 import LikeLion.TodaysLunch.menu.domain.Menu;
 import java.util.List;
