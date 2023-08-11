@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -197,7 +198,8 @@ class MenuServiceTest extends ServiceTest {
     menuService.createImage(이미지, 등록된_메뉴.getId(), 유저.getMember());
 
     // when
-    List<MenuImageDto> 이미지_목록 = menuService.menuImageList(등록된_메뉴.getId());
+    HashMap<String, Object> 응답 = menuService.menuImageList(등록된_메뉴.getId(), 0, 5);
+    List<MenuImageDto> 이미지_목록 = (List<MenuImageDto>) 응답.get("data");
 
     // then
     assertEquals(2, 이미지_목록.size());

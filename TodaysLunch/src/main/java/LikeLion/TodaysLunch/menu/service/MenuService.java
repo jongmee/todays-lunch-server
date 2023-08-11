@@ -17,12 +17,14 @@ import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepositor
 import LikeLion.TodaysLunch.external.S3UploadService;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -154,14 +156,23 @@ public class MenuService {
     }
   }
 
-  public List<MenuImageDto> menuImageList(Long menuId){
+  public HashMap<String, Object> menuImageList(Long menuId, int page, int size){
+    Pageable pageable = PageRequest.of(page, size);
     Menu menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new NotFoundException("메뉴"));
-    return menuImageRepository.findAllByMenu(menu).stream()
+
+    Page<MenuImage> menuImages = menuImageRepository.findAllByMenu(menu, pageable);
+    List<MenuImageDto> images = menuImages.stream()
         .map(MenuImage::getImagePk)
         .map(pk->imageUrlRepository.findById(pk).orElseThrow(() -> new NotFoundException("이미지")))
         .map(MenuImageDto::fromEntity)
         .collect(Collectors.toList());
+
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", images);
+    responseMap.put("totalPages", menuImages.getTotalPages());
+
+    return responseMap;
   }
 
   public void deleteImage(Long menuId, Long imageId){

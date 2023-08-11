@@ -83,8 +83,11 @@ public class MenuController {
   }
 
   @GetMapping("/menus/{menuId}/images")
-  public ResponseEntity<List<MenuImageDto>> menuImageList(@PathVariable Long menuId){
-    return ResponseEntity.status(HttpStatus.OK).body(menuService.menuImageList(menuId));
+  public ResponseEntity<HashMap<String, Object>> menuImageList(
+      @PathVariable Long menuId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "8") int size){
+    return ResponseEntity.status(HttpStatus.OK).body(menuService.menuImageList(menuId, page, size));
   }
 
   @DeleteMapping("/menus/{menuId}/images/{imageId}")
