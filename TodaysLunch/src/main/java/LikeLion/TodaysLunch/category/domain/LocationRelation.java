@@ -1,7 +1,5 @@
 package LikeLion.TodaysLunch.category.domain;
 
-import LikeLion.TodaysLunch.category.domain.LocationCategory;
-import LikeLion.TodaysLunch.category.domain.LocationTag;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +9,7 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class LocationRelation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,6 +17,7 @@ public class LocationRelation {
     @ManyToOne
     @JoinColumn
     private LocationCategory locationCategory;
+
     @ManyToOne
     @JoinColumn
     private LocationTag locationTag;

@@ -1,12 +1,11 @@
 package LikeLion.TodaysLunch.image.domain;
 
 import LikeLion.TodaysLunch.menu.domain.Menu;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,11 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class MenuImage {
+
   @Id
   private Long imagePk;
+
   @ManyToOne
-  @JoinColumn
-  @NotNull
+  @JoinColumn(nullable = false)
   private Menu menu;
 
   @Builder

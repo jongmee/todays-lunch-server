@@ -41,7 +41,7 @@ public class JudgeRestaurantListDto {
         .foodCategory(restaurant.getFoodCategory().getName())
         .locationCategory(restaurant.getLocationCategory().getName())
         .locationTag(restaurant.getLocationTag().getName())
-        .agreementCount(restaurant.getAgreementCount().get())
+        .agreementCount(restaurant.getAgreementCount())
         .agreed(agreed)
         .build();
   }

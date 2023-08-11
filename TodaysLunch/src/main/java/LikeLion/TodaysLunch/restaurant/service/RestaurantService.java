@@ -236,21 +236,21 @@ RestaurantService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
-    AtomicLong agreementCount = restaurant.getAgreementCount();
+    Long agreementCount = restaurant.getAgreementCount();
 
     if(isNotAlreadyAgree(member, restaurant)){
       agreementRepository.save(new Agreement(member, restaurant));
 
-      agreementCount.incrementAndGet();
+      agreementCount += 1;
       restaurant.setAgreementCount(agreementCount);
 
-      if (agreementCount.get() > 4L)
+      if (agreementCount > 4L)
         restaurant.setJudgement(false);
 
       restaurantRepository.save(restaurant);
     } else {
       Agreement agreement = agreementRepository.findByMemberAndRestaurant(member, restaurant).get();
-      agreementCount.decrementAndGet();
+      agreementCount -= 1;
       restaurant.setAgreementCount(agreementCount);
       restaurantRepository.save(restaurant);
       agreementRepository.delete(agreement);

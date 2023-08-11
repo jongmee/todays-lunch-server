@@ -15,14 +15,17 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MyStore {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(nullable = false)
     private Member member;
+
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(nullable = false)
     private Restaurant restaurant;
 
     public MyStore(Member member, Restaurant restaurant){

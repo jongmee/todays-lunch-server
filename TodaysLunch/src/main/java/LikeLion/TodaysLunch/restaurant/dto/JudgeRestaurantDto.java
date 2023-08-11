@@ -42,7 +42,7 @@ public class JudgeRestaurantDto {
         .imageUrl(image)
         .latitude(restaurant.getLatitude())
         .longitude(restaurant.getLongitude())
-        .agreementCount(restaurant.getAgreementCount().get())
+        .agreementCount(restaurant.getAgreementCount())
         .foodCategory(restaurant.getFoodCategory().getName())
         .locationCategory(restaurant.getLocationCategory().getName())
         .locationTag(restaurant.getLocationTag().getName())

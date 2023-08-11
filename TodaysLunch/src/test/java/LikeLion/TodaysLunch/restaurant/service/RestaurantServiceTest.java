@@ -64,7 +64,7 @@ class RestaurantServiceTest extends ServiceTest {
     restaurantService.addOrCancelAgreement(유저.getMember(), restaurantForTest.getId());
 
     // then
-    Assertions.assertEquals(1L, restaurantForTest.getAgreementCount().get());
+    Assertions.assertEquals(1L, restaurantForTest.getAgreementCount());
   }
   @Test
   void 심사맛집을_정식맛집으로_전환하기(){

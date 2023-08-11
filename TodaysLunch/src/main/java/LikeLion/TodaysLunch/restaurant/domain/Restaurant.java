@@ -1,7 +1,6 @@
 package LikeLion.TodaysLunch.restaurant.domain;
 
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
-import LikeLion.TodaysLunch.common.BaseTimeEntity;
 import LikeLion.TodaysLunch.image.domain.ImageUrl;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
@@ -10,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,35 +28,64 @@ public class Restaurant {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(nullable = false)
   private String restaurantName;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private FoodCategory foodCategory;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private LocationCategory locationCategory;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private LocationTag locationTag;
+
   @OneToMany(mappedBy="restaurant", cascade = CascadeType.ALL)
   private Set<RestaurantRecommendCategoryRelation> recommendCategoryRelations = new HashSet<>();
+
   @OneToOne
   @JoinColumn
   private ImageUrl imageUrl;
+
+  @Column(nullable = false)
   private Double latitude;
+
+  @Column(nullable = false)
   private Double longitude;
+
+  @Column(nullable = false)
   private String address;
+
   private String introduction;
+
   private Double rating;
+
+  @Column(nullable = false)
   private Boolean judgement;
+
+  @Column(nullable = false)
   private LocalDate startDate;
+
+  @Column(nullable = false)
   private LocalDate endDate;
-  private AtomicLong agreementCount;
+
+  @Column(nullable = false)
+  private Long agreementCount;
+
+  @Column(nullable = false)
   private Long reviewCount;
+
   private Long lowestPrice;
+
   private String bestReview;
+
+  @Column(nullable = false)
   private LocalDateTime updatedDate;
+
   @OneToOne
   @JoinColumn
   private Member registrant;
@@ -81,9 +108,11 @@ public class Restaurant {
     this.longitude = longitude;
     this.latitude = latitude;
     this.registrant = registrant;
-    this.agreementCount = new AtomicLong(0);
+    this.agreementCount = 0L;
+    this.reviewCount = 0L;
     this.updatedDate = LocalDateTime.now();
   }
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -96,16 +125,17 @@ public class Restaurant {
   public void setReviewCount(Long reviewCount) {
     this.reviewCount = reviewCount;
   }
-  public void setRegistrant(Member member) { this.registrant = member; }
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
-  public void setAgreementCount(AtomicLong agreementCount) { this.agreementCount = agreementCount; }
+  public void setAgreementCount(Long agreementCount) { this.agreementCount = agreementCount; }
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
   public void setBestReview(String bestReview) { this.bestReview = bestReview; }
+
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);
   }
   public void deleteRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.remove(recommendCategoryRelation);
   }
+
   public void setUpdatedDate(LocalDateTime date) { this.updatedDate = date; }
 }

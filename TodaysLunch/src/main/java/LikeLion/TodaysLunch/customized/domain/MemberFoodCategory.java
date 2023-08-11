@@ -16,15 +16,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MemberFoodCategory {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Member member;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private FoodCategory foodCategory;
+
   @Builder
   public MemberFoodCategory(Member member, FoodCategory foodCategory){
     this.member = member;

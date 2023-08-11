@@ -13,13 +13,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 public class RecommendCategory {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(nullable = false)
   private String name;
+
   @Column(nullable = false)
   private String color;
+
   @Builder
   public RecommendCategory(String name, String color) {
     this.name = name;
