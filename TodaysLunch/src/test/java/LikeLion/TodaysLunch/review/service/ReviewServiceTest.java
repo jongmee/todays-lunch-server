@@ -205,6 +205,19 @@ class ReviewServiceTest extends ServiceTest {
     List<ReviewDto> 유저2의_리뷰들 = (List<ReviewDto>) 응답값.get("data");
     Assertions.assertEquals(2, 유저2의_리뷰들.size());
   }
+  @Test
+  void 리뷰등록하고_맛집에_리뷰수_반영하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저1.getMember());
+    ReviewDto 작성한_리뷰1 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(1).build();
+
+    // when
+    reviewService.create(1L, 작성한_리뷰1, 유저1.getMember());
+
+    // then
+    Assertions.assertEquals(1L, 맛집.getRestaurant().getReviewCount());
+  }
 
   Review 리뷰_생성하기(Member member, Restaurant restaurant, String reviewContent, Integer rating){
     Review review = new Review(reviewContent, rating);
