@@ -16,15 +16,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MemberLocationCategory {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Member member;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private LocationCategory locationCategory;
+
   @Builder
   public MemberLocationCategory(Member member, LocationCategory locationCategory){
     this.member = member;

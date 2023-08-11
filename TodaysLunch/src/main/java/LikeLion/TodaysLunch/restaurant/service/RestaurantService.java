@@ -39,8 +39,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -54,8 +52,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @RequiredArgsConstructor
-public class
-RestaurantService {
+public class RestaurantService {
+
+  private final Double EARTH_RADIUS = 6370d; // 지구 반지름(km)
+
+  @Autowired
+  private S3UploadService s3UploadService;
+
   private final DataJpaRestaurantRepository restaurantRepository;
   private final FoodCategoryRepository foodCategoryRepository;
   private final LocationTagRepository locationTagRepository;
@@ -68,11 +71,6 @@ RestaurantService {
   private final RestaurantContributorRepository restaurantContributorRepository;
   private final MyStoreRepository myStoreRepository;
   private final MemberLocationCategoryRepository memberLocationCategoryRepository;
-
-  @Autowired
-  private S3UploadService s3UploadService;
-
-  private final Double EARTH_RADIUS = 6370d; // 지구 반지름(km)
 
   public HashMap<String, Object> restaurantList(
       String foodCategory, String locationCategory,
@@ -236,21 +234,21 @@ RestaurantService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
-    AtomicLong agreementCount = restaurant.getAgreementCount();
+    Long agreementCount = restaurant.getAgreementCount();
 
     if(isNotAlreadyAgree(member, restaurant)){
       agreementRepository.save(new Agreement(member, restaurant));
 
-      agreementCount.incrementAndGet();
+      agreementCount += 1;
       restaurant.setAgreementCount(agreementCount);
 
-      if (agreementCount.get() > 4L)
+      if (agreementCount > 4L)
         restaurant.setJudgement(false);
 
       restaurantRepository.save(restaurant);
     } else {
       Agreement agreement = agreementRepository.findByMemberAndRestaurant(member, restaurant).get();
-      agreementCount.decrementAndGet();
+      agreementCount -= 1;
       restaurant.setAgreementCount(agreementCount);
       restaurantRepository.save(restaurant);
       agreementRepository.delete(agreement);
@@ -335,9 +333,12 @@ RestaurantService {
 
   }
 
-  public HashMap<String, Object> participateRestaurantList(Member member) {
-    List<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false);
-    Integer participationCount = participateRestaurant.size();
+  public HashMap<String, Object> participateRestaurantList(Member member, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false, pageable);
+    Integer participationCount = participateRestaurant.getSize();
+
     List<ParticipateRestaurantDto> participation = new ArrayList<>(participationCount);
     Boolean liked;
     for(Restaurant restaurant: participateRestaurant){
@@ -348,10 +349,23 @@ RestaurantService {
       participation.add(ParticipateRestaurantDto.fromEntity(restaurant, liked));
     }
 
-    List<Restaurant> contributionRestaurant = restaurantContributorRepository.findAllByMember(member)
-        .stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
-    Integer contributionCount = contributionRestaurant.size();
+    HashMap response = new HashMap<>();
+    response.put("participation", participation);
+    response.put("participationCount", participationCount);
+    response.put("totalPages", participateRestaurant.getTotalPages());
+
+    return response;
+  }
+
+  public HashMap<String, Object> contributeRestaurantList(Member member, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<RestaurantContributor> relations = restaurantContributorRepository.findAllByMember(member, pageable);
+    List<Restaurant> contributionRestaurant = relations.stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
+    Integer contributionCount = relations.getSize();
+
     List<ParticipateRestaurantDto> contribution = new ArrayList<>(contributionCount);
+    Boolean liked;
     for(Restaurant restaurant: contributionRestaurant){
       if(isNotAlreadyMyStore(member, restaurant))
         liked = false;
@@ -361,10 +375,9 @@ RestaurantService {
     }
 
     HashMap response = new HashMap<>();
-    response.put("participation", participation);
-    response.put("participationCount", participationCount);
     response.put("contribution", contribution);
     response.put("contributionCount", contributionCount);
+    response.put("totalPages", relations.getTotalPages());
 
     return response;
   }

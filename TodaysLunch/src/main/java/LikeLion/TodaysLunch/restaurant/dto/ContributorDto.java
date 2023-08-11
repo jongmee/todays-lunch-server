@@ -11,14 +11,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ContributorDto {
+
   private Long id;
   private String nickname;
   private String icon;
+
   public static ContributorDto fromEntity(Member member){
     String image = null;
-    if(member.getIcon() != null){
+    if(member.getIcon() != null)
       image = member.getIcon().getImageUrl();
-    }
+
     return ContributorDto.builder()
         .id(member.getId())
         .nickname(member.getNickname())

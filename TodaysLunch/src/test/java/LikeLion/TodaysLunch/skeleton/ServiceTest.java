@@ -20,6 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Transactional
 public abstract class ServiceTest {
+
+  protected final String 추천카테고리이름1 = "혼밥하기 좋으니 가게 🍚";
+  protected final String 추천카테고리이름2 = "술자리 저격이니 가게 🍺";
+
   @Autowired
   protected FoodCategoryRepository foodCategoryRepository;
   @Autowired
@@ -32,10 +36,12 @@ public abstract class ServiceTest {
   protected TestUserEnviron testUserEnviron;
   @Autowired
   protected TestRestaurantEnviron testRestaurantEnviron;
+
   @BeforeEach
   void beforeEach() {
     카테고리_등록하기();
   }
+
   public TestUser makeTestUser(String email, String password, String nickname,
       List<String> foodCategories, List<String> locationCategories) {
     TestUser tu = new TestUser(testUserEnviron);
@@ -59,6 +65,7 @@ public abstract class ServiceTest {
 
     return tu;
   }
+
   public TestRestaurant makeTestRestaurant(String foodCategoryName, String locationCategoryName,
       String locationTagName, String address, String restaurantName, String introduction,
       Double longitude, Double latitude, Member registrant) {
@@ -75,6 +82,7 @@ public abstract class ServiceTest {
 
     return tr;
   }
+
   public TestRestaurant makeTestJudgeRestaurant(String foodCategoryName, String locationCategoryName,
       String locationTagName, String address, String restaurantName, String introduction,
       Double longitude, Double latitude, Member registrant) {
@@ -91,7 +99,8 @@ public abstract class ServiceTest {
 
     return tr;
   }
-  void 카테고리_등록하기() {
+
+  private void 카테고리_등록하기() {
     LocationCategory locationCategory1 = 위치카테고리_생성하기("서강대",37.550940, 126.941136);
     LocationCategory locationCategory2 = 위치카테고리_생성하기("연세대",37.565750, 126.938744);
     LocationCategory locationCategory3 = 위치카테고리_생성하기("서울대",37.459992, 126.951466);
@@ -103,10 +112,11 @@ public abstract class ServiceTest {
     LocationTag locationTag6 = 위치태그_생성하기("이대", 37.556776, 126.945947);
     FoodCategory foodCategory1 = 음식카테고리_생성하기("한식");
     FoodCategory foodCategory2 = 음식카테고리_생성하기("중식");
-    RecommendCategory recommendCategory1 = 추천카테고리_생성하기("혼밥하기 좋으니 가게🍚");
-    RecommendCategory recommendCategory2 = 추천카테고리_생성하기("단체 회식일 때 가게🍺");
+    RecommendCategory recommendCategory1 = 추천카테고리_생성하기(추천카테고리이름1);
+    RecommendCategory recommendCategory2 = 추천카테고리_생성하기(추천카테고리이름2);
   }
-  FoodCategory 음식카테고리_생성하기(String name) {
+
+  private FoodCategory 음식카테고리_생성하기(String name) {
     FoodCategory foodCategory =
         FoodCategory
             .builder()
@@ -114,7 +124,8 @@ public abstract class ServiceTest {
             .build();
     return foodCategoryRepository.save(foodCategory);
   }
-  LocationCategory 위치카테고리_생성하기(String name, Double latitude, Double longitude) {
+
+  private LocationCategory 위치카테고리_생성하기(String name, Double latitude, Double longitude) {
     LocationCategory locationCategory =
         LocationCategory
             .builder()
@@ -124,18 +135,25 @@ public abstract class ServiceTest {
             .build();
     return locationCategoryRepository.save(locationCategory);
   }
-  LocationTag 위치태그_생성하기(String name, Double latitude, Double longitude) {
+
+  private LocationTag 위치태그_생성하기(String name, Double latitude, Double longitude) {
     LocationTag locationTag = new LocationTag();
     locationTag.setName(name);
     locationTag.setLatitude(latitude);
     locationTag.setLongitude(longitude);
     return locationTagRepository.save(locationTag);
   }
-  RecommendCategory 추천카테고리_생성하기(String name) {
+
+  private RecommendCategory 추천카테고리_생성하기(String name) {
     return recommendCategoryRepository.save(RecommendCategory
         .builder()
         .color("#0100FF")
         .name(name)
         .build());
+  }
+
+  protected Long 추천카테고리_반환하기(String name){
+    return recommendCategoryRepository.findByName(name)
+        .orElseThrow(() -> new NotFoundException("추천 카테고리")).getId();
   }
 }

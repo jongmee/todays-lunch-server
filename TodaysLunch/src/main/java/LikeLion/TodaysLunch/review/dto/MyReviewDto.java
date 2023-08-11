@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MyReviewDto {
+
   private Long reviewId;
   private Long restaurantId;
   private String restaurantName;
@@ -25,9 +26,9 @@ public class MyReviewDto {
 
   public static MyReviewDto fromEntity(Review review, String liked) {
     String image = null;
-    if(review.getRestaurant().getImageUrl() != null){
+    if(review.getRestaurant().getImageUrl() != null)
       image = review.getRestaurant().getImageUrl().getImageUrl();
-    }
+
     return MyReviewDto.builder()
         .reviewId(review.getId())
         .restaurantId(review.getRestaurant().getId())

@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.restaurant.dto;
 
+import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import java.util.List;
 import java.util.Set;
@@ -14,12 +15,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RestaurantDto {
+
   private Long id;
   private String restaurantName;
   private String foodCategory;
   private String locationCategory;
   private String locationTag;
-  private Set<String> recommendCategoryList;
+  private Set<RecommendCategoryDto.CategoryList> recommendCategoryList;
   private String imageUrl;
   private Double latitude;
   private Double longitude;
@@ -30,15 +32,16 @@ public class RestaurantDto {
   private List<ContributorDto> contributors;
   private String bestReview;
   private Boolean liked;
+
   public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors, Boolean liked){
     String image = null;
-    if (restaurant.getImageUrl() != null){
+    if (restaurant.getImageUrl() != null)
       image = restaurant.getImageUrl().getImageUrl();
-    }
+
     ContributorDto registrant = null;
-    if(restaurant.getRegistrant() != null){
+    if(restaurant.getRegistrant() != null)
       registrant = ContributorDto.fromEntity(restaurant.getRegistrant());
-    }
+
     return RestaurantDto.builder()
         .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())
@@ -47,9 +50,8 @@ public class RestaurantDto {
         .locationTag(restaurant.getLocationTag().getName())
         .recommendCategoryList(
             restaurant.getRecommendCategoryRelations().stream()
-            .map(rel -> rel.getRecommendCategory().getName())
-            .collect(Collectors.toSet())
-        )
+            .map(rel -> RecommendCategoryDto.CategoryList.fromEntity(rel.getRecommendCategory()))
+            .collect(Collectors.toSet()))
         .imageUrl(image)
         .latitude(restaurant.getLatitude())
         .longitude(restaurant.getLongitude())

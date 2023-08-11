@@ -3,14 +3,13 @@ package LikeLion.TodaysLunch.member.dto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class TokenDto {
     @Getter
     public static class LoginToken {
+
         private Long id;
         private Boolean temporaryPw;
         @NotNull
@@ -19,6 +18,7 @@ public class TokenDto {
         private String refreshToken;
         @NotNull
         private long refreshTokenExpiresTime;
+
         @Builder
         public LoginToken(String accessToken, String refreshToken, long refreshTokenExpiresTime) {
             this.accessToken = accessToken;
@@ -35,6 +35,7 @@ public class TokenDto {
         }
 
     }
+
     @Getter
     public static class Refresh {
         @NotEmpty(message="accessToken을 입력해주세요.")

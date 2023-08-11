@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.review.dto.ReviewDto;
 import LikeLion.TodaysLunch.review.service.ReviewService;
 import java.util.HashMap;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +20,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ReviewController {
+
   static final String PAGE_VALUE = "0";
   static final String PAGE_SIZE = "100";
   static final String SORT = "createdDate";
   static final String ORDER = "descending";
+
   private final ReviewService reviewService;
+
   @Autowired
   public ReviewController(ReviewService reviewService) {
     this.reviewService = reviewService;
   }
+
   @PostMapping("/restaurants/{restaurantId}/reviews")
-  public ResponseEntity<Void> createReview(@RequestBody ReviewDto reviewDto,
-      @PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+  public ResponseEntity<Void> createReview(
+      @Valid @RequestBody ReviewDto reviewDto,
+      @PathVariable Long restaurantId,
+      @AuthenticationPrincipal Member member){
     reviewService.create(restaurantId, reviewDto, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -43,19 +50,22 @@ public class ReviewController {
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order,
       @AuthenticationPrincipal Member member){
-    HashMap<String, Object> responseMap = reviewService.reviewsList(restaurantId, page, size, sort, order, member);
-    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    return ResponseEntity.status(HttpStatus.OK).body(reviewService.reviewsList(restaurantId, page, size, sort, order, member));
   }
 
   @PatchMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
-  public  ResponseEntity<Void> updateReview(@PathVariable Long reviewId, @PathVariable Long restaurantId,
-      @RequestBody ReviewDto dto){
+  public  ResponseEntity<Void> updateReview(
+      @PathVariable Long reviewId,
+      @PathVariable Long restaurantId,
+      @Valid @RequestBody ReviewDto dto){
     reviewService.update(reviewId, restaurantId, dto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @DeleteMapping("/restaurants/{restaurantId}/reviews/{reviewId}")
-  public ResponseEntity<Void> delete(@PathVariable Long reviewId, @PathVariable Long restaurantId){
+  public ResponseEntity<Void> delete(
+      @PathVariable Long reviewId,
+      @PathVariable Long restaurantId){
     reviewService.delete(reviewId, restaurantId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -63,7 +73,8 @@ public class ReviewController {
   @PostMapping("/restaurants/{restaurantId}/reviews/{reviewId}/like")
   public ResponseEntity<Void> likeReview(
       @PathVariable Long restaurantId,
-      @PathVariable Long reviewId, @AuthenticationPrincipal Member member){
+      @PathVariable Long reviewId,
+      @AuthenticationPrincipal Member member){
     reviewService.addOrCancelLike(restaurantId, reviewId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -75,8 +86,6 @@ public class ReviewController {
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
       @RequestParam(defaultValue = ORDER) String order){
-    HashMap<String, Object> responseMap = reviewService.myReviewList(reviewerID, page, size, sort, order);
-    return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+    return ResponseEntity.status(HttpStatus.OK).body(reviewService.myReviewList(reviewerID, page, size, sort, order));
   }
-
 }

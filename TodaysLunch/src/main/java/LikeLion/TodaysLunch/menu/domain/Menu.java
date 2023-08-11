@@ -8,29 +8,36 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
 @NoArgsConstructor
 public class Menu {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(nullable = false)
   private String name;
+
   @Column(nullable = false)
   private Long price;
+
   private Long salePrice;
+
   private String saleExplain;
+
+  @Column(nullable = false)
   private Long imageCount;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Restaurant restaurant;
+
   @Builder
   public Menu(String name, Long price, Long salePrice, String saleExplain){
     this.name = name;
@@ -39,6 +46,7 @@ public class Menu {
     this.salePrice = salePrice;
     this.saleExplain = saleExplain;
   }
+
   public Menu updateMenu(String name, Long price, Long salePrice, String saleExplain){
     this.name = name;
     this.price = price;
@@ -46,6 +54,7 @@ public class Menu {
     this.saleExplain = saleExplain;
     return this;
   }
+
   public void setImageCount(Long imageCount) {
     this.imageCount = imageCount;
   }

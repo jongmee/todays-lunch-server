@@ -35,17 +35,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
+
     @Autowired
     private S3UploadService s3UploadService;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
@@ -60,7 +62,6 @@ public class MemberService {
     private final ImageUrlRepository imageUrlRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
-    @Transactional
     public void join(MemberJoinDto memberDto) {
         validateDuplication(memberDto);
 
@@ -104,7 +105,6 @@ public class MemberService {
         }
     }
 
-    @Transactional
     public TokenDto.LoginToken login(MemberLoginDto memberDto) {
         Member member = memberRepository.findByEmail(memberDto.getEmail())
             .orElseThrow(() -> new NotFoundException("이메일"));
@@ -119,7 +119,7 @@ public class MemberService {
         tokenDto.setId(member.getId());
         return tokenDto;
     }
-    @Transactional
+
     public TokenDto.LoginToken refresh(TokenDto.Refresh refreshDto) {
         jwtTokenProvider.validateToken(refreshDto.getRefreshToken());
 
@@ -138,7 +138,6 @@ public class MemberService {
         return tokenDto;
     }
 
-    @Transactional
     public void logout(String token) {
         jwtTokenProvider.validateToken(token);
 
@@ -149,7 +148,6 @@ public class MemberService {
         }
     }
 
-    @Transactional
     public MyPageDto  myPage(Member member) {
         List<LocationCategoryDto> locationCategoryList = memberLocationCategoryRepository.findAllByMember(member)
             .stream()
@@ -167,7 +165,6 @@ public class MemberService {
         return MyPageDto.fromEntity(member, foodCategoryList, locationCategoryList, myJudgeCount, participationCount, myStoreCount, reviewCount, contributionCount);
     }
 
-    @Transactional
     public void myFoodCategoryEdit(Member member, List<FoodCategoryDto> categoryList) {;
         List<FoodCategory> newCategoryList = categoryList.stream()
             .map(f->f.toEntity())
@@ -190,7 +187,6 @@ public class MemberService {
         }
     }
 
-    @Transactional
     public void myLocationCategoryEdit(Member member, List<LocationCategoryDto> categoryList) {
         List<LocationCategory> newCategoryList = categoryList.stream()
             .map(f->f.toEntity())
@@ -213,13 +209,11 @@ public class MemberService {
         }
     }
 
-    @Transactional
     public void nicknameEdit(Member member, String nickname) {
         member.updateNickname(nickname);
         memberRepository.save(member);
     }
 
-    @Transactional
     public void iconEdit(Member member, MultipartFile icon) throws IOException {
         // 기존 아이콘 삭제
         ImageUrl imageUrl = member.getIcon();
@@ -252,13 +246,11 @@ public class MemberService {
         }
     }
 
-    @Transactional
     public Member checkExistingEmail(String email){
         return memberRepository.findByEmail(email)
             .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
     }
 
-    @Transactional
     public void changePassword(Member member, String password, Boolean isTemporary){
         if(isTemporary){
             member.setTemporaryPw(true);
@@ -270,7 +262,6 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    @Transactional
     public Boolean checkPassword(Member member, String password){
         if(passwordEncoder.matches(password, member.getPassword())){
             return true;

@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.menu.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.image.domain.ImageUrl;
@@ -22,8 +23,8 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 
 class MenuServiceTest extends ServiceTest {
+
   @Autowired
   private MenuService menuService;
   @Autowired
@@ -43,6 +45,7 @@ class MenuServiceTest extends ServiceTest {
   private MenuImageRepository menuImageRepository;
   @Autowired
   private ImageUrlRepository imageUrlRepository;
+
   @Test
   void 메뉴_등록하기(){
     // given
@@ -65,10 +68,11 @@ class MenuServiceTest extends ServiceTest {
     Menu 등록된_메뉴3 = menuRepository.findByName("카레")
         .orElseThrow(() -> new NotFoundException("메뉴"));
 
-    Assertions.assertEquals(10000L, 등록된_메뉴1.getSalePrice());
-    Assertions.assertEquals(null, 등록된_메뉴2.getSaleExplain());
-    Assertions.assertEquals(null, 등록된_메뉴3.getSalePrice());
+    assertEquals(10000L, 등록된_메뉴1.getSalePrice());
+    assertEquals(null, 등록된_메뉴2.getSaleExplain());
+    assertEquals(null, 등록된_메뉴3.getSalePrice());
   }
+
   @Test
   void 메뉴_수정하기(){
     // given
@@ -93,9 +97,10 @@ class MenuServiceTest extends ServiceTest {
     menuService.update(수정_요청2, 정식맛집.getRestaurant().getId(), 등록된_메뉴2.getId(), 유저.getMember());
 
     // then
-    Assertions.assertEquals(null, 등록된_메뉴1.getSaleExplain());
-    Assertions.assertEquals("8월첫째주만합니다", 등록된_메뉴2.getSaleExplain());
+    assertEquals(null, 등록된_메뉴1.getSaleExplain());
+    assertEquals("8월첫째주만합니다", 등록된_메뉴2.getSaleExplain());
   }
+
   @Test
   void 메뉴_삭제하기() throws Exception{
     // given
@@ -118,10 +123,11 @@ class MenuServiceTest extends ServiceTest {
 
     // then
     List<MenuImage> 등록된_관계들 = menuImageRepository.findAllByMenu(등록된_메뉴);
-    Assertions.assertEquals(0, 등록된_관계들.size());
-    Assertions.assertEquals(0, menuRepository.findAll().size());
-    Assertions.assertEquals(0, imageUrlRepository.findAll().size());
+    assertEquals(0, 등록된_관계들.size());
+    assertEquals(0, menuRepository.findAll().size());
+    assertEquals(0, imageUrlRepository.findAll().size());
   }
+
   @Test
   void 메뉴이미지_등록하기() throws Exception{
     // given
@@ -143,8 +149,9 @@ class MenuServiceTest extends ServiceTest {
     List<MenuImage> 등록된_관계들 = menuImageRepository.findAllByMenu(등록된_메뉴);
     ImageUrl 등록된_이미지 = imageUrlRepository.findById(등록된_관계들.get(0).getImagePk())
         .orElseThrow(() -> new NotFoundException("이미지"));
-    Assertions.assertEquals(이미지_이름, 등록된_이미지.getOriginalName());
+    assertEquals(이미지_이름, 등록된_이미지.getOriginalName());
   }
+
   @Test
   void 메뉴이미지_삭제하기() throws Exception{
     // given
@@ -170,8 +177,9 @@ class MenuServiceTest extends ServiceTest {
 
     // then
     List<MenuImage> 삭제후_관계들 = menuImageRepository.findAllByMenu(등록된_메뉴);
-    Assertions.assertEquals(0, 삭제후_관계들.size());
+    assertEquals(0, 삭제후_관계들.size());
   }
+
   @Test
   void 메뉴이미지_목록_조회하기() throws Exception{
     // given
@@ -190,11 +198,13 @@ class MenuServiceTest extends ServiceTest {
     menuService.createImage(이미지, 등록된_메뉴.getId(), 유저.getMember());
 
     // when
-    List<MenuImageDto> 이미지_목록 = menuService.menuImageList(등록된_메뉴.getId());
+    HashMap<String, Object> 응답 = menuService.menuImageList(등록된_메뉴.getId(), 0, 5);
+    List<MenuImageDto> 이미지_목록 = (List<MenuImageDto>) 응답.get("data");
 
     // then
-    Assertions.assertEquals(2, 이미지_목록.size());
+    assertEquals(2, 이미지_목록.size());
   }
+
   @Test
   void 메뉴_등록하면_맛집_업데이트날짜에_반영하기(){
     // given
@@ -210,6 +220,7 @@ class MenuServiceTest extends ServiceTest {
     //then
     assertThat(수정시간).isAfter(비교시간);
   }
+
   @Test
   void 메뉴_수정하면_맛집_업데이트날짜에_반영하기(){
     // given
@@ -233,6 +244,7 @@ class MenuServiceTest extends ServiceTest {
     //then
     assertThat(수정시간).isAfter(비교시간);
   }
+
   @Test
   void 메뉴이미지_등록하면_맛집_업데이트날짜에_반영하기() throws IOException {
     // given
@@ -256,6 +268,7 @@ class MenuServiceTest extends ServiceTest {
     // then
     assertThat(수정시간).isAfter(비교시간);
   }
+
   private MultipartFile 이미지_가져오기(String imageName) throws IOException {
     File file = new File(new File("").getAbsolutePath() + "/src/test/resources/testImage/"+imageName);
     FileItem fileItem = new DiskFileItem("originFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());

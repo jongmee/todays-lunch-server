@@ -8,13 +8,18 @@ import lombok.Setter;
 @Setter
 @Entity
 public class LocationTag {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(nullable = false)
   private String name;
+
   @Column(nullable = false)
   private Double latitude;
+
   @Column(nullable = false)
   private Double longitude;
+
 }

@@ -73,7 +73,6 @@ public class EmailService {
     return message;
   }
 
-
   public static String createEmailKey() {
     StringBuffer key = new StringBuffer();
     Random rnd = new Random();

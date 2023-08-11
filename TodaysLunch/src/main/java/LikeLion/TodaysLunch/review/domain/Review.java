@@ -4,11 +4,9 @@ import LikeLion.TodaysLunch.common.BaseTimeEntity;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.review.dto.ReviewDto;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -22,17 +20,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class Review extends BaseTimeEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Column(length = 200, nullable = false)
   private String reviewContent;
+
   @Column(nullable = false)
   private Integer rating;
+
+  @Column(nullable = false)
   private Long likeCount;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Restaurant restaurant;
+
   @OneToOne
   @JoinColumn(nullable = false)
   Member member;
@@ -51,12 +56,10 @@ public class Review extends BaseTimeEntity {
   public void setLikeCount(Long likeCount) { this.likeCount = likeCount; }
 
   public void update(ReviewDto reviewDto) {
-    if (reviewDto.getReviewContent() != null) {
+    if (reviewDto.getReviewContent() != null)
       this.reviewContent = reviewDto.getReviewContent();
-    }
-    if (reviewDto.getRating() != null) {
-      this.rating = reviewDto.getRating();
-    }
-  }
 
+    if (reviewDto.getRating() != null)
+      this.rating = reviewDto.getRating();
+  }
 }

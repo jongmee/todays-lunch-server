@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ReviewDto {
+
   private Long id;
   private ReviewProfileDto member;
   @NotBlank(message = "리뷰 내용은 Null과 공백일 수 없습니다!")
@@ -24,7 +25,10 @@ public class ReviewDto {
   private String liked;
 
   public Review toEntity(){
-    return Review.builder().rating(rating).reviewContent(reviewContent).build();
+    return Review.builder()
+        .rating(rating)
+        .reviewContent(reviewContent)
+        .build();
   }
 
   public static ReviewDto fromEntity(Review review, String liked){

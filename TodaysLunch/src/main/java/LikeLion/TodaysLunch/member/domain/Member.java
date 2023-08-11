@@ -28,9 +28,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Builder
 public class Member implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String email;
 
@@ -54,7 +56,6 @@ public class Member implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-
     public void setMyStoreCount(Long myStoreCount) {
         this.myStoreCount = myStoreCount;
     }
@@ -66,16 +67,14 @@ public class Member implements UserDetails {
     public Long getId() {
         return id;
     }
+    public String getPassword() {
+        return password;
+    }
 
     @Override
     public String getUsername() {
         return email;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -83,6 +82,7 @@ public class Member implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

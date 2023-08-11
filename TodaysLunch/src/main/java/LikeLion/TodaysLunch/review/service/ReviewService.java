@@ -14,7 +14,6 @@ import LikeLion.TodaysLunch.review.repository.ReviewRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +26,13 @@ import org.springframework.data.domain.Sort;
 @Transactional
 @RequiredArgsConstructor
 public class ReviewService {
+
   private final MemberRepository memberRepository;
   private final ReviewRepository reviewRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
   private final ReviewLikeRepository reviewLikeRepository;
 
-  public void create(Long restaurantId, ReviewDto reviewDto, Member member){
+  public Review create(Long restaurantId, ReviewDto reviewDto, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
@@ -58,7 +58,7 @@ public class ReviewService {
     Review review = reviewDto.toEntity();
     review.setRestaurant(restaurant);
     review.setMember(member);
-    reviewRepository.save(review);
+    return reviewRepository.save(review);
   }
 
   public HashMap<String, Object> reviewsList(Long restaurantId, int page, int size, String sort, String order, Member member){
@@ -193,5 +193,4 @@ public class ReviewService {
     }
     return pageable;
   }
-
 }

@@ -1,7 +1,6 @@
 package LikeLion.TodaysLunch.restaurant.domain;
 
 import LikeLion.TodaysLunch.member.domain.Member;
-import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,15 +15,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class RestaurantContributor {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Restaurant restaurant;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Member member;
+
   @Builder
   public RestaurantContributor(Restaurant restaurant, Member member){
     this.restaurant = restaurant;

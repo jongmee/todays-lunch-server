@@ -14,18 +14,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ReviewLike {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Member member;
+
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
   private Review review;
+
   public ReviewLike(Member member, Review review) {
     this.member = member;
     this.review = review;
   }
-
 }

@@ -1,6 +1,6 @@
 package LikeLion.TodaysLunch.category.repository;
-import LikeLion.TodaysLunch.category.domain.LocationTag;
 
+import LikeLion.TodaysLunch.category.domain.LocationTag;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

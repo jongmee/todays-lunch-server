@@ -5,14 +5,11 @@ import LikeLion.TodaysLunch.menu.domain.Menu;
 import LikeLion.TodaysLunch.menu.dto.MenuDto;
 import LikeLion.TodaysLunch.menu.dto.MenuImageDto;
 import LikeLion.TodaysLunch.menu.service.MenuService;
-import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
-import LikeLion.TodaysLunch.member.service.MemberService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,21 +22,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class MenuController {
+
   private final MenuService menuService;
-  private final RestaurantService restaurantService;
-  private final MemberService memberService;
 
   @Autowired
-  public MenuController(MenuService menuService, RestaurantService restaurantService, MemberService memberService) {
+  public MenuController(MenuService menuService) {
     this.menuService = menuService;
-    this.restaurantService = restaurantService;
-    this.memberService = memberService;
   }
 
   @GetMapping("/search/menu-name")
-  public ResponseEntity<List<Menu>> searchMenuName(@RequestParam String keyword, Pageable pageable){
-    List<Menu> menus = menuService.searchMenuName(keyword, pageable).getContent();
-    return ResponseEntity.status(HttpStatus.OK).body(menus);
+  public ResponseEntity<List<Menu>> searchMenuName(
+      Pageable pageable,
+      @RequestParam String keyword){
+    return ResponseEntity.status(HttpStatus.OK).body(menuService.searchMenuName(keyword, pageable).getContent());
   }
 
   @GetMapping("/restaurants/{restaurantId}/menus")
@@ -71,9 +66,11 @@ public class MenuController {
   }
 
   @DeleteMapping("/restaurants/{restaurantId}/menus/{menuId}")
-  public ResponseEntity<Menu> deleteMenu(@PathVariable Long restaurantId, @PathVariable Long menuId){
-    Menu menu = menuService.delete(restaurantId, menuId);
-    return ResponseEntity.status(HttpStatus.OK).body(menu);
+  public ResponseEntity<Void> deleteMenu(
+      @PathVariable Long restaurantId,
+      @PathVariable Long menuId){
+    menuService.delete(restaurantId, menuId);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @PostMapping("/menus/{menuId}/images")
@@ -86,16 +83,17 @@ public class MenuController {
   }
 
   @GetMapping("/menus/{menuId}/images")
-  public ResponseEntity<List<MenuImageDto>> menuImageList(@PathVariable Long menuId){
-    List<MenuImageDto> menuImages = menuService.menuImageList(menuId);
-    return ResponseEntity.status(HttpStatus.OK).body(menuImages);
+  public ResponseEntity<HashMap<String, Object>> menuImageList(
+      @PathVariable Long menuId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "8") int size){
+    return ResponseEntity.status(HttpStatus.OK).body(menuService.menuImageList(menuId, page, size));
   }
 
   @DeleteMapping("/menus/{menuId}/images/{imageId}")
   public ResponseEntity<Void> deleteMenuImage(
       @PathVariable Long menuId,
-      @PathVariable Long imageId
-  ){
+      @PathVariable Long imageId){
     menuService.deleteImage(menuId, imageId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
