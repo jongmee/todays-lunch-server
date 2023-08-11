@@ -119,12 +119,18 @@ public class RestaurantController {
   }
 
   @GetMapping("/participate-restaurant")
-  public ResponseEntity<HashMap<String, Object>> participateRestaurantList (@AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.participateRestaurantList(member));
+  public ResponseEntity<HashMap<String, Object>> participateRestaurantList (
+      @AuthenticationPrincipal Member member,
+      @RequestParam(defaultValue = PAGE_VALUE) int page,
+      @RequestParam(defaultValue = PAGE_SIZE) int size){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.participateRestaurantList(member, page, size));
   }
 
   @GetMapping("/contribute-restaurant")
-  public ResponseEntity<HashMap<String, Object>> contributeRestaurantList (@AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.contributeRestaurantList(member));
+  public ResponseEntity<HashMap<String, Object>> contributeRestaurantList (
+      @AuthenticationPrincipal Member member,
+      @RequestParam(defaultValue = PAGE_VALUE) int page,
+      @RequestParam(defaultValue = PAGE_SIZE) int size){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.contributeRestaurantList(member, page, size));
   }
 }

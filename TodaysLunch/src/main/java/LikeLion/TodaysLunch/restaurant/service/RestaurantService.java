@@ -333,9 +333,12 @@ public class RestaurantService {
 
   }
 
-  public HashMap<String, Object> participateRestaurantList(Member member) {
-    List<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false);
-    Integer participationCount = participateRestaurant.size();
+  public HashMap<String, Object> participateRestaurantList(Member member, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false, pageable);
+    Integer participationCount = participateRestaurant.getSize();
+
     List<ParticipateRestaurantDto> participation = new ArrayList<>(participationCount);
     Boolean liked;
     for(Restaurant restaurant: participateRestaurant){
@@ -349,14 +352,18 @@ public class RestaurantService {
     HashMap response = new HashMap<>();
     response.put("participation", participation);
     response.put("participationCount", participationCount);
+    response.put("totalPages", participateRestaurant.getTotalPages());
 
     return response;
   }
 
-  public HashMap<String, Object> contributeRestaurantList(Member member) {
-    List<Restaurant> contributionRestaurant = restaurantContributorRepository.findAllByMember(member)
-        .stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
-    Integer contributionCount = contributionRestaurant.size();
+  public HashMap<String, Object> contributeRestaurantList(Member member, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<RestaurantContributor> relations = restaurantContributorRepository.findAllByMember(member, pageable);
+    List<Restaurant> contributionRestaurant = relations.stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
+    Integer contributionCount = relations.getSize();
+
     List<ParticipateRestaurantDto> contribution = new ArrayList<>(contributionCount);
     Boolean liked;
     for(Restaurant restaurant: contributionRestaurant){
@@ -370,6 +377,7 @@ public class RestaurantService {
     HashMap response = new HashMap<>();
     response.put("contribution", contribution);
     response.put("contributionCount", contributionCount);
+    response.put("totalPages", relations.getTotalPages());
 
     return response;
   }

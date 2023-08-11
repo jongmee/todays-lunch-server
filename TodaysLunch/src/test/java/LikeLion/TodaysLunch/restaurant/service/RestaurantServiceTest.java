@@ -103,11 +103,10 @@ class RestaurantServiceTest extends ServiceTest {
     menuService.create(메뉴_생성_요청, 정식맛집.getRestaurant().getId(), 유저.getMember());
 
     // when
-    HashMap 응답값 = restaurantService.participateRestaurantList(유저.getMember());
+    HashMap 응답값 = restaurantService.participateRestaurantList(유저.getMember(), 0, 5);
 
     // then
     assertEquals(1, 응답값.get("participationCount"));
-    assertEquals(1, 응답값.get("contributionCount"));
   }
 
   @Test
