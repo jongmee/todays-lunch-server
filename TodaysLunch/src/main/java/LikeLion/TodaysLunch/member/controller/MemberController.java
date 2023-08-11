@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class MemberController {
+
     private final MemberService memberService;
     private final EmailService emailService;
 
@@ -36,62 +37,66 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<String> join(@Valid @RequestBody MemberJoinDto memberDto) {
+    public ResponseEntity<Void> join(@Valid @RequestBody MemberJoinDto memberDto) {
         memberService.join(memberDto);
-        return ResponseEntity.ok("성공적으로 가입했습니다.");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberLoginDto memberDto) {
-        TokenDto.LoginToken tokenDto = memberService.login(memberDto);
-        return ResponseEntity.ok(tokenDto);
+    public ResponseEntity<TokenDto.LoginToken> login(@RequestBody MemberLoginDto memberDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.login(memberDto));
     }
 
-    @PostMapping("/logout-member")
-    public ResponseEntity<String> logout(@RequestHeader String Authorization) {
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestHeader String Authorization) {
         memberService.logout(Authorization);
-        return ResponseEntity.ok("성공적으로 로그아웃했습니다.");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/mypage")
     public ResponseEntity<MyPageDto> myPage(@AuthenticationPrincipal Member member){
-        return ResponseEntity.ok(memberService.myPage(member));
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.myPage(member));
     }
 
     @PatchMapping("/mypage/food-category")
-    public ResponseEntity<Void> myFoodCategoryEdit(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> myFoodCategoryEdit(
+        @AuthenticationPrincipal Member member,
         @RequestBody MyFoodCategoryEditDto categoryList){
         memberService.myFoodCategoryEdit(member, categoryList.getCategoryList());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping("/mypage/location-category")
-    public ResponseEntity<Void> myLocationCategoryEdit(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> myLocationCategoryEdit(
+        @AuthenticationPrincipal Member member,
         @RequestBody MyLocationCategoryEditDto categoryList){
         memberService.myLocationCategoryEdit(member, categoryList.getCategoryList());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping("/mypage/nickname")
-    public ResponseEntity<Void> nicknameEdit(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> nicknameEdit(
+        @AuthenticationPrincipal Member member,
         @RequestParam String nickname){
         memberService.nicknameEdit(member, nickname);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping("/mypage/icon")
-    public ResponseEntity<Void> iconEdit(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> iconEdit(
+        @AuthenticationPrincipal Member member,
         @RequestParam MultipartFile icon) throws IOException {
         memberService.iconEdit(member, icon);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody TokenDto.Refresh memberDto) {
-        TokenDto.LoginToken tokenDto = memberService.refresh(memberDto);
-        return ResponseEntity.ok(tokenDto);
+    public ResponseEntity<TokenDto.LoginToken> refresh(@RequestBody TokenDto.Refresh memberDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.refresh(memberDto));
     }
+
     @PostMapping("/email-verification/send-code")
-    public ResponseEntity<?> sendEmailCode(@RequestParam String email) throws Exception {
+    public ResponseEntity<String> sendEmailCode(@RequestParam String email) throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(emailService.sendEmailVerifyMessage(email));
     }
 
@@ -104,14 +109,16 @@ public class MemberController {
     }
 
     @PatchMapping("/change-pw")
-    public ResponseEntity<Void> passwordEdit(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> passwordEdit(
+        @AuthenticationPrincipal Member member,
         @RequestParam String password){
         memberService.changePassword(member, password, false);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/check-pw")
-    public ResponseEntity<Boolean> checkPassword(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Boolean> checkPassword(
+        @AuthenticationPrincipal Member member,
         @RequestParam String password) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.checkPassword(member, password));
     }

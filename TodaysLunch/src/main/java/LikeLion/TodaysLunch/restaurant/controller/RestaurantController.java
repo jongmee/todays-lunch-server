@@ -4,16 +4,13 @@ package LikeLion.TodaysLunch.restaurant.controller;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantDto;
-import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
-import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
-import LikeLion.TodaysLunch.member.service.MemberService;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,12 +27,10 @@ public class RestaurantController {
   static final String ORDER = "descending";
 
   private final RestaurantService restaurantService;
-  private final MemberService memberService;
 
   @Autowired
-  public RestaurantController(RestaurantService restaurantService, MemberService memberService) {
+  public RestaurantController(RestaurantService restaurantService) {
     this.restaurantService = restaurantService;
-    this.memberService = memberService;
   }
 
   @GetMapping("")
@@ -55,9 +50,10 @@ public class RestaurantController {
   }
 
   @GetMapping("/{restaurantId}")
-  public ResponseEntity<RestaurantDto> detail(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member) {
-    RestaurantDto restaurantDto = restaurantService.restaurantDetail(restaurantId, member);
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantDto);
+  public ResponseEntity<RestaurantDto> detail(
+      @PathVariable Long restaurantId,
+      @AuthenticationPrincipal Member member) {
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.restaurantDetail(restaurantId, member));
   }
 
   @PostMapping("/judges")
@@ -86,23 +82,29 @@ public class RestaurantController {
   }
 
   @GetMapping("/judges/{restaurantId}")
-  public ResponseEntity<JudgeRestaurantDto> judgeRestaurantDetail(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+  public ResponseEntity<JudgeRestaurantDto> judgeRestaurantDetail(
+      @PathVariable Long restaurantId,
+      @AuthenticationPrincipal Member member){
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantDetail(restaurantId, member));
   }
 
   @PostMapping("/judges/{restaurantId}/agree")
-  public ResponseEntity<Void> addAgreement(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+  public ResponseEntity<Void> addAgreement(
+      @PathVariable Long restaurantId,
+      @AuthenticationPrincipal Member member){
     restaurantService.addOrCancelAgreement(member, restaurantId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @GetMapping("/recommendation")
-  public ResponseEntity<?> recommendation(@AuthenticationPrincipal Member member){
+  public ResponseEntity<List<RestaurantRecommendDto>> recommendation(@AuthenticationPrincipal Member member){
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.recommendation(member));
   }
 
   @PostMapping("/{restaurantId}/mystore")
-  public ResponseEntity<Void> addMyStore(@PathVariable Long restaurantId, @AuthenticationPrincipal Member member){
+  public ResponseEntity<Void> addMyStore(
+      @PathVariable Long restaurantId,
+      @AuthenticationPrincipal Member member){
     restaurantService.addMyStore(restaurantId, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
