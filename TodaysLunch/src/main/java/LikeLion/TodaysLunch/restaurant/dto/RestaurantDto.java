@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.restaurant.dto;
 
+import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class RestaurantDto {
   private String foodCategory;
   private String locationCategory;
   private String locationTag;
-  private Set<String> recommendCategoryList;
+  private Set<RecommendCategoryDto.CategoryList> recommendCategoryList;
   private String imageUrl;
   private Double latitude;
   private Double longitude;
@@ -47,7 +48,7 @@ public class RestaurantDto {
         .locationTag(restaurant.getLocationTag().getName())
         .recommendCategoryList(
             restaurant.getRecommendCategoryRelations().stream()
-            .map(rel -> rel.getRecommendCategory().getName())
+            .map(rel -> RecommendCategoryDto.CategoryList.fromEntity(rel.getRecommendCategory()))
             .collect(Collectors.toSet())
         )
         .imageUrl(image)
