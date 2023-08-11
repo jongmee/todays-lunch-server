@@ -346,10 +346,19 @@ public class RestaurantService {
       participation.add(ParticipateRestaurantDto.fromEntity(restaurant, liked));
     }
 
+    HashMap response = new HashMap<>();
+    response.put("participation", participation);
+    response.put("participationCount", participationCount);
+
+    return response;
+  }
+
+  public HashMap<String, Object> contributeRestaurantList(Member member) {
     List<Restaurant> contributionRestaurant = restaurantContributorRepository.findAllByMember(member)
         .stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
     Integer contributionCount = contributionRestaurant.size();
     List<ParticipateRestaurantDto> contribution = new ArrayList<>(contributionCount);
+    Boolean liked;
     for(Restaurant restaurant: contributionRestaurant){
       if(isNotAlreadyMyStore(member, restaurant))
         liked = false;
@@ -359,8 +368,6 @@ public class RestaurantService {
     }
 
     HashMap response = new HashMap<>();
-    response.put("participation", participation);
-    response.put("participationCount", participationCount);
     response.put("contribution", contribution);
     response.put("contributionCount", contributionCount);
 

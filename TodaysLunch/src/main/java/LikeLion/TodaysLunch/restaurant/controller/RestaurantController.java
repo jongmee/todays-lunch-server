@@ -122,4 +122,9 @@ public class RestaurantController {
   public ResponseEntity<HashMap<String, Object>> participateRestaurantList (@AuthenticationPrincipal Member member){
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.participateRestaurantList(member));
   }
+
+  @GetMapping("/contribute-restaurant")
+  public ResponseEntity<HashMap<String, Object>> contributeRestaurantList (@AuthenticationPrincipal Member member){
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.contributeRestaurantList(member));
+  }
 }
