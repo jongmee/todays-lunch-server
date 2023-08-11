@@ -39,8 +39,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -54,8 +52,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @RequiredArgsConstructor
-public class
-RestaurantService {
+public class RestaurantService {
+
+  private final Double EARTH_RADIUS = 6370d; // 지구 반지름(km)
+
+  @Autowired
+  private S3UploadService s3UploadService;
+
   private final DataJpaRestaurantRepository restaurantRepository;
   private final FoodCategoryRepository foodCategoryRepository;
   private final LocationTagRepository locationTagRepository;
@@ -68,11 +71,6 @@ RestaurantService {
   private final RestaurantContributorRepository restaurantContributorRepository;
   private final MyStoreRepository myStoreRepository;
   private final MemberLocationCategoryRepository memberLocationCategoryRepository;
-
-  @Autowired
-  private S3UploadService s3UploadService;
-
-  private final Double EARTH_RADIUS = 6370d; // 지구 반지름(km)
 
   public HashMap<String, Object> restaurantList(
       String foodCategory, String locationCategory,

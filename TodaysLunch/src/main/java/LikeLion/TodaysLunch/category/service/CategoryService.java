@@ -1,8 +1,5 @@
 package LikeLion.TodaysLunch.category.service;
 
-import LikeLion.TodaysLunch.category.domain.FoodCategory;
-import LikeLion.TodaysLunch.category.domain.LocationCategory;
-import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
@@ -29,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class CategoryService {
+
   private final FoodCategoryRepository foodCategoryRepository;
   private final LocationCategoryRepository locationCategoryRepository;
   private final LocationTagRepository locationTagRepository;
@@ -41,21 +39,25 @@ public class CategoryService {
         .stream().map(c-> FoodCategoryDto.fromEntity(c))
         .collect(Collectors.toList());
   }
+
   public List<LocationCategoryDto> locationCategoryList(){
     return locationCategoryRepository.findAll()
         .stream().map(c->LocationCategoryDto.fromEntity(c))
         .collect(Collectors.toList());
   }
+
   public List<LocationTagDto> locationTagList(){
     return locationTagRepository.findAll()
         .stream().map(c->LocationTagDto.fromEntity(c))
         .collect(Collectors.toList());
   }
+
   public List<RecommendCategoryDto.CategoryList> recommendCategoryList(){
     return recommendCategoryRepository.findAll()
         .stream().map(c->RecommendCategoryDto.CategoryList.fromEntity(c))
         .collect(Collectors.toList());
   }
+
   public void recommendCategoryEdit(Long restaurantId, RecommendCategoryDto.Edit editDto){
     Map<RecommendCategory, RestaurantRecommendCategoryRelation> pair = new HashMap<>();
     Restaurant restaurant = restaurantRepository.findById(restaurantId)

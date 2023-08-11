@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RestaurantSpecification {
+
   public static Specification<Restaurant> equalRegistrant(Member registrant){
     return new Specification<Restaurant>() {
       @Override
@@ -34,6 +35,7 @@ public class RestaurantSpecification {
       }
     };
   }
+
   public static Specification<Restaurant> equalFoodCategory(FoodCategory foodCategory){
     return new Specification<Restaurant>() {
       @Override

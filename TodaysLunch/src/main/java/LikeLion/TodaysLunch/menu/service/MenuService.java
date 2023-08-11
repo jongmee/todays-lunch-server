@@ -20,32 +20,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
+@RequiredArgsConstructor
 public class MenuService {
+
   @Autowired
   private S3UploadService s3UploadService;
+
   private final MenuRepository menuRepository;
   private final ImageUrlRepository imageUrlRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
   private final RestaurantContributorRepository restaurantContributorRepository;
   private final MenuImageRepository menuImageRepository;
-  @Autowired
-  public MenuService(MenuRepository menuRepository,
-      ImageUrlRepository imageUrlRepository,
-      DataJpaRestaurantRepository restaurantRepository,
-      RestaurantContributorRepository restaurantContributorRepository,
-      MenuImageRepository menuImageRepository) {
-    this.menuRepository = menuRepository;
-    this.imageUrlRepository = imageUrlRepository;
-    this.restaurantRepository = restaurantRepository;
-    this.restaurantContributorRepository = restaurantContributorRepository;
-    this.menuImageRepository = menuImageRepository;
-  }
 
   public Page<MenuDto> findMenuByRestaurant(Long restaurantId, Pageable pageable){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
@@ -56,7 +48,6 @@ public class MenuService {
   public Page<Menu> searchMenuName(String keyword, Pageable pageable){
     return menuRepository.findByNameContaining(keyword, pageable);
   }
-
 
   public void create(MenuDto menuDto, Long restaurantId, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
