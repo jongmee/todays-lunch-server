@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FoodCategoryDto {
+
   private Long id;
   private String name;
+
   public static FoodCategoryDto fromEntity(FoodCategory foodCategory){
     return FoodCategoryDto.builder()
         .id(foodCategory.getId())

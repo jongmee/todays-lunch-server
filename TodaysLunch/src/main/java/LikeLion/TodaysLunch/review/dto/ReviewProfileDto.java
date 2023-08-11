@@ -11,15 +11,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ReviewProfileDto {
+
   private Long id;
   private String email;
   private String nickname;
   private String icon;
+
   public static ReviewProfileDto fromEntity(Member member){
     String image = null;
-    if(member.getIcon() != null){
+    if(member.getIcon() != null)
       image = member.getIcon().getImageUrl();
-    }
+
     return ReviewProfileDto.builder()
         .id(member.getId())
         .email(member.getEmail())

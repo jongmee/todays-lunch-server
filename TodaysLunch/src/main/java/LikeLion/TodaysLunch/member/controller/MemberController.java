@@ -43,7 +43,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto.LoginToken> login(@RequestBody MemberLoginDto memberDto) {
+    public ResponseEntity<TokenDto.LoginToken> login(@Valid @RequestBody MemberLoginDto memberDto) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.login(memberDto));
     }
 
@@ -91,8 +91,8 @@ public class MemberController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenDto.LoginToken> refresh(@RequestBody TokenDto.Refresh memberDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.refresh(memberDto));
+    public ResponseEntity<TokenDto.LoginToken> refresh(@Valid @RequestBody TokenDto.Refresh refreshDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.refresh(refreshDto));
     }
 
     @PostMapping("/email-verification/send-code")

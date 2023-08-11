@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RestaurantRecommendDto {
+
   private Long id;
   private String restaurantName;
   private String foodCategory;
@@ -21,11 +22,12 @@ public class RestaurantRecommendDto {
   private Long lowestPrice;
   private Long reviewCount;
   private Boolean liked;
+
   public static RestaurantRecommendDto fromEntity(Restaurant restaurant, Boolean liked){
     String image = null;
-    if (restaurant.getImageUrl() != null){
+    if (restaurant.getImageUrl() != null)
       image = restaurant.getImageUrl().getImageUrl();
-    }
+
     return RestaurantRecommendDto.builder()
         .id(restaurant.getId())
         .foodCategory(restaurant.getFoodCategory().getName())

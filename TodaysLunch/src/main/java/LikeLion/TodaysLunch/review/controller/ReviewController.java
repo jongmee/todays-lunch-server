@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.review.dto.ReviewDto;
 import LikeLion.TodaysLunch.review.service.ReviewService;
 import java.util.HashMap;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class ReviewController {
 
   @PostMapping("/restaurants/{restaurantId}/reviews")
   public ResponseEntity<Void> createReview(
-      @RequestBody ReviewDto reviewDto,
+      @Valid @RequestBody ReviewDto reviewDto,
       @PathVariable Long restaurantId,
       @AuthenticationPrincipal Member member){
     reviewService.create(restaurantId, reviewDto, member);
@@ -56,7 +57,7 @@ public class ReviewController {
   public  ResponseEntity<Void> updateReview(
       @PathVariable Long reviewId,
       @PathVariable Long restaurantId,
-      @RequestBody ReviewDto dto){
+      @Valid @RequestBody ReviewDto dto){
     reviewService.update(reviewId, restaurantId, dto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }

@@ -10,20 +10,21 @@ import lombok.NoArgsConstructor;
 public class RecommendCategoryDto {
   @Getter
   @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
   public static class Edit {
     private List<Long> recommendCategoryIds;
-    @Builder
-    public Edit(List<Long> recommendCategoryIds) {
-      this.recommendCategoryIds = recommendCategoryIds;
-    }
   }
+
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
   public static class CategoryList {
+
     private Long id;
     private String name;
     private String color;
+
     public static CategoryList fromEntity(RecommendCategory category) {
       return CategoryList.builder()
           .id(category.getId())

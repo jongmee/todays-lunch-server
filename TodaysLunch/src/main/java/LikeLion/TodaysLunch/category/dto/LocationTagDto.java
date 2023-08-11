@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class LocationTagDto {
+
   private Long id;
   private String name;
+
   public static LocationTagDto fromEntity(LocationTag locationTag){
     return LocationTagDto.builder()
         .id(locationTag.getId())

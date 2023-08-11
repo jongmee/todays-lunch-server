@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MenuDto {
+
   private Long id;
   @NotBlank(message="메뉴의 이름은 공백, 빈칸이 될 수 없습니다.")
   private String name;
@@ -21,6 +22,7 @@ public class MenuDto {
   private Long imageCount;
   private Long salePrice;
   private String saleExplain;
+
   public static MenuDto fromEntity(Menu menu){
     return MenuDto.builder()
         .id(menu.getId())
@@ -31,9 +33,11 @@ public class MenuDto {
         .imageCount(menu.getImageCount())
         .build();
   }
+
   public Menu toEntity(){
     return Menu.builder().name(name).price(price).salePrice(salePrice).saleExplain(saleExplain).build();
   }
+
   public Menu updateMenu(Menu menu){
     return menu.updateMenu(name, price, salePrice, saleExplain);
   }

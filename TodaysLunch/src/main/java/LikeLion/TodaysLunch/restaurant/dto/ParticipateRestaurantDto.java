@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ParticipateRestaurantDto {
+
   private Long id;
   private String restaurantName;
   private String imageUrl;
@@ -22,9 +23,9 @@ public class ParticipateRestaurantDto {
 
   public static ParticipateRestaurantDto fromEntity(Restaurant restaurant, Boolean liked){
     String image = null;
-    if (restaurant.getImageUrl() != null){
+    if (restaurant.getImageUrl() != null)
       image = restaurant.getImageUrl().getImageUrl();
-    }
+
     return ParticipateRestaurantDto.builder()
         .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())

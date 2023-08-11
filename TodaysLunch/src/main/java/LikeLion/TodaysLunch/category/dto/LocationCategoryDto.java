@@ -11,14 +11,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class LocationCategoryDto {
+
   private Long id;
   private String name;
+
   public static LocationCategoryDto fromEntity(LocationCategory locationCategory){
     return LocationCategoryDto.builder()
         .id(locationCategory.getId())
         .name(locationCategory.getName())
         .build();
   }
+
   public LocationCategory toEntity(){
     return LocationCategory.builder()
         .id(id)

@@ -10,6 +10,7 @@ import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +60,7 @@ public class RestaurantController {
   @PostMapping("/judges")
   public ResponseEntity<Void> createJudge(
       @RequestPart(required = false) MultipartFile restaurantImage,
-      @RequestPart JudgeRestaurantCreateDto createDto,
+      @Valid @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
     restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);

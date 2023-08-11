@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RestaurantDto {
+
   private Long id;
   private String restaurantName;
   private String foodCategory;
@@ -31,15 +32,16 @@ public class RestaurantDto {
   private List<ContributorDto> contributors;
   private String bestReview;
   private Boolean liked;
+
   public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors, Boolean liked){
     String image = null;
-    if (restaurant.getImageUrl() != null){
+    if (restaurant.getImageUrl() != null)
       image = restaurant.getImageUrl().getImageUrl();
-    }
+
     ContributorDto registrant = null;
-    if(restaurant.getRegistrant() != null){
+    if(restaurant.getRegistrant() != null)
       registrant = ContributorDto.fromEntity(restaurant.getRegistrant());
-    }
+
     return RestaurantDto.builder()
         .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())
@@ -49,8 +51,7 @@ public class RestaurantDto {
         .recommendCategoryList(
             restaurant.getRecommendCategoryRelations().stream()
             .map(rel -> RecommendCategoryDto.CategoryList.fromEntity(rel.getRecommendCategory()))
-            .collect(Collectors.toSet())
-        )
+            .collect(Collectors.toSet()))
         .imageUrl(image)
         .latitude(restaurant.getLatitude())
         .longitude(restaurant.getLongitude())

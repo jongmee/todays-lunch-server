@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MyPageDto {
+
   private Long id;
   private String nickname;
   private String icon;
@@ -25,7 +26,9 @@ public class MyPageDto {
   private Integer contributionCount;
   private Integer myStoreCount;
   private Integer reviewCount;
-  public static MyPageDto fromEntity(Member member,
+
+  public static MyPageDto fromEntity(
+      Member member,
       List<FoodCategoryDto> foodCategoryList,
       List<LocationCategoryDto> locationCategoryList,
       Integer myJudgeCount,
@@ -34,9 +37,9 @@ public class MyPageDto {
       Integer reviewCount,
       Integer contributionCount){
     String image = null;
-    if (member.getIcon() != null){
+    if (member.getIcon() != null)
       image = member.getIcon().getImageUrl();
-    }
+
     return MyPageDto.builder()
         .id(member.getId())
         .nickname(member.getNickname())

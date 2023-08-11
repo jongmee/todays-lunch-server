@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class JudgeRestaurantDto {
+
   private Long id;
   private String restaurantName;
   private String introduction;
@@ -23,15 +24,16 @@ public class JudgeRestaurantDto {
   private String locationCategory;
   private String locationTag;
   private Boolean agreed;
+
   public static JudgeRestaurantDto fromEntity(Restaurant restaurant, Boolean agreed){
     String image = null;
-    if (restaurant.getImageUrl() != null){
+    if (restaurant.getImageUrl() != null)
       image = restaurant.getImageUrl().getImageUrl();
-    }
+
     String registrant = null;
-    if(restaurant.getRegistrant() != null){
+    if(restaurant.getRegistrant() != null)
       registrant = restaurant.getRegistrant().getNickname();
-    }
+
     return JudgeRestaurantDto.builder()
         .id(restaurant.getId())
         .restaurantName(restaurant.getRestaurantName())
