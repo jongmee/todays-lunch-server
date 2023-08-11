@@ -269,6 +269,27 @@ class MenuServiceTest extends ServiceTest {
     assertThat(수정시간).isAfter(비교시간);
   }
 
+  @Test
+  void 메뉴의_세일정보_삭제하기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+
+    MenuDto 새로운_메뉴 = MenuDto.builder().name("사케동").price(15000L).salePrice(10000L).saleExplain("서강대학생전용입니다").build();
+    menuService.create(새로운_메뉴, 정식맛집.getRestaurant().getId(), 유저.getMember());
+    Menu 등록된_메뉴 = menuRepository.findByName("사케동")
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+
+    // when
+    MenuDto 수정_요청 = MenuDto.builder().name("사케동").price(15000L).build();
+    menuService.update(수정_요청, 정식맛집.getRestaurant().getId(), 등록된_메뉴.getId(), 유저.getMember());
+
+    // then
+    Menu 수정된_메뉴 = menuRepository.findByName("사케동")
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+    assertEquals(null, 수정된_메뉴.getSalePrice());
+  }
+
   private MultipartFile 이미지_가져오기(String imageName) throws IOException {
     File file = new File(new File("").getAbsolutePath() + "/src/test/resources/testImage/"+imageName);
     FileItem fileItem = new DiskFileItem("originFile", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
