@@ -219,6 +219,14 @@ public class MenuService {
     return responseMap;
   }
 
+  public void setBestMenuImage(Long imageId){
+    MenuImage menuImage = menuImageRepository.findById(imageId)
+        .orElseThrow(() -> new NotFoundException("메뉴와 이미지의 관계"));
+
+    menuImage.setBest(true);
+    menuImageRepository.save(menuImage);
+  }
+
   private void createRestaurantContributor(Restaurant restaurant, Member member){
     if(restaurantContributorRepository.findByRestaurantAndMember(restaurant, member).isEmpty()){
       RestaurantContributor contributor = RestaurantContributor.builder()

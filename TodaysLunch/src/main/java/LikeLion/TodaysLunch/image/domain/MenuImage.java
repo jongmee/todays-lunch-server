@@ -31,4 +31,6 @@ public class MenuImage {
     this.menu = menu;
     this.isBest = false;
   }
+
+  public void setBest(Boolean best) {   isBest = best;  }
 }
