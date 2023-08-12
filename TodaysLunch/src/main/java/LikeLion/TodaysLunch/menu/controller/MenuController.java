@@ -105,6 +105,7 @@ public class MenuController {
 
   @PostMapping("/menus/best")
   public ResponseEntity<Void> setBestMenuImage(@RequestParam Long imageId){
+    menuService.setBestMenuImage(imageId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 }
