@@ -8,6 +8,8 @@ import LikeLion.TodaysLunch.customized.domain.MemberFoodCategory;
 import LikeLion.TodaysLunch.customized.domain.MemberLocationCategory;
 import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
+import LikeLion.TodaysLunch.member.dto.AdminJoinDto;
+import LikeLion.TodaysLunch.member.dto.JoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.member.dto.MyPageDto;
@@ -99,7 +101,7 @@ public class MemberService {
 
     }
 
-    private void validateDuplication(MemberJoinDto memberDto) {
+    private void validateDuplication(JoinDto memberDto) {
         if (memberRepository.findByEmail(memberDto.getEmail()).isPresent()) {
             throw new DuplicationException("이메일");
         }
@@ -267,6 +269,14 @@ public class MemberService {
             return true;
         }
         return false;
+    }
+
+    public void adminJoin(AdminJoinDto joinDto){
+        validateDuplication(joinDto);
+
+        Member member = joinDto.toEntity(passwordEncoder.encode(joinDto.getPassword()));
+
+        memberRepository.save(member);
     }
 
 }

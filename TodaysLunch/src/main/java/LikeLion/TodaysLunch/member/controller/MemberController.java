@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.member.controller;
 
 import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.member.dto.AdminJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.customized.dto.MyFoodCategoryEditDto;
@@ -121,5 +122,11 @@ public class MemberController {
         @AuthenticationPrincipal Member member,
         @RequestParam String password) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.checkPassword(member, password));
+    }
+
+    @PostMapping("/admin-join")
+    public ResponseEntity<Void> adminJoin(@Valid @RequestBody AdminJoinDto memberDto) {
+        memberService.adminJoin(memberDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
