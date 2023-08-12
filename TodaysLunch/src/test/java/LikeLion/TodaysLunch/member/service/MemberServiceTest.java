@@ -2,7 +2,10 @@ package LikeLion.TodaysLunch.member.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.member.dto.AdminJoinDto;
+import LikeLion.TodaysLunch.member.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.skeleton.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.TestUser;
 import java.util.ArrayList;
@@ -44,5 +47,45 @@ class MemberServiceTest extends ServiceTest {
 
     // then
     assertEquals(true,응답);
+  }
+
+  @Test
+  void 일반유저_회원가입하기(){
+    // given
+    MemberJoinDto 회원가입_요청 = MemberJoinDto.builder()
+        .email("qwer1234@naver.com")
+        .password("1234")
+        .nickname("일반유저")
+        .foodCategoryList(new ArrayList<>(Arrays.asList("한식")))
+        .locationCategoryList(new ArrayList<>(Arrays.asList("서강대")))
+        .build();
+
+    // when
+    memberService.join(회원가입_요청);
+
+    // then
+    Member 등록된_유저 = testUserEnviron.memberRepository().findByEmail("qwer1234@naver.com")
+        .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
+    assertEquals("일반유저", 등록된_유저.getNickname());
+    assertEquals(Arrays.asList("ROLE_USER"), 등록된_유저.getRoles());
+  }
+
+  @Test
+  void 관리자_회원가입하기(){
+    // given
+    AdminJoinDto 회원가입_요청 = AdminJoinDto.builder()
+        .email("qwer1234@naver.com")
+        .password("1234")
+        .nickname("관리자")
+        .build();
+
+    // when
+    memberService.adminJoin(회원가입_요청);
+
+    // then
+    Member 등록된_관리자 = testUserEnviron.memberRepository().findByEmail("qwer1234@naver.com")
+        .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
+    assertEquals("관리자", 등록된_관리자.getNickname());
+    assertEquals(Arrays.asList("ROLE_ADMIN"), 등록된_관리자.getRoles());
   }
 }
