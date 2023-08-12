@@ -97,4 +97,14 @@ public class MenuController {
     menuService.deleteImage(menuId, imageId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
+
+  @GetMapping("/menus/sale")
+  public ResponseEntity<HashMap<String, Object>> saleMenuList(Pageable pageable){
+    return ResponseEntity.status(HttpStatus.OK).body(menuService.saleMenuList(pageable));
+  }
+
+  @PostMapping("/menus/best")
+  public ResponseEntity<Void> setBestMenuImage(@RequestParam Long imageId){
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
 }

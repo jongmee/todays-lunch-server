@@ -22,9 +22,15 @@ public class MenuImage {
   @JoinColumn(nullable = false)
   private Menu menu;
 
+  @Column(nullable = false)
+  private Boolean isBest;
+
   @Builder
   public MenuImage(ImageUrl imagePk, Menu menu){
     this.imagePk = imagePk.getId();
     this.menu = menu;
+    this.isBest = false;
   }
+
+  public void setBest(Boolean best) {   isBest = best;  }
 }

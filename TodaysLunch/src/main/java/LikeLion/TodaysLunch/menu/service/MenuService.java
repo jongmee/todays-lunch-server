@@ -5,6 +5,7 @@ import LikeLion.TodaysLunch.image.domain.MenuImage;
 import LikeLion.TodaysLunch.image.repository.MenuImageRepository;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.menu.domain.Menu;
+import LikeLion.TodaysLunch.menu.dto.SaleMenuDto;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.domain.RestaurantContributor;
 import LikeLion.TodaysLunch.menu.dto.MenuDto;
@@ -17,6 +18,7 @@ import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepositor
 import LikeLion.TodaysLunch.external.S3UploadService;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -190,6 +192,39 @@ public class MenuService {
     s3UploadService.delete(imageUrl.getImageUrl());
     imageUrlRepository.delete(imageUrl);
     menuImageRepository.delete(relation);
+  }
+
+  public HashMap<String, Object> saleMenuList(Pageable pageable){
+    Page<Menu> saleMenuList = menuRepository.findAllBySalePriceIsNotNull(pageable);
+
+    List<SaleMenuDto> saleMenuDtos = new ArrayList<>();
+
+    String image;
+    for(Menu menu: saleMenuList){
+        image = null;
+        MenuImage imageUrl = menuImageRepository.findByMenuAndIsBest(menu, true)
+            .orElseGet(()->menuImageRepository.findByMenu(menu)
+                .orElseGet(()->null));
+        if (imageUrl != null) {
+          image = imageUrlRepository.findById(imageUrl.getImagePk())
+              .orElseThrow(() -> new NotFoundException("이미지")).getImageUrl();
+        }
+      saleMenuDtos.add(SaleMenuDto.fromEntity(menu, image));
+    }
+
+    HashMap<String, Object> responseMap = new HashMap<>();
+    responseMap.put("data", saleMenuDtos);
+    responseMap.put("totalPages", saleMenuList.getTotalPages());
+
+    return responseMap;
+  }
+
+  public void setBestMenuImage(Long imageId){
+    MenuImage menuImage = menuImageRepository.findById(imageId)
+        .orElseThrow(() -> new NotFoundException("메뉴와 이미지의 관계"));
+
+    menuImage.setBest(true);
+    menuImageRepository.save(menuImage);
   }
 
   private void createRestaurantContributor(Restaurant restaurant, Member member){
