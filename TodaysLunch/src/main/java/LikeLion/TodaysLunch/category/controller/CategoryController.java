@@ -79,4 +79,36 @@ public class CategoryController {
     categoryService.createRecommendCategory(categoryDto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
+
+  @PatchMapping("/food-category/{foodCategoryId}")
+  ResponseEntity<Void> updateFoodCategory(
+      @PathVariable Long foodCategoryId,
+      @RequestParam String foodCategoryName){
+    categoryService.updateFoodCategory(foodCategoryId, foodCategoryName);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @PatchMapping("/location-category/{locationCategoryId}")
+  ResponseEntity<Void> updateLocationCategory(
+      @PathVariable Long locationCategoryId,
+      @RequestParam LocationCategoryDto locationCategoryDto){
+    categoryService.updateLocationCategory(locationCategoryId, locationCategoryDto);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @PatchMapping("/location-tag/{locationTagId}")
+  ResponseEntity<Void> updateLocationTag(
+      @PathVariable Long locationTagId,
+      @RequestParam LocationTagDto locationTagDto){
+    categoryService.updateLocationTag(locationTagId, locationTagDto);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @PatchMapping("/recommend-category/{recommendCategoryId}")
+  ResponseEntity<Void> updateRecommendCategory(
+      @PathVariable Long recommendCategoryId,
+      @RequestParam RecommendCategoryDto.CategoryList categoryDto){
+    categoryService.updateRecommendCategory(recommendCategoryId, categoryDto);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
 }

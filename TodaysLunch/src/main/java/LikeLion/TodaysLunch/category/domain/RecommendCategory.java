@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.category.domain;
 
+import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,5 +29,11 @@ public class RecommendCategory {
   public RecommendCategory(String name, String color) {
     this.name = name;
     this.color = color;
+  }
+
+  public RecommendCategory update(RecommendCategoryDto.CategoryList categoryDto){
+    this.name = categoryDto.getName();
+    this.color = categoryDto.getColor();
+    return this;
   }
 }

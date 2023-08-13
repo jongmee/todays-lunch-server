@@ -19,6 +19,7 @@ public class RecommendCategoryDto {
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
+  @Getter
   public static class CategoryList {
 
     private Long id;
