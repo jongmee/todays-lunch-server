@@ -134,4 +134,28 @@ public class CategoryService {
         .orElseThrow(() -> new NotFoundException("추천 카테고리"));
     recommendCategoryRepository.save(recommendCategory.update(categoryDto));
   }
+
+  public void deleteFoodCategory(Long id){
+    FoodCategory foodCategory = foodCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+    foodCategoryRepository.delete(foodCategory);
+  }
+
+  public void deleteLocationCategory(Long id){
+    LocationCategory locationCategory = locationCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+    locationCategoryRepository.delete(locationCategory);
+  }
+
+  public void deleteLocationTag(Long id){
+    LocationTag locationTag = locationTagRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("위치 태그"));
+    locationTagRepository.delete(locationTag);
+  }
+
+  public void deleteRecommendCategory(Long id){
+    RecommendCategory recommendCategory = recommendCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+    recommendCategoryRepository.delete(recommendCategory);
+  }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -109,6 +110,30 @@ public class CategoryController {
       @PathVariable Long recommendCategoryId,
       @RequestParam RecommendCategoryDto.CategoryList categoryDto){
     categoryService.updateRecommendCategory(recommendCategoryId, categoryDto);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @DeleteMapping("/food-category/{foodCategoryId}")
+  ResponseEntity<Void> deleteFoodCategory(@PathVariable Long foodCategoryId){
+    categoryService.deleteFoodCategory(foodCategoryId);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @DeleteMapping("/location-category/{locationCategoryId}")
+  ResponseEntity<Void> deleteLocationCategory(@PathVariable Long locationCategoryId){
+    categoryService.deleteLocationCategory(locationCategoryId);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @DeleteMapping("/location-tag/{locationTagId}")
+  ResponseEntity<Void> deleteLocationTag(@PathVariable Long locationTagId){
+    categoryService.deleteLocationTag(locationTagId);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @DeleteMapping("/recommend-category/{recommendCategoryId}")
+  ResponseEntity<Void> deleteRecommendCategory(@PathVariable Long recommendCategoryId){
+    categoryService.deleteRecommendCategory(recommendCategoryId);;
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 }
