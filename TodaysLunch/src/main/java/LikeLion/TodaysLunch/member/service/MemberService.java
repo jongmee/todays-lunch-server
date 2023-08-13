@@ -30,6 +30,7 @@ import LikeLion.TodaysLunch.review.repository.ReviewRepository;
 import LikeLion.TodaysLunch.external.S3UploadService;
 import LikeLion.TodaysLunch.external.JwtTokenProvider;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -167,19 +168,26 @@ public class MemberService {
         return MyPageDto.fromEntity(member, foodCategoryList, locationCategoryList, myJudgeCount, participationCount, myStoreCount, reviewCount, contributionCount);
     }
 
-    public void myFoodCategoryEdit(Member member, List<FoodCategoryDto> categoryList) {;
+    public void myFoodCategoryEdit(Member member, List<String> categoryList) {;
         List<FoodCategory> newCategoryList = categoryList.stream()
-            .map(f->f.toEntity())
+            .map(f->foodCategoryRepository.findByName(f)
+                .orElseThrow(() -> new NotFoundException("음식 카테고리")))
             .collect(Collectors.toList());
+
         List<FoodCategory> existingCategoryList = memberFoodCategoryRepository.findAllByMember(member)
             .stream()
             .map(f->f.getFoodCategory())
             .collect(Collectors.toList());
+
+        List<FoodCategory> temporaryList = new ArrayList<>(existingCategoryList);
         existingCategoryList.removeAll(newCategoryList);
+        newCategoryList.removeAll(temporaryList);
+
         for(FoodCategory obj: existingCategoryList){
             MemberFoodCategory memberFoodCategory = memberFoodCategoryRepository.findByFoodCategoryAndMember(obj, member).get();
             memberFoodCategoryRepository.delete(memberFoodCategory);
         }
+
         for(FoodCategory obj: newCategoryList){
             MemberFoodCategory memberFoodCategory = MemberFoodCategory.builder()
                 .foodCategory(obj)
@@ -189,19 +197,26 @@ public class MemberService {
         }
     }
 
-    public void myLocationCategoryEdit(Member member, List<LocationCategoryDto> categoryList) {
+    public void myLocationCategoryEdit(Member member, List<String> categoryList) {
         List<LocationCategory> newCategoryList = categoryList.stream()
-            .map(f->f.toEntity())
+            .map(f->locationCategoryRepository.findByName(f)
+                .orElseThrow(() -> new NotFoundException("위치 카테고리")))
             .collect(Collectors.toList());
+
         List<LocationCategory> existingCategoryList = memberLocationCategoryRepository.findAllByMember(member)
             .stream()
             .map(f->f.getLocationCategory())
             .collect(Collectors.toList());
+
+        List<LocationCategory> temporaryList = new ArrayList<>(existingCategoryList);
         existingCategoryList.removeAll(newCategoryList);
+        newCategoryList.removeAll(temporaryList);
+
         for(LocationCategory obj: existingCategoryList){
             MemberLocationCategory memberLocationCategory = memberLocationCategoryRepository.findByLocationCategoryAndMember(obj, member).get();
             memberLocationCategoryRepository.delete(memberLocationCategory);
         }
+
         for(LocationCategory obj: newCategoryList){
             MemberLocationCategory memberLocationCategory = MemberLocationCategory.builder()
                 .locationCategory(obj)
