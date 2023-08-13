@@ -2,6 +2,10 @@ package LikeLion.TodaysLunch.member.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import LikeLion.TodaysLunch.customized.domain.MemberFoodCategory;
+import LikeLion.TodaysLunch.customized.domain.MemberLocationCategory;
+import LikeLion.TodaysLunch.customized.repository.MemberFoodCategoryRepository;
+import LikeLion.TodaysLunch.customized.repository.MemberLocationCategoryRepository;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.member.dto.AdminJoinDto;
@@ -10,6 +14,7 @@ import LikeLion.TodaysLunch.skeleton.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.TestUser;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +24,10 @@ class MemberServiceTest extends ServiceTest {
   private MemberService memberService;
   @Autowired
   private EmailService emailService;
+  @Autowired
+  private MemberLocationCategoryRepository memberLocationCategoryRepository;
+  @Autowired
+  private MemberFoodCategoryRepository memberFoodCategoryRepository;
 
   @Test
   void 임시비밀번호로_비밀번호_변경하기() throws Exception {
@@ -50,7 +59,7 @@ class MemberServiceTest extends ServiceTest {
   }
 
   @Test
-  void 일반유저_회원가입하기(){
+  void 일반유저_회원가입하기() {
     // given
     MemberJoinDto 회원가입_요청 = MemberJoinDto.builder()
         .email("qwer1234@naver.com")
@@ -71,7 +80,7 @@ class MemberServiceTest extends ServiceTest {
   }
 
   @Test
-  void 관리자_회원가입하기(){
+  void 관리자_회원가입하기() {
     // given
     AdminJoinDto 회원가입_요청 = AdminJoinDto.builder()
         .email("qwer1234@naver.com")
@@ -87,5 +96,55 @@ class MemberServiceTest extends ServiceTest {
         .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
     assertEquals("관리자", 등록된_관리자.getNickname());
     assertEquals(Arrays.asList("ROLE_ADMIN"), 등록된_관리자.getRoles());
+  }
+
+  @Test
+  void 유저의_위치카테고리_수정하기() {
+    // given
+    MemberJoinDto 회원가입_요청 = MemberJoinDto.builder()
+        .email("qwer1234@naver.com")
+        .password("1234")
+        .nickname("일반유저")
+        .foodCategoryList(new ArrayList<>(Arrays.asList("한식")))
+        .locationCategoryList(new ArrayList<>(Arrays.asList("서강대")))
+        .build();
+    memberService.join(회원가입_요청);
+
+    Member 등록된_유저 = testUserEnviron.memberRepository().findByEmail("qwer1234@naver.com")
+        .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
+
+    // when
+    memberService.myLocationCategoryEdit(등록된_유저, new ArrayList<>(Arrays.asList("서강대","서울대")));
+
+    // then
+    List<MemberLocationCategory> 등록된_유저의_위치카테고리 = memberLocationCategoryRepository.findAllByMember(등록된_유저);
+    assertEquals(2, 등록된_유저의_위치카테고리.size());
+    assertEquals("서강대", 등록된_유저의_위치카테고리.get(0).getLocationCategory().getName());
+    assertEquals("서울대", 등록된_유저의_위치카테고리.get(1).getLocationCategory().getName());
+  }
+
+  @Test
+  void 유저의_음식카테고리_수정하기() {
+    // given
+    MemberJoinDto 회원가입_요청 = MemberJoinDto.builder()
+        .email("qwer1234@naver.com")
+        .password("1234")
+        .nickname("일반유저")
+        .foodCategoryList(new ArrayList<>(Arrays.asList("한식")))
+        .locationCategoryList(new ArrayList<>(Arrays.asList("서강대")))
+        .build();
+    memberService.join(회원가입_요청);
+
+    Member 등록된_유저 = testUserEnviron.memberRepository().findByEmail("qwer1234@naver.com")
+        .orElseThrow(() -> new NotFoundException("해당 이메일로 가입된 유저"));
+
+    // when
+    memberService.myFoodCategoryEdit(등록된_유저, new ArrayList<>(Arrays.asList("한식", "중식")));
+
+    // then
+    List<MemberFoodCategory> 등록된_유저의_음식카테고리 = memberFoodCategoryRepository.findAllByMember(등록된_유저);
+    assertEquals(2, 등록된_유저의_음식카테고리.size());
+    assertEquals("한식", 등록된_유저의_음식카테고리.get(0).getFoodCategory().getName());
+    assertEquals("중식", 등록된_유저의_음식카테고리.get(1).getFoodCategory().getName());
   }
 }
