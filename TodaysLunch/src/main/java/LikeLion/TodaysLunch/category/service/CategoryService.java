@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.category.service;
 
+import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
@@ -90,5 +91,13 @@ public class CategoryService {
       restaurant.setUpdatedDate(LocalDateTime.now());
       restaurantRepository.save(restaurant);
     }
+  }
+
+  public void createFoodCategory(String foodCategoryName){
+    foodCategoryRepository.save(FoodCategory.builder().name(foodCategoryName).build());
+  }
+
+  public void createLocationCategory(LocationCategoryDto locationCategoryDto){
+    locationCategoryRepository.save(locationCategoryDto.toEntity());
   }
 }
