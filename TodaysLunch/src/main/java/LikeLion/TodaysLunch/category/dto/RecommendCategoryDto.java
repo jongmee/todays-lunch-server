@@ -32,5 +32,12 @@ public class RecommendCategoryDto {
           .color(category.getColor())
           .build();
     }
+
+    public RecommendCategory toEntity() {
+      return RecommendCategory.builder()
+          .name(name)
+          .color(color)
+          .build();
+    }
   }
 }

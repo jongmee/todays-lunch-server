@@ -100,4 +100,12 @@ public class CategoryService {
   public void createLocationCategory(LocationCategoryDto locationCategoryDto){
     locationCategoryRepository.save(locationCategoryDto.toEntity());
   }
+
+  public void createLocationTag(LocationTagDto locationTagDto){
+    locationTagRepository.save(locationTagDto.toEntity());
+  }
+
+  public void createRecommendCategory(RecommendCategoryDto.CategoryList categoryDto){
+    recommendCategoryRepository.save(categoryDto.toEntity());
+  }
 }

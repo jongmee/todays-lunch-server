@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.category.controller;
 
+import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationTagDto;
@@ -64,6 +65,18 @@ public class CategoryController {
   @PostMapping("/location-category")
   ResponseEntity<Void> createLocationCategory(@RequestBody LocationCategoryDto locationCategoryDto){
     categoryService.createLocationCategory(locationCategoryDto);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @PostMapping("/location-tag")
+  ResponseEntity<Void> createLocationTag(@RequestBody LocationTagDto locationTagDto){
+    categoryService.createLocationTag(locationTagDto);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @PostMapping("/recommend-category")
+  ResponseEntity<Void> createRecommendCategory(@RequestBody RecommendCategoryDto.CategoryList categoryDto){
+    categoryService.createRecommendCategory(categoryDto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 }
