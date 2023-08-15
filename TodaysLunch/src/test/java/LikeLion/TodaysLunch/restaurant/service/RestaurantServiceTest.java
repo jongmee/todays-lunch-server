@@ -58,6 +58,7 @@ class RestaurantServiceTest extends ServiceTest {
     Restaurant restaurantForTest = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
         .orElseThrow(() -> new NotFoundException("맛집"));
     assertEquals("참 맛있어요!", restaurantForTest.getIntroduction());
+    assertEquals(1, restaurantForTest.getRecommendCategoryRelations().size());
   }
 
   @Test
@@ -112,7 +113,7 @@ class RestaurantServiceTest extends ServiceTest {
     HashMap 응답값 = restaurantService.participateRestaurantList(유저.getMember(), 0, 5);
 
     // then
-    assertEquals(1, 응답값.get("participationCount"));
+    assertEquals(1L, 응답값.get("participationCount"));
   }
 
   @Test
