@@ -105,7 +105,7 @@ public class RestaurantService {
     List<ContributorDto> contributors =
         restaurantContributorRepository.findAllByRestaurant(restaurant)
         .stream()
-        .map(c->c.getMember())
+        .map(RestaurantContributor::getMember)
         .map(ContributorDto::fromEntity)
         .collect(Collectors.toList());
 
@@ -118,10 +118,7 @@ public class RestaurantService {
     return RestaurantDto.fromEntity(restaurant, contributors, liked);
   }
 
-  public void createJudgeRestaurant(JudgeRestaurantCreateDto createDto,
-      MultipartFile restaurantImage, Member member)
-      throws IOException {
-
+  public void createJudgeRestaurant(JudgeRestaurantCreateDto createDto, MultipartFile restaurantImage, Member member) throws IOException {
     FoodCategory foodCategory = foodCategoryRepository.findByName(createDto.getFoodCategoryName())
         .orElseThrow(() -> new NotFoundException("음식 카테고리"));
 
@@ -175,16 +172,12 @@ public class RestaurantService {
     restaurantRepository.save(restaurant);
 
     List<Long> recommendCategoryIds= createDto.getRecommendCategoryIds();
-    for(int i = 0; i < recommendCategoryIds.size(); i++){
-      RecommendCategory recommendCategory = recommendCategoryRepository.findById(recommendCategoryIds.get(i))
+    for(Long id: recommendCategoryIds){
+      RecommendCategory recommendCategory = recommendCategoryRepository.findById(id)
           .orElseThrow(() -> new NotFoundException("추천 카테고리"));
       RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, recommendCategory);
       restRecmdRelRepository.save(relation);
       restaurant.addRecommendCategoryRelation(relation);
-    }
-
-    if (recommendCategoryIds.size() > 0){
-      restaurantRepository.save(restaurant);
     }
   }
 
@@ -194,7 +187,8 @@ public class RestaurantService {
 
     Member registrant = null;
     if (registrantId != null){
-      registrant = memberRepository.findById(registrantId).get();
+      registrant = memberRepository.findById(registrantId)
+          .orElseThrow(() -> new NotFoundException("유저"));
     }
 
     Pageable pageable = determineSort(page, size, sort, order);
@@ -222,11 +216,13 @@ public class RestaurantService {
   public JudgeRestaurantDto judgeRestaurantDetail(Long id, Member member){
     Restaurant restaurant = restaurantRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("맛집"));
+
     Boolean agreed;
     if(isNotAlreadyAgree(member, restaurant))
       agreed = false;
     else
       agreed = true;
+
     return JudgeRestaurantDto.fromEntity(restaurant, agreed);
   }
 
@@ -264,6 +260,7 @@ public class RestaurantService {
       spec = spec.or(RestaurantSpecification.equalLocationCategory(locationCategory));
     }
     spec = spec.and(RestaurantSpecification.equalJudgement(false));
+
     List<Restaurant> pool = restaurantRepository.findAll(spec);
     int poolSize = pool.size();
 
@@ -279,7 +276,7 @@ public class RestaurantService {
       size--;
     }
 
-    List<RestaurantRecommendDto> recommendDtos = new ArrayList<>();
+    List<RestaurantRecommendDto> recommendDtos = new ArrayList<>(recommend.size());
 
     Boolean liked;
     for(Restaurant restaurant: recommend){
@@ -296,6 +293,7 @@ public class RestaurantService {
   public void addMyStore(Long restaurantId, Member member) {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
+
     if (isNotAlreadyMyStore(member, restaurant)) {
       Long count = member.getMyStoreCount();
       member.setMyStoreCount(++count);
@@ -312,11 +310,12 @@ public class RestaurantService {
     }
   }
 
-  public HashMap<String, Object> myStoreList(
-      int page, int size, Member member) {
+  public HashMap<String, Object> myStoreList(int page, int size, Member member) {
     Pageable pageable = PageRequest.of(page, size);
+
     Page<MyStore> myStores = myStoreRepository.findAllByMember(member,pageable);
-    List<Restaurant> restaurantList = myStores.stream().map(s->s.getRestaurant()).collect(Collectors.toList());
+    List<Restaurant> restaurantList = myStores.stream().map(MyStore::getRestaurant).collect(Collectors.toList());
+
     List<RestaurantListDto> restaurantDtos = new ArrayList<>(restaurantList.size());
     Boolean liked;
     for(Restaurant restaurant: restaurantList){
@@ -326,11 +325,12 @@ public class RestaurantService {
         liked = true;
       restaurantDtos.add(RestaurantListDto.fromEntity(restaurant, liked));
     }
+
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", restaurantDtos);
     responseMap.put("totalPages", myStores.getTotalPages());
-    return responseMap;
 
+    return responseMap;
   }
 
   public HashMap<String, Object> participateRestaurantList(Member member, int page, int size) {
@@ -382,15 +382,7 @@ public class RestaurantService {
     return response;
   }
 
-  private boolean isNotAlreadyMyStore(Member member, Restaurant restaurant){
-    return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
-  }
-
-  private boolean isNotAlreadyAgree(Member member, Restaurant restaurant){
-    return agreementRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
-  }
-
-  public Pageable determineSort(int page, int size, String sort, String order){
+  private Pageable determineSort(int page, int size, String sort, String order){
     Pageable pageable = PageRequest.of(page, size);
     if(order.equals("ascending")){
       pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
@@ -400,7 +392,7 @@ public class RestaurantService {
     return pageable;
   }
 
-  public Specification<Restaurant> determineSpecification(String foodCategory, String locationCategory,
+  private Specification<Restaurant> determineSpecification(String foodCategory, String locationCategory,
       String locationTag, Long recommendCategoryId, String keyword, Boolean judgement, Member member){
     FoodCategory foodCategoryObj;
     LocationCategory locationCategoryObj;
@@ -433,6 +425,14 @@ public class RestaurantService {
     }
 
     return spec.and(RestaurantSpecification.equalJudgement(judgement));
+  }
+
+  private boolean isNotAlreadyMyStore(Member member, Restaurant restaurant){
+    return myStoreRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
+  }
+
+  private boolean isNotAlreadyAgree(Member member, Restaurant restaurant){
+    return agreementRepository.findByMemberAndRestaurant(member, restaurant).isEmpty();
   }
 
   private Double getDistance(Double latitude1, Double longitude1, Double latitude2, Double longitude2){
