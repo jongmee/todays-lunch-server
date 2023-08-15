@@ -1,7 +1,9 @@
 package LikeLion.TodaysLunch.restaurant.dto;
 
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
+import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto.CategoryList;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class RestaurantDto {
   private List<ContributorDto> contributors;
   private String bestReview;
   private Boolean liked;
+  private LocalDate updatedDate;
 
   public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors, Boolean liked){
     String image = null;
@@ -50,7 +53,7 @@ public class RestaurantDto {
         .locationTag(restaurant.getLocationTag().getName())
         .recommendCategoryList(
             restaurant.getRecommendCategoryRelations().stream()
-            .map(rel -> RecommendCategoryDto.CategoryList.fromEntity(rel.getRecommendCategory()))
+            .map(rel -> CategoryList.fromEntity(rel.getRecommendCategory()))
             .collect(Collectors.toSet()))
         .imageUrl(image)
         .latitude(restaurant.getLatitude())
@@ -62,6 +65,7 @@ public class RestaurantDto {
         .contributors(contributors)
         .bestReview(restaurant.getBestReview())
         .liked(liked)
+        .updatedDate(restaurant.getUpdatedDate().toLocalDate())
         .build();
   }
 }
