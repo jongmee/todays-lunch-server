@@ -1,13 +1,15 @@
 package LikeLion.TodaysLunch.category.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
+import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
-import LikeLion.TodaysLunch.skeleton.ServiceTest;
-import LikeLion.TodaysLunch.skeleton.TestRestaurant;
+import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
+import LikeLion.TodaysLunch.skeleton.service.TestRestaurant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;

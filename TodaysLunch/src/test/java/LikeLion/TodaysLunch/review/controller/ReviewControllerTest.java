@@ -9,12 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import LikeLion.TodaysLunch.review.dto.MyReviewDto;
-import LikeLion.TodaysLunch.skeleton.ControllerTest;
+import LikeLion.TodaysLunch.skeleton.controller.ControllerTest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.http.MediaType;

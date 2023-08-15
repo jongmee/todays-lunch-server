@@ -1,6 +1,7 @@
-package LikeLion.TodaysLunch.skeleton;
+package LikeLion.TodaysLunch.skeleton.controller;
 
 import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.skeleton.controller.WithMockCustomMember;
 import java.util.Collections;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
