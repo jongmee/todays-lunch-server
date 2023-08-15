@@ -14,18 +14,23 @@ public class LocationCategoryDto {
 
   private Long id;
   private String name;
+  private Double latitude;
+  private Double longitude;
 
   public static LocationCategoryDto fromEntity(LocationCategory locationCategory){
     return LocationCategoryDto.builder()
         .id(locationCategory.getId())
         .name(locationCategory.getName())
+        .latitude(locationCategory.getLatitude())
+        .longitude(locationCategory.getLongitude())
         .build();
   }
 
   public LocationCategory toEntity(){
     return LocationCategory.builder()
-        .id(id)
         .name(name)
+        .latitude(latitude)
+        .longitude(longitude)
         .build();
   }
 }

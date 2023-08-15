@@ -1,12 +1,17 @@
 package LikeLion.TodaysLunch.category.domain;
 
+import LikeLion.TodaysLunch.category.dto.LocationTagDto;
 import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class LocationTag {
 
   @Id
@@ -21,5 +26,12 @@ public class LocationTag {
 
   @Column(nullable = false)
   private Double longitude;
+
+  public LocationTag update(LocationTagDto locationTagDto){
+    this.name = locationTagDto.getName();
+    this.latitude = locationTagDto.getLatitude();
+    this.longitude = locationTagDto.getLongitude();
+    return this;
+  }
 
 }

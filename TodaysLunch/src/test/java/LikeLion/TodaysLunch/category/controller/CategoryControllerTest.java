@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
-import LikeLion.TodaysLunch.skeleton.ControllerTest;
+import LikeLion.TodaysLunch.skeleton.controller.ControllerTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;

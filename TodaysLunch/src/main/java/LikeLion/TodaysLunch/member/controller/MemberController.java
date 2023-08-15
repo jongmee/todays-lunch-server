@@ -1,10 +1,10 @@
 package LikeLion.TodaysLunch.member.controller;
 
+import LikeLion.TodaysLunch.customized.dto.MyCategoryEditDto;
 import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.member.dto.AdminJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberLoginDto;
-import LikeLion.TodaysLunch.customized.dto.MyFoodCategoryEditDto;
-import LikeLion.TodaysLunch.customized.dto.MyLocationCategoryEditDto;
 import LikeLion.TodaysLunch.member.dto.MyPageDto;
 import LikeLion.TodaysLunch.member.dto.TokenDto;
 import LikeLion.TodaysLunch.member.service.EmailService;
@@ -61,7 +61,7 @@ public class MemberController {
     @PatchMapping("/mypage/food-category")
     public ResponseEntity<Void> myFoodCategoryEdit(
         @AuthenticationPrincipal Member member,
-        @RequestBody MyFoodCategoryEditDto categoryList){
+        @RequestBody MyCategoryEditDto categoryList){
         memberService.myFoodCategoryEdit(member, categoryList.getCategoryList());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -69,7 +69,7 @@ public class MemberController {
     @PatchMapping("/mypage/location-category")
     public ResponseEntity<Void> myLocationCategoryEdit(
         @AuthenticationPrincipal Member member,
-        @RequestBody MyLocationCategoryEditDto categoryList){
+        @RequestBody MyCategoryEditDto categoryList){
         memberService.myLocationCategoryEdit(member, categoryList.getCategoryList());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -121,5 +121,11 @@ public class MemberController {
         @AuthenticationPrincipal Member member,
         @RequestParam String password) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.checkPassword(member, password));
+    }
+
+    @PostMapping("/admin-join")
+    public ResponseEntity<Void> adminJoin(@Valid @RequestBody AdminJoinDto memberDto) {
+        memberService.adminJoin(memberDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

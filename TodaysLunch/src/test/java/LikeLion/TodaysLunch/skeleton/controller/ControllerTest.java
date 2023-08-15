@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.skeleton;
+package LikeLion.TodaysLunch.skeleton.controller;
 
 
 import LikeLion.TodaysLunch.external.JwtTokenProvider;

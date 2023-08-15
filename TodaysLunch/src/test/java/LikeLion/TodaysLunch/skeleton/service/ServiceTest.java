@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.skeleton;
+package LikeLion.TodaysLunch.skeleton.service;
 
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
@@ -137,10 +137,11 @@ public abstract class ServiceTest {
   }
 
   private LocationTag 위치태그_생성하기(String name, Double latitude, Double longitude) {
-    LocationTag locationTag = new LocationTag();
-    locationTag.setName(name);
-    locationTag.setLatitude(latitude);
-    locationTag.setLongitude(longitude);
+    LocationTag locationTag = LocationTag.builder()
+        .name(name)
+        .latitude(latitude)
+        .longitude(longitude)
+        .build();
     return locationTagRepository.save(locationTag);
   }
 

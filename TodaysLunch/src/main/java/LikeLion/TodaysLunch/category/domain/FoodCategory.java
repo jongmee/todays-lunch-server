@@ -21,4 +21,9 @@ public class FoodCategory {
   @Column(nullable = false)
   private String name;
 
+  public FoodCategory update(String name) {
+    this.name = name;
+    return this;
+  }
+
 }

@@ -1,5 +1,6 @@
 package LikeLion.TodaysLunch.category.domain;
 
+import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,12 @@ public class LocationCategory {
 
   @Column(nullable = false)
   private Double longitude;
+
+  public LocationCategory update(LocationCategoryDto locationCategoryDto){
+    this.name = locationCategoryDto.getName();
+    this.latitude = locationCategoryDto.getLatitude();
+    this.longitude = locationCategoryDto.getLongitude();
+    return this;
+  }
 
 }

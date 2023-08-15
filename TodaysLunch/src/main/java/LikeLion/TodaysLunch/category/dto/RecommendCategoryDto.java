@@ -19,6 +19,7 @@ public class RecommendCategoryDto {
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
+  @Getter
   public static class CategoryList {
 
     private Long id;
@@ -30,6 +31,13 @@ public class RecommendCategoryDto {
           .id(category.getId())
           .name(category.getName())
           .color(category.getColor())
+          .build();
+    }
+
+    public RecommendCategory toEntity() {
+      return RecommendCategory.builder()
+          .name(name)
+          .color(color)
           .build();
     }
   }

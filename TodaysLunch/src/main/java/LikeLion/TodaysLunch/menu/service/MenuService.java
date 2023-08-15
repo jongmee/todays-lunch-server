@@ -225,6 +225,14 @@ public class MenuService {
 
     menuImage.setBest(true);
     menuImageRepository.save(menuImage);
+
+    List<MenuImage> menuImages = menuImageRepository.findAllByMenu(menuImage.getMenu());
+    for(MenuImage m: menuImages){
+      if(m.getImagePk() != imageId && m.getIsBest()){
+        m.setBest(false);
+        menuImageRepository.save(m);
+      }
+    }
   }
 
   private void createRestaurantContributor(Restaurant restaurant, Member member){

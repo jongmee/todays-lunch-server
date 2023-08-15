@@ -1,5 +1,8 @@
 package LikeLion.TodaysLunch.category.service;
 
+import LikeLion.TodaysLunch.category.domain.FoodCategory;
+import LikeLion.TodaysLunch.category.domain.LocationCategory;
+import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
@@ -90,5 +93,69 @@ public class CategoryService {
       restaurant.setUpdatedDate(LocalDateTime.now());
       restaurantRepository.save(restaurant);
     }
+  }
+
+  public void createFoodCategory(String foodCategoryName){
+    foodCategoryRepository.save(FoodCategory.builder().name(foodCategoryName).build());
+  }
+
+  public void createLocationCategory(LocationCategoryDto locationCategoryDto){
+    locationCategoryRepository.save(locationCategoryDto.toEntity());
+  }
+
+  public void createLocationTag(LocationTagDto locationTagDto){
+    locationTagRepository.save(locationTagDto.toEntity());
+  }
+
+  public void createRecommendCategory(RecommendCategoryDto.CategoryList categoryDto){
+    recommendCategoryRepository.save(categoryDto.toEntity());
+  }
+
+  public void updateFoodCategory(Long id, String foodCategoryName){
+    FoodCategory foodCategory = foodCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+    foodCategoryRepository.save(foodCategory.update(foodCategoryName));
+  }
+
+  public void updateLocationCategory(Long id, LocationCategoryDto locationCategoryDto){
+    LocationCategory locationCategory = locationCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+    locationCategoryRepository.save(locationCategory.update(locationCategoryDto));
+  }
+
+  public void updateLocationTag(Long id, LocationTagDto locationTagDto){
+    LocationTag locationTag = locationTagRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("위치 태그"));
+    locationTagRepository.save(locationTag.update(locationTagDto));
+  }
+
+  public  void updateRecommendCategory(Long id, RecommendCategoryDto.CategoryList categoryDto){
+    RecommendCategory recommendCategory = recommendCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+    recommendCategoryRepository.save(recommendCategory.update(categoryDto));
+  }
+
+  public void deleteFoodCategory(Long id){
+    FoodCategory foodCategory = foodCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+    foodCategoryRepository.delete(foodCategory);
+  }
+
+  public void deleteLocationCategory(Long id){
+    LocationCategory locationCategory = locationCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("위치 카테고리"));
+    locationCategoryRepository.delete(locationCategory);
+  }
+
+  public void deleteLocationTag(Long id){
+    LocationTag locationTag = locationTagRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("위치 태그"));
+    locationTagRepository.delete(locationTag);
+  }
+
+  public void deleteRecommendCategory(Long id){
+    RecommendCategory recommendCategory = recommendCategoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("추천 카테고리"));
+    recommendCategoryRepository.delete(recommendCategory);
   }
 }

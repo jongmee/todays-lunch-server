@@ -2,23 +2,17 @@ package LikeLion.TodaysLunch.member.dto;
 
 import LikeLion.TodaysLunch.member.domain.Member;
 import java.util.Collections;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class MemberJoinDto extends JoinDto{
-
-  private List<String> foodCategoryList;
-  private List<String> locationCategoryList;
+public class AdminJoinDto extends JoinDto{
 
   @Builder
-  public MemberJoinDto(String email, String password, String nickname, List<String> foodCategoryList, List<String> locationCategoryList){
+  public AdminJoinDto(String email, String password, String nickname){
     this.email = email;
     this.password = password;
     this.nickname = nickname;
-    this.foodCategoryList = foodCategoryList;
-    this.locationCategoryList = locationCategoryList;
   }
 
   public Member toEntity(String encodedPassword){
@@ -26,9 +20,10 @@ public class MemberJoinDto extends JoinDto{
         .nickname(nickname)
         .email(email)
         .password(encodedPassword)
-        .roles(Collections.singletonList("ROLE_USER"))
+        .roles(Collections.singletonList("ROLE_ADMIN"))
         .myStoreCount(0L)
         .temporaryPw(false)
         .build();
   }
+
 }
