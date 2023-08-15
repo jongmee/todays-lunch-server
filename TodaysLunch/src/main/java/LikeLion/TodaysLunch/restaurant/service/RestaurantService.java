@@ -337,9 +337,9 @@ public class RestaurantService {
     Pageable pageable = PageRequest.of(page, size);
 
     Page<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false, pageable);
-    Integer participationCount = participateRestaurant.getSize();
+    long participationCount = participateRestaurant.getTotalElements();
 
-    List<ParticipateRestaurantDto> participation = new ArrayList<>(participationCount);
+    List<ParticipateRestaurantDto> participation = new ArrayList<>((int)participationCount);
     Boolean liked;
     for(Restaurant restaurant: participateRestaurant){
       if(isNotAlreadyMyStore(member, restaurant))
@@ -362,9 +362,9 @@ public class RestaurantService {
 
     Page<RestaurantContributor> relations = restaurantContributorRepository.findAllByMember(member, pageable);
     List<Restaurant> contributionRestaurant = relations.stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
-    Integer contributionCount = relations.getSize();
+    long contributionCount = relations.getTotalElements();
 
-    List<ParticipateRestaurantDto> contribution = new ArrayList<>(contributionCount);
+    List<ParticipateRestaurantDto> contribution = new ArrayList<>((int)contributionCount);
     Boolean liked;
     for(Restaurant restaurant: contributionRestaurant){
       if(isNotAlreadyMyStore(member, restaurant))
