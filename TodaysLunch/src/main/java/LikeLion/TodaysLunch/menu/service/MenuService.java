@@ -56,6 +56,7 @@ public class MenuService {
   public void create(MenuDto menuDto, Long restaurantId, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
+
     Long price = menuDto.getPrice();
     Long salePrice = menuDto.getSalePrice();
     if(salePrice != null && salePrice < price)
@@ -66,14 +67,14 @@ public class MenuService {
     if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
 
-    Menu menu = menuDto.toEntity();
-    menu.setRestaurant(restaurant);
-    menuRepository.save(menu);
-
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
     restaurantRepository.save(restaurant);
+
+    Menu menu = menuDto.toEntity();
+    menu.setRestaurant(restaurant);
+    menuRepository.save(menu);
   }
 
   public void update(MenuDto menuDto, Long restaurantId, Long menuId, Member member){
@@ -92,14 +93,13 @@ public class MenuService {
     if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
 
-    menu = menuDto.updateMenu(menu);
-
-    menuRepository.save(menu);
-
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
     restaurantRepository.save(restaurant);
+
+    menu = menuDto.updateMenu(menu);
+    menuRepository.save(menu);
   }
 
   public Menu delete(Long restaurantId, Long menuId){
@@ -110,6 +110,7 @@ public class MenuService {
     for(MenuImage relation: relations){
       menuImageRepository.delete(relation);
     }
+
     List<ImageUrl> imageUrls = relations.stream()
         .map(MenuImage::getImagePk)
         .map(pk->imageUrlRepository.findById(pk).orElseThrow(() -> new NotFoundException("이미지")))
@@ -133,7 +134,7 @@ public class MenuService {
       menu.setImageCount(++count);
       menu.getRestaurant().setUpdatedDate(LocalDateTime.now());
       restaurantRepository.save(menu.getRestaurant());
-      Menu savedMenu = menuRepository.save(menu);
+      menuRepository.save(menu);
 
       // s3에 이미지 저장
       String savedUrl = s3UploadService.upload(image, "menu");

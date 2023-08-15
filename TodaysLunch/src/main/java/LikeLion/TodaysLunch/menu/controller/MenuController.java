@@ -75,7 +75,7 @@ public class MenuController {
 
   @PostMapping("/menus/{menuId}/images")
   public ResponseEntity<Void> createMenuImage(
-      @RequestParam MultipartFile menuImage,
+      @RequestParam(value = "menu-image") MultipartFile menuImage,
       @PathVariable Long menuId,
       @AuthenticationPrincipal Member member) throws IOException {
     menuService.createImage(menuImage, menuId, member);
@@ -104,7 +104,7 @@ public class MenuController {
   }
 
   @PostMapping("/menus/best")
-  public ResponseEntity<Void> setBestMenuImage(@RequestParam Long imageId){
+  public ResponseEntity<Void> setBestMenuImage(@RequestParam(value = "image-id") Long imageId){
     menuService.setBestMenuImage(imageId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
