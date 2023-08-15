@@ -282,6 +282,22 @@ class RestaurantServiceTest extends ServiceTest {
     assertEquals("유저2", 상세정보.getContributors().get(1).getNickname());
   }
 
+  @Test
+  void 유저가_기여한_맛집_목록보기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집1 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집2 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+
+    // when
+    메뉴_생성하기("사케동", 15000L, 정식맛집1.getRestaurant().getId(), 유저.getMember());
+    메뉴_생성하기("명란우동", 15000L, 정식맛집2.getRestaurant().getId(), 유저.getMember());
+    HashMap 응답값 = restaurantService.contributeRestaurantList(유저.getMember(), 0, 5);
+
+    // then
+    assertEquals(2L, 응답값.get("contributionCount"));
+  }
+
   Menu 메뉴_생성하기(String 메뉴이름, Long 가격, Long 맛집ID, Member 등록자){
     MenuDto 새로운_메뉴 = MenuDto.builder().name(메뉴이름).price(가격).build();
     menuService.create(새로운_메뉴, 맛집ID, 등록자);
