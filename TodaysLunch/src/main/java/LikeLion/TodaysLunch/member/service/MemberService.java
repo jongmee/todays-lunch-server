@@ -102,12 +102,6 @@ public class MemberService {
 
     }
 
-    private void validateDuplication(JoinDto memberDto) {
-        if (memberRepository.findByEmail(memberDto.getEmail()).isPresent()) {
-            throw new DuplicationException("이메일");
-        }
-    }
-
     public TokenDto.LoginToken login(MemberLoginDto memberDto) {
         Member member = memberRepository.findByEmail(memberDto.getEmail())
             .orElseThrow(() -> new NotFoundException("이메일"));
@@ -120,6 +114,7 @@ public class MemberService {
         redisTemplate.opsForValue()
             .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
         tokenDto.setId(member.getId());
+
         return tokenDto;
     }
 
@@ -127,17 +122,21 @@ public class MemberService {
         jwtTokenProvider.validateToken(refreshDto.getRefreshToken());
 
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshDto.getAccessToken());
-        String refreshToken = (String)redisTemplate.opsForValue().get(authentication.getName());
+
+        String refreshToken = redisTemplate.opsForValue().get(authentication.getName());
         if(!refreshToken.equals(refreshDto.getRefreshToken())){
             throw new UnauthorizedException("Refresh Token 정보가 일치하지 않습니다.");
         }
+
         Member member = memberRepository.findByEmail(authentication.getName())
             .orElseThrow(() -> new NotFoundException("유저"));
+
         TokenDto.LoginToken tokenDto = jwtTokenProvider.createToken(authentication.getName(), member.getRoles());
         redisTemplate.opsForValue()
             .set(member.getEmail(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpiresTime(), TimeUnit.MILLISECONDS);
         tokenDto.setId(member.getId());
         tokenDto.setTemporaryPw(member.getTemporaryPw());
+
         return tokenDto;
     }
 
@@ -154,17 +153,22 @@ public class MemberService {
     public MyPageDto  myPage(Member member) {
         List<LocationCategoryDto> locationCategoryList = memberLocationCategoryRepository.findAllByMember(member)
             .stream()
-            .map(s->LocationCategoryDto.fromEntity(s.getLocationCategory()))
+            .map(MemberLocationCategory::getLocationCategory)
+            .map(LocationCategoryDto::fromEntity)
             .collect(Collectors.toList());
+
         List<FoodCategoryDto> foodCategoryList = memberFoodCategoryRepository.findAllByMember(member)
             .stream()
-            .map(s->FoodCategoryDto.fromEntity(s.getFoodCategory()))
+            .map(MemberFoodCategory::getFoodCategory)
+            .map(FoodCategoryDto::fromEntity)
             .collect(Collectors.toList());
+
         Integer myJudgeCount = restaurantRepository.findAllByRegistrantAndJudgement(member, true).size();
         Integer participationCount = restaurantRepository.findAllByRegistrantAndJudgement(member, false).size();
         Integer contributionCount = restaurantContributorRepository.findAllByMember(member).size();
         Integer myStoreCount = myStoreRepository.findAllByMember(member).size();
         Integer reviewCount = reviewRepository.findAllByMember(member).size();
+
         return MyPageDto.fromEntity(member, foodCategoryList, locationCategoryList, myJudgeCount, participationCount, myStoreCount, reviewCount, contributionCount);
     }
 
@@ -176,7 +180,7 @@ public class MemberService {
 
         List<FoodCategory> existingCategoryList = memberFoodCategoryRepository.findAllByMember(member)
             .stream()
-            .map(f->f.getFoodCategory())
+            .map(MemberFoodCategory::getFoodCategory)
             .collect(Collectors.toList());
 
         List<FoodCategory> temporaryList = new ArrayList<>(existingCategoryList);
@@ -205,7 +209,7 @@ public class MemberService {
 
         List<LocationCategory> existingCategoryList = memberLocationCategoryRepository.findAllByMember(member)
             .stream()
-            .map(f->f.getLocationCategory())
+            .map(MemberLocationCategory::getLocationCategory)
             .collect(Collectors.toList());
 
         List<LocationCategory> temporaryList = new ArrayList<>(existingCategoryList);
@@ -292,6 +296,12 @@ public class MemberService {
         Member member = joinDto.toEntity(passwordEncoder.encode(joinDto.getPassword()));
 
         memberRepository.save(member);
+    }
+
+    private void validateDuplication(JoinDto memberDto) {
+        if (memberRepository.findByEmail(memberDto.getEmail()).isPresent()) {
+            throw new DuplicationException("이메일");
+        }
     }
 
 }
