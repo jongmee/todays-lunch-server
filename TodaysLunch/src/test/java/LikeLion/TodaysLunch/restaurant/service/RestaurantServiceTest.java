@@ -301,7 +301,7 @@ class RestaurantServiceTest extends ServiceTest {
   Menu 메뉴_생성하기(String 메뉴이름, Long 가격, Long 맛집ID, Member 등록자){
     MenuDto 새로운_메뉴 = MenuDto.builder().name(메뉴이름).price(가격).build();
     menuService.create(새로운_메뉴, 맛집ID, 등록자);
-    return menuRepository.findByName("사케동")
+    return menuRepository.findByName(메뉴이름)
         .orElseThrow(() -> new NotFoundException("메뉴"));
   }
 }
