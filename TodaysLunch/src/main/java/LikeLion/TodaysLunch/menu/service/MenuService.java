@@ -159,10 +159,11 @@ public class MenuService {
     return menu;
   }
 
-  public void createImage(MultipartFile image, Long menuId, Member member) throws IOException {
+  public ImageUrl createImage(MultipartFile image, Long menuId, Member member) throws IOException {
     Menu menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new NotFoundException("메뉴"));
 
+    ImageUrl re = null;
     if(image != null && !image.isEmpty()){
       Long count = menu.getImageCount();
       menu.setImageCount(++count);
@@ -180,7 +181,7 @@ public class MenuService {
           .member(member)
           .build();
 
-      imageUrlRepository.save(imageUrl);
+      re = imageUrlRepository.save(imageUrl);
 
       MenuImage relation = MenuImage.builder()
           .imagePk(imageUrl)
@@ -191,6 +192,8 @@ public class MenuService {
 
       createRestaurantContributor(menu.getRestaurant(), member);
     }
+
+    return re;
   }
 
   public HashMap<String, Object> menuImageList(Long menuId, int page, int size){
