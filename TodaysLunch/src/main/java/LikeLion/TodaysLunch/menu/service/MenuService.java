@@ -90,6 +90,9 @@ public class MenuService {
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
+
+    if(originalLowestPrice == menu.getPrice() || originalLowestPrice == menu.getSalePrice())
+      originalLowestPrice = null;
     if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
 
@@ -103,7 +106,8 @@ public class MenuService {
   }
 
   public Menu delete(Long restaurantId, Long menuId){
-    Menu menu = menuRepository.findById(menuId).get();
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
 
     // 메뉴의 image가 있다면 s3와 db에서 삭제
     List<MenuImage> relations = menuImageRepository.findAllByMenu(menu);
@@ -119,6 +123,36 @@ public class MenuService {
       ImageUrl deleteImage = imageUrls.get(i);
       s3UploadService.delete(deleteImage.getImageUrl());
       imageUrlRepository.delete(deleteImage);
+    }
+
+    // 최저 메뉴 가격 재설정
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+
+    Long originalPrice = menu.getPrice() > menu.getSalePrice() ? menu.getSalePrice() : menu.getPrice();
+    if(originalPrice == restaurant.getLowestPrice()){
+      Long price = null;
+      Long lowestPrice = 10000000L;
+
+      List<Menu> menuList = menuRepository.findAllByRestaurant(restaurant);
+      for(Menu m: menuList){
+        if(m.getId() != menu.getId()) {
+          if (m.getSalePrice() != null)
+            price = m.getPrice() > m.getSalePrice() ? m.getSalePrice() : m.getPrice();
+          else
+            price = m.getPrice();
+
+          if (lowestPrice > price)
+            lowestPrice = price;
+        }
+      }
+
+      if(lowestPrice != 10000000L)
+        restaurant.setLowestPrice(lowestPrice);
+      else
+        restaurant.setLowestPrice(null);
+
+      restaurantRepository.save(restaurant);
     }
 
     menuRepository.delete(menu);
