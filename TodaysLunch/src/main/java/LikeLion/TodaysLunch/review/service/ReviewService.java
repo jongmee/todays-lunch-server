@@ -46,8 +46,8 @@ public class ReviewService {
       Pageable pageable = PageRequest.of(0, (int)reviewRepository.count());
       List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant, pageable).getContent();
       Double sum = 0.0;
-      for(int i = 0; i < reviews.size(); i++){
-        sum += reviews.get(i).getRating();
+      for(Review r: reviews){
+        sum += r.getRating();
       }
       sum += reviewDto.getRating();
       restaurant.setRating((double)sum/count);
@@ -120,8 +120,9 @@ public class ReviewService {
 
     List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
     Double sum = 0.0;
-    for(int i = 0; i < reviews.size()-1; i++){
-      sum += reviews.get(i).getRating();
+    for(Review r: reviews){
+      if(r.getId() != reviewId)
+        sum += r.getRating();
     }
     sum += reviewDto.getRating();
     restaurant.setRating((double)sum/count);
@@ -144,8 +145,9 @@ public class ReviewService {
 
     List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
     Double sum = 0.0;
-    for(int i = 0; i < reviews.size()-1; i++){
-      sum += reviews.get(i).getRating();
+    for(Review r: reviews){
+      if(r.getId() != reviewId)
+        sum += r.getRating();
     }
     restaurant.setRating((double)sum/count);
 
