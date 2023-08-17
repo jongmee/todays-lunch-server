@@ -138,10 +138,10 @@ class ReviewServiceTest extends ServiceTest {
 
     // when
     ReviewDto 수정한_리뷰 = ReviewDto.builder().reviewContent("생각해보니까 별로인듯").rating(1).build();
-    reviewService.update(생성된_리뷰1.getId(), 맛집ID, 수정한_리뷰);
+    reviewService.update(생성된_리뷰3.getId(), 맛집ID, 수정한_리뷰);
     Double 수정된평점 = 맛집.getRestaurant().getRating();
     assertEquals((5.0+2.0+5.0)/3, 기존평점);
-    assertEquals((1.0+2.0+5.0)/3, 수정된평점);
+    assertEquals((5.0+2.0+1.0)/3, 수정된평점);
   }
 
   @Test
@@ -161,10 +161,10 @@ class ReviewServiceTest extends ServiceTest {
     Double 기존평점 = 맛집.getRestaurant().getRating();
 
     // when
-    reviewService.delete(생성된_리뷰1.getId(), 맛집ID);
+    reviewService.delete(생성된_리뷰3.getId(), 맛집ID);
     Double 수정된평점 = 맛집.getRestaurant().getRating();
     assertEquals((5.0+2.0+5.0)/3, 기존평점);
-    assertEquals((2.0+5.0)/2, 수정된평점);
+    assertEquals((5.0+2.0)/2, 수정된평점);
   }
 
   @Test
