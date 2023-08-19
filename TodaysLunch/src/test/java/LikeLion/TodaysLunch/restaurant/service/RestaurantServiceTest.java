@@ -1,13 +1,18 @@
 package LikeLion.TodaysLunch.restaurant.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.menu.domain.Menu;
 import LikeLion.TodaysLunch.menu.dto.MenuDto;
+import LikeLion.TodaysLunch.menu.repository.MenuRepository;
 import LikeLion.TodaysLunch.menu.service.MenuService;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
@@ -27,6 +32,8 @@ class RestaurantServiceTest extends ServiceTest {
   private RestaurantService restaurantService;
   @Autowired
   private MenuService menuService;
+  @Autowired
+  private MenuRepository menuRepository;
 
   @Test
   void 맛집_심사_등록하기() throws IOException {
@@ -51,6 +58,7 @@ class RestaurantServiceTest extends ServiceTest {
     Restaurant restaurantForTest = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
         .orElseThrow(() -> new NotFoundException("맛집"));
     assertEquals("참 맛있어요!", restaurantForTest.getIntroduction());
+    assertEquals(1, restaurantForTest.getRecommendCategoryRelations().size());
   }
 
   @Test
@@ -99,14 +107,13 @@ class RestaurantServiceTest extends ServiceTest {
     TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
     TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
         "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
-    MenuDto 메뉴_생성_요청 = MenuDto.builder().name("사케동").price(15000L).build();
-    menuService.create(메뉴_생성_요청, 정식맛집.getRestaurant().getId(), 유저.getMember());
+    메뉴_생성하기("사케동", 15000L, 정식맛집.getRestaurant().getId(), 유저.getMember());
 
     // when
     HashMap 응답값 = restaurantService.participateRestaurantList(유저.getMember(), 0, 5);
 
     // then
-    assertEquals(1, 응답값.get("participationCount"));
+    assertEquals(1L, 응답값.get("participationCount"));
   }
 
   @Test
@@ -254,5 +261,47 @@ class RestaurantServiceTest extends ServiceTest {
 
     // then
     assertEquals(1, 추천된_맛집들.size());
+  }
+
+  @Test
+  void 맛집기여자를_상세정보에서_반환하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestUser 유저2 = makeTestUser("qwer1@naver.com", "1234", "유저2", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+
+    // when
+    메뉴_생성하기("사케동", 15000L, 정식맛집.getRestaurant().getId(), 유저1.getMember());
+    메뉴_생성하기("명란우동", 15000L, 정식맛집.getRestaurant().getId(), 유저2.getMember());
+    RestaurantDto 상세정보 = restaurantService.restaurantDetail(정식맛집.getRestaurant().getId(), null);
+
+    // then
+    assertEquals(2, 상세정보.getContributors().size());
+    assertEquals("유저1", 상세정보.getContributors().get(0).getNickname());
+    assertEquals("유저2", 상세정보.getContributors().get(1).getNickname());
+  }
+
+  @Test
+  void 유저가_기여한_맛집_목록보기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 정식맛집1 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+    TestRestaurant 정식맛집2 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+
+    // when
+    메뉴_생성하기("사케동", 15000L, 정식맛집1.getRestaurant().getId(), 유저.getMember());
+    메뉴_생성하기("명란우동", 15000L, 정식맛집2.getRestaurant().getId(), 유저.getMember());
+    HashMap 응답값 = restaurantService.contributeRestaurantList(유저.getMember(), 0, 5);
+
+    // then
+    assertEquals(2L, 응답값.get("contributionCount"));
+  }
+
+  Menu 메뉴_생성하기(String 메뉴이름, Long 가격, Long 맛집ID, Member 등록자){
+    MenuDto 새로운_메뉴 = MenuDto.builder().name(메뉴이름).price(가격).build();
+    menuService.create(새로운_메뉴, 맛집ID, 등록자);
+    return menuRepository.findByName(메뉴이름)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
   }
 }

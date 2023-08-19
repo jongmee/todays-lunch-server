@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.review.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
@@ -12,6 +13,7 @@ import LikeLion.TodaysLunch.skeleton.service.TestRestaurant;
 import LikeLion.TodaysLunch.skeleton.service.TestUser;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -43,6 +45,33 @@ class ReviewServiceTest extends ServiceTest {
 
     //then
     assertEquals("아주맛잇군2", 맛집.getRestaurant().getBestReview());
+  }
+
+  @Test
+  void 리뷰리스트_반환하기(){
+    // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저.getMember());
+    ReviewDto 작성한_리뷰1 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(1).build();
+    ReviewDto 작성한_리뷰2 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(2).build();
+    ReviewDto 작성한_리뷰3 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(5).build();
+    ReviewDto 작성한_리뷰4 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(3).build();
+    ReviewDto 작성한_리뷰5 = ReviewDto.builder().reviewContent("정말 맛있는 집이예요!").rating(3).build();
+
+    Long 맛집ID = 맛집.getRestaurant().getId();
+    reviewService.create(맛집ID, 작성한_리뷰1, 유저.getMember());
+    reviewService.create(맛집ID, 작성한_리뷰2, 유저.getMember());
+    reviewService.create(맛집ID, 작성한_리뷰3, 유저.getMember());
+    reviewService.create(맛집ID, 작성한_리뷰4, 유저.getMember());
+    reviewService.create(맛집ID, 작성한_리뷰5, 유저.getMember());
+
+    // when
+    HashMap 응답값 = reviewService.reviewsList(맛집ID, 0, 2, "rating", "ascending", 유저.getMember());
+
+    // then
+    assertEquals(3, 응답값.get("totalPages"));
+    assertEquals(5L, 응답값.get("totalReviewCount"));
   }
 
   @Test
@@ -109,10 +138,10 @@ class ReviewServiceTest extends ServiceTest {
 
     // when
     ReviewDto 수정한_리뷰 = ReviewDto.builder().reviewContent("생각해보니까 별로인듯").rating(1).build();
-    reviewService.update(생성된_리뷰1.getId(), 맛집ID, 수정한_리뷰);
+    reviewService.update(생성된_리뷰3.getId(), 맛집ID, 수정한_리뷰);
     Double 수정된평점 = 맛집.getRestaurant().getRating();
     assertEquals((5.0+2.0+5.0)/3, 기존평점);
-    assertEquals((1.0+2.0+5.0)/3, 수정된평점);
+    assertEquals((5.0+2.0+1.0)/3, 수정된평점);
   }
 
   @Test
@@ -132,10 +161,10 @@ class ReviewServiceTest extends ServiceTest {
     Double 기존평점 = 맛집.getRestaurant().getRating();
 
     // when
-    reviewService.delete(생성된_리뷰1.getId(), 맛집ID);
+    reviewService.delete(생성된_리뷰3.getId(), 맛집ID);
     Double 수정된평점 = 맛집.getRestaurant().getRating();
     assertEquals((5.0+2.0+5.0)/3, 기존평점);
-    assertEquals((2.0+5.0)/2, 수정된평점);
+    assertEquals((5.0+2.0)/2, 수정된평점);
   }
 
   @Test

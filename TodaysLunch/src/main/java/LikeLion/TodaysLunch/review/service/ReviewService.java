@@ -46,8 +46,8 @@ public class ReviewService {
       Pageable pageable = PageRequest.of(0, (int)reviewRepository.count());
       List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant, pageable).getContent();
       Double sum = 0.0;
-      for(int i = 0; i < reviews.size(); i++){
-        sum += reviews.get(i).getRating();
+      for(Review r: reviews){
+        sum += r.getRating();
       }
       sum += reviewDto.getRating();
       restaurant.setRating((double)sum/count);
@@ -62,62 +62,67 @@ public class ReviewService {
   }
 
   public HashMap<String, Object> reviewsList(Long restaurantId, int page, int size, String sort, String order, Member member){
-    Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+
     Pageable pageable = determineSort(page, size, sort, order);
     Page<Review> reviews = reviewRepository.findAllByRestaurant(restaurant, pageable);
-    List<Review> reviewList = reviews.stream().collect(Collectors.toList());
-    List<ReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
+
+    List<ReviewDto> reviewDtos = new ArrayList<>((int)reviews.getTotalElements());
     String liked;
-    for(Review review: reviewList){
+    for(Review review: reviews){
       if(isNotAlreadyLike(member, review))
         liked = "false";
       else
         liked = "true";
       reviewDtos.add(ReviewDto.fromEntity(review, liked));
     }
+
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviewDtos);
     responseMap.put("totalPages", reviews.getTotalPages());
     responseMap.put("totalReviewCount", totalReviewCount(restaurantId));
+
     return responseMap;
   }
 
   public HashMap<String, Object> myReviewList(Long reviewerId, int page, int size, String sort, String order){
     Member reviewer = memberRepository.findById(reviewerId)
         .orElseThrow(() -> new NotFoundException("유저"));
+
     Pageable pageable = determineSort(page, size, sort, order);
     Page<Review> reviews = reviewRepository.findAllByMember(reviewer, pageable);
-    List<Review> reviewList = reviews.stream().collect(Collectors.toList());
-    List<MyReviewDto> reviewDtos = new ArrayList<>(reviewList.size());
+
+    List<MyReviewDto> reviewDtos = new ArrayList<>((int)reviews.getTotalElements());
     String liked;
-    for(Review review: reviewList){
+    for(Review review: reviews){
       if(isNotAlreadyLike(reviewer, review))
         liked = "false";
       else
         liked = "true";
       reviewDtos.add(MyReviewDto.fromEntity(review, liked));
     }
+
     HashMap<String, Object> responseMap = new HashMap<>();
     responseMap.put("data", reviewDtos);
     responseMap.put("totalPages", reviews.getTotalPages());
-    return responseMap;
-  }
 
-  public Long totalReviewCount(Long restaurantId){
-    return restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException("맛집")).getReviewCount();
+    return responseMap;
   }
 
   public void update(Long reviewId, Long restaurantId, ReviewDto reviewDto){
     Review review = reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new IllegalArgumentException("리뷰 수정 실패! 대상 리뷰가 없습니다."));
+        .orElseThrow(() -> new NotFoundException("리뷰"));
 
-    Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
     Long count = restaurant.getReviewCount();
-    Pageable pageable = PageRequest.of(0, (int)reviewRepository.count());
-    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant, pageable).getContent();
+
+    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
     Double sum = 0.0;
-    for(int i = 0; i < reviews.size()-1; i++){
-      sum += reviews.get(i).getRating();
+    for(Review r: reviews){
+      if(r.getId() != reviewId)
+        sum += r.getRating();
     }
     sum += reviewDto.getRating();
     restaurant.setRating((double)sum/count);
@@ -130,17 +135,19 @@ public class ReviewService {
 
   public void delete(Long reviewId, Long restaurantId){
     Review review = reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new IllegalArgumentException("리뷰 삭제 실패! 대상 리뷰가 없습니다."));
+        .orElseThrow(() -> new NotFoundException("리뷰"));
 
-    Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+
     Long count = restaurant.getReviewCount() - 1;
     restaurant.setReviewCount(count);
 
-    Pageable pageable = PageRequest.of(0, (int)reviewRepository.count());
-    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant, pageable).getContent();
+    List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
     Double sum = 0.0;
-    for(int i = 0; i < reviews.size()-1; i++){
-      sum += reviews.get(i).getRating();
+    for(Review r: reviews){
+      if(r.getId() != reviewId)
+        sum += r.getRating();
     }
     restaurant.setRating((double)sum/count);
 
@@ -184,7 +191,8 @@ public class ReviewService {
   private boolean isNotAlreadyLike(Member member, Review review){
     return reviewLikeRepository.findByReviewAndMember(review, member).isEmpty();
   }
-  public Pageable determineSort(int page, int size, String sort, String order){
+
+  private Pageable determineSort(int page, int size, String sort, String order){
     Pageable pageable = PageRequest.of(page, size);
     if(order.equals("ascending")){
       pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
@@ -192,5 +200,9 @@ public class ReviewService {
       pageable = PageRequest.of(page, size, Sort.by(sort).descending());
     }
     return pageable;
+  }
+
+  private Long totalReviewCount(Long restaurantId){
+    return restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException("맛집")).getReviewCount();
   }
 }

@@ -56,6 +56,7 @@ public class MenuService {
   public void create(MenuDto menuDto, Long restaurantId, Member member){
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
+
     Long price = menuDto.getPrice();
     Long salePrice = menuDto.getSalePrice();
     if(salePrice != null && salePrice < price)
@@ -66,14 +67,14 @@ public class MenuService {
     if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
 
-    Menu menu = menuDto.toEntity();
-    menu.setRestaurant(restaurant);
-    menuRepository.save(menu);
-
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
     restaurantRepository.save(restaurant);
+
+    Menu menu = menuDto.toEntity();
+    menu.setRestaurant(restaurant);
+    menuRepository.save(menu);
   }
 
   public void update(MenuDto menuDto, Long restaurantId, Long menuId, Member member){
@@ -89,27 +90,31 @@ public class MenuService {
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
+
+    if(originalLowestPrice == menu.getPrice() || originalLowestPrice == menu.getSalePrice())
+      originalLowestPrice = null;
     if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
-
-    menu = menuDto.updateMenu(menu);
-
-    menuRepository.save(menu);
 
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
     restaurantRepository.save(restaurant);
+
+    menu = menuDto.updateMenu(menu);
+    menuRepository.save(menu);
   }
 
   public Menu delete(Long restaurantId, Long menuId){
-    Menu menu = menuRepository.findById(menuId).get();
+    Menu menu = menuRepository.findById(menuId)
+        .orElseThrow(() -> new NotFoundException("메뉴"));
 
     // 메뉴의 image가 있다면 s3와 db에서 삭제
     List<MenuImage> relations = menuImageRepository.findAllByMenu(menu);
     for(MenuImage relation: relations){
       menuImageRepository.delete(relation);
     }
+
     List<ImageUrl> imageUrls = relations.stream()
         .map(MenuImage::getImagePk)
         .map(pk->imageUrlRepository.findById(pk).orElseThrow(() -> new NotFoundException("이미지")))
@@ -120,20 +125,51 @@ public class MenuService {
       imageUrlRepository.delete(deleteImage);
     }
 
+    // 최저 메뉴 가격 재설정
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+
+    Long originalPrice = menu.getPrice() > menu.getSalePrice() ? menu.getSalePrice() : menu.getPrice();
+    if(originalPrice == restaurant.getLowestPrice()){
+      Long price = null;
+      Long lowestPrice = 10000000L;
+
+      List<Menu> menuList = menuRepository.findAllByRestaurant(restaurant);
+      for(Menu m: menuList){
+        if(m.getId() != menu.getId()) {
+          if (m.getSalePrice() != null)
+            price = m.getPrice() > m.getSalePrice() ? m.getSalePrice() : m.getPrice();
+          else
+            price = m.getPrice();
+
+          if (lowestPrice > price)
+            lowestPrice = price;
+        }
+      }
+
+      if(lowestPrice != 10000000L)
+        restaurant.setLowestPrice(lowestPrice);
+      else
+        restaurant.setLowestPrice(null);
+
+      restaurantRepository.save(restaurant);
+    }
+
     menuRepository.delete(menu);
     return menu;
   }
 
-  public void createImage(MultipartFile image, Long menuId, Member member) throws IOException {
+  public ImageUrl createImage(MultipartFile image, Long menuId, Member member) throws IOException {
     Menu menu = menuRepository.findById(menuId)
         .orElseThrow(() -> new NotFoundException("메뉴"));
 
+    ImageUrl re = null;
     if(image != null && !image.isEmpty()){
       Long count = menu.getImageCount();
       menu.setImageCount(++count);
       menu.getRestaurant().setUpdatedDate(LocalDateTime.now());
       restaurantRepository.save(menu.getRestaurant());
-      Menu savedMenu = menuRepository.save(menu);
+      menuRepository.save(menu);
 
       // s3에 이미지 저장
       String savedUrl = s3UploadService.upload(image, "menu");
@@ -145,7 +181,7 @@ public class MenuService {
           .member(member)
           .build();
 
-      imageUrlRepository.save(imageUrl);
+      re = imageUrlRepository.save(imageUrl);
 
       MenuImage relation = MenuImage.builder()
           .imagePk(imageUrl)
@@ -156,6 +192,8 @@ public class MenuService {
 
       createRestaurantContributor(menu.getRestaurant(), member);
     }
+
+    return re;
   }
 
   public HashMap<String, Object> menuImageList(Long menuId, int page, int size){

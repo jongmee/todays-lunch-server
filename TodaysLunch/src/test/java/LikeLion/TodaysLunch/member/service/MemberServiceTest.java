@@ -10,6 +10,8 @@ import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.member.dto.AdminJoinDto;
 import LikeLion.TodaysLunch.member.dto.MemberJoinDto;
+import LikeLion.TodaysLunch.member.dto.MemberLoginDto;
+import LikeLion.TodaysLunch.member.dto.TokenDto;
 import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.service.TestUser;
 import java.util.ArrayList;
@@ -28,6 +30,19 @@ class MemberServiceTest extends ServiceTest {
   private MemberLocationCategoryRepository memberLocationCategoryRepository;
   @Autowired
   private MemberFoodCategoryRepository memberFoodCategoryRepository;
+
+  @Test
+  void 로그인하기(){
+    // given
+    TestUser 유저 = makeTestUser("dummy@test.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    MemberLoginDto 로그인_요청 = MemberLoginDto.builder().email("dummy@test.com").password("1234").build();
+
+    // when
+    TokenDto.LoginToken 로그인_응답 = memberService.login(로그인_요청);
+
+    // then
+    assertEquals(false, 로그인_응답.getTemporaryPw());
+  }
 
   @Test
   void 임시비밀번호로_비밀번호_변경하기() throws Exception {
