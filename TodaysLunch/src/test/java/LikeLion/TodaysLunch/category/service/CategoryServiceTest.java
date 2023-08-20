@@ -77,4 +77,17 @@ class CategoryServiceTest extends ServiceTest {
     LocalDateTime 수정시간 = 맛집.getRestaurant().getUpdatedDate();
     assertThat(수정시간).isAfter(생성시간);
   }
+
+  @Test
+  void 음식카테고리_수정하기(){
+    // given
+    FoodCategory 음식카테고리 = foodCategoryRepository.findByName("한식")
+        .orElseThrow(() -> new NotFoundException("음식 카테고리"));
+
+    // when
+    categoryService.updateFoodCategory(음식카테고리.getId(), "변경된 이름");
+
+    // then
+    assertEquals("변경된 이름", foodCategoryRepository.findByName("변경된 이름").get().getName());
+  }
 }
