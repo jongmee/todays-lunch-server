@@ -3,8 +3,10 @@ package LikeLion.TodaysLunch.member.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public abstract class JoinDto {
 
   @NotBlank(message = "닉네임은 Null, 공백일 수 없습니다.")
