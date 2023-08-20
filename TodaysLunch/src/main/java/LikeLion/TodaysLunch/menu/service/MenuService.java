@@ -90,8 +90,7 @@ public class MenuService {
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
-
-    if(originalLowestPrice == menu.getPrice() || originalLowestPrice == menu.getSalePrice())
+    if (originalLowestPrice.equals(menu.getPrice()) || originalLowestPrice.equals(menu.getSalePrice()))
       originalLowestPrice = null;
     if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
