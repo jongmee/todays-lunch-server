@@ -240,13 +240,10 @@ public class RestaurantService {
 
       if (agreementCount > 4L)
         restaurant.setJudgement(false);
-
-      restaurantRepository.save(restaurant);
     } else {
       Agreement agreement = agreementRepository.findByMemberAndRestaurant(member, restaurant).get();
       agreementCount -= 1;
       restaurant.setAgreementCount(agreementCount);
-      restaurantRepository.save(restaurant);
       agreementRepository.delete(agreement);
     }
   }
