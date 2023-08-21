@@ -129,13 +129,13 @@ public class MenuService {
         .orElseThrow(() -> new NotFoundException("맛집"));
 
     Long originalPrice = menu.getPrice() > menu.getSalePrice() ? menu.getSalePrice() : menu.getPrice();
-    if(originalPrice == restaurant.getLowestPrice()){
+    if(originalPrice.equals(restaurant.getLowestPrice())){
       Long price = null;
       Long lowestPrice = 10000000L;
 
       List<Menu> menuList = menuRepository.findAllByRestaurant(restaurant);
       for(Menu m: menuList){
-        if(m.getId() != menu.getId()) {
+        if(!m.getId().equals(menu.getId())) {
           if (m.getSalePrice() != null)
             price = m.getPrice() > m.getSalePrice() ? m.getSalePrice() : m.getPrice();
           else
@@ -265,7 +265,7 @@ public class MenuService {
 
     List<MenuImage> menuImages = menuImageRepository.findAllByMenu(menuImage.getMenu());
     for(MenuImage m: menuImages){
-      if(m.getImagePk() != imageId && m.getIsBest()){
+      if(!(m.getImagePk().equals(imageId)) && m.getIsBest()){
         m.setBest(false);
         menuImageRepository.save(m);
       }
