@@ -3,6 +3,7 @@ package LikeLion.TodaysLunch.menu.domain;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +22,7 @@ public class Menu {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = 25)
   private String name;
 
   @Column(nullable = false)
@@ -29,13 +30,14 @@ public class Menu {
 
   private Long salePrice;
 
+  @Column(length = 200)
   private String saleExplain;
 
   @Column(nullable = false)
   private Long imageCount;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Restaurant restaurant;
 
   @Builder

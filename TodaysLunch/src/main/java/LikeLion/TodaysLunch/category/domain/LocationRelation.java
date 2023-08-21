@@ -1,6 +1,7 @@
 package LikeLion.TodaysLunch.category.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,12 +15,12 @@ public class LocationRelation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private LocationCategory locationCategory;
 
-    @ManyToOne
-    @JoinColumn
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private LocationTag locationTag;
 
 }

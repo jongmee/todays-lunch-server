@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.review.domain;
 
 import LikeLion.TodaysLunch.member.domain.Member;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,12 +20,12 @@ public class ReviewLike {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Member member;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Review review;
 
   public ReviewLike(Member member, Review review) {

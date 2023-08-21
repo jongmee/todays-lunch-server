@@ -3,6 +3,7 @@ package LikeLion.TodaysLunch.customized.domain;
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.member.domain.Member;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,12 +22,12 @@ public class MemberFoodCategory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Member member;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private FoodCategory foodCategory;
 
   @Builder
