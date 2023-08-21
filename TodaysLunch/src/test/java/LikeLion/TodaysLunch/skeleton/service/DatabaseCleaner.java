@@ -7,10 +7,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseCleaner implements InitializingBean {
+
+  @Value("${test-constraint}")
+  private String constraint;
   private final List<String> tableNames = new ArrayList<>();
 
   @PersistenceContext
@@ -26,10 +30,10 @@ public class DatabaseCleaner implements InitializingBean {
   }
 
   private void truncate() {
-    entityManager.createNativeQuery("SET referential_integrity = 0").executeUpdate();
+    entityManager.createNativeQuery("SET " + constraint + " = 0").executeUpdate();
     for (String tableName : tableNames)
       entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
-    entityManager.createNativeQuery("SET referential_integrity = 1").executeUpdate();
+    entityManager.createNativeQuery("SET " + constraint + " = 1").executeUpdate();
   }
 
   @Override
