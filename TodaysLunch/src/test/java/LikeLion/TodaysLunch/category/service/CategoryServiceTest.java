@@ -7,6 +7,7 @@ import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
+import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.service.TestRestaurant;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 
 class CategoryServiceTest extends ServiceTest {
@@ -51,6 +53,7 @@ class CategoryServiceTest extends ServiceTest {
   }
 
   @Test
+  @Transactional
   void 추천카테고리_수정을_맛집속성에_반영하기(){
     // given
     TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
@@ -60,7 +63,9 @@ class CategoryServiceTest extends ServiceTest {
     categoryService.recommendCategoryEdit(맛집.getRestaurant().getId(),수정_요청);
 
     // then
-    assertEquals(2, 맛집.getRestaurant().getRecommendCategoryRelations().size());
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals(2, 수정된_맛집.getRecommendCategoryRelations().size());
   }
 
   @Test
@@ -74,7 +79,9 @@ class CategoryServiceTest extends ServiceTest {
     categoryService.recommendCategoryEdit(맛집.getRestaurant().getId(),수정_요청);
 
     // then
-    LocalDateTime 수정시간 = 맛집.getRestaurant().getUpdatedDate();
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    LocalDateTime 수정시간 = 수정된_맛집.getUpdatedDate();
     assertThat(수정시간).isAfter(생성시간);
   }
 

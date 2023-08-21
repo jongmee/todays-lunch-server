@@ -3,6 +3,7 @@ package LikeLion.TodaysLunch.review.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.review.domain.Review;
@@ -44,7 +45,9 @@ class ReviewServiceTest extends ServiceTest {
     reviewService.addOrCancelLike(맛집ID, 리뷰2.getId(), 유저2.getMember());
 
     //then
-    assertEquals("아주맛잇군2", 맛집.getRestaurant().getBestReview());
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals("아주맛잇군2", 수정된_맛집.getBestReview());
   }
 
   @Test
@@ -89,7 +92,9 @@ class ReviewServiceTest extends ServiceTest {
     reviewService.create(맛집ID, 작성한_리뷰2, 유저1.getMember());
 
     //then
-    Long 맛집의_리뷰_수 = 맛집.getRestaurant().getReviewCount();
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Long 맛집의_리뷰_수 = 수정된_맛집.getReviewCount();
     assertEquals(2L, 맛집의_리뷰_수);
   }
 
@@ -108,16 +113,20 @@ class ReviewServiceTest extends ServiceTest {
     // when
     Long 맛집ID = 맛집.getRestaurant().getId();
     reviewService.create(맛집ID, 작성한_리뷰1, 유저1.getMember());
-    Double 평점1 = 맛집.getRestaurant().getRating();
+    Restaurant 수정된_맛집1 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Double 기존평점 = 수정된_맛집1.getRating();
     reviewService.create(맛집ID, 작성한_리뷰2, 유저1.getMember());
     reviewService.create(맛집ID, 작성한_리뷰3, 유저1.getMember());
     reviewService.create(맛집ID, 작성한_리뷰4, 유저1.getMember());
     reviewService.create(맛집ID, 작성한_리뷰5, 유저1.getMember());
-    Double 평점2 = 맛집.getRestaurant().getRating();
+    Restaurant 수정된_맛집2 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Double 수정된평점 = 수정된_맛집2.getRating();
 
     //then
-    assertEquals(1.0, 평점1);
-    assertEquals((1.0+2.0+5.0+3.0+3.0)/5, 평점2);
+    assertEquals(1.0, 기존평점);
+    assertEquals((1.0+2.0+5.0+3.0+3.0)/5, 수정된평점);
   }
 
   @Test
@@ -134,12 +143,16 @@ class ReviewServiceTest extends ServiceTest {
     Review 생성된_리뷰1 = reviewService.create(맛집ID, 작성한_리뷰, 유저1.getMember());
     Review 생성된_리뷰2 = reviewService.create(맛집ID, 작성한_리뷰2, 유저1.getMember());
     Review 생성된_리뷰3 = reviewService.create(맛집ID, 작성한_리뷰3, 유저1.getMember());
-    Double 기존평점 = 맛집.getRestaurant().getRating();
+    Restaurant 수정된_맛집1 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Double 기존평점 = 수정된_맛집1.getRating();
 
     // when
     ReviewDto 수정한_리뷰 = ReviewDto.builder().reviewContent("생각해보니까 별로인듯").rating(1).build();
     reviewService.update(생성된_리뷰3.getId(), 맛집ID, 수정한_리뷰);
-    Double 수정된평점 = 맛집.getRestaurant().getRating();
+    Restaurant 수정된_맛집2 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Double 수정된평점 = 수정된_맛집2.getRating();
     assertEquals((5.0+2.0+5.0)/3, 기존평점);
     assertEquals((5.0+2.0+1.0)/3, 수정된평점);
   }
@@ -158,11 +171,15 @@ class ReviewServiceTest extends ServiceTest {
     Review 생성된_리뷰1 = reviewService.create(맛집ID, 작성한_리뷰, 유저1.getMember());
     Review 생성된_리뷰2 = reviewService.create(맛집ID, 작성한_리뷰2, 유저1.getMember());
     Review 생성된_리뷰3 = reviewService.create(맛집ID, 작성한_리뷰3, 유저1.getMember());
-    Double 기존평점 = 맛집.getRestaurant().getRating();
+    Restaurant 수정된_맛집1 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Double 기존평점 = 수정된_맛집1.getRating();
 
     // when
     reviewService.delete(생성된_리뷰3.getId(), 맛집ID);
-    Double 수정된평점 = 맛집.getRestaurant().getRating();
+    Restaurant 수정된_맛집2 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    Double 수정된평점 = 수정된_맛집2.getRating();
     assertEquals((5.0+2.0+5.0)/3, 기존평점);
     assertEquals((5.0+2.0)/2, 수정된평점);
   }
@@ -267,7 +284,9 @@ class ReviewServiceTest extends ServiceTest {
     reviewService.create(맛집ID, 작성한_리뷰1, 유저1.getMember());
 
     // then
-    assertEquals(1L, 맛집.getRestaurant().getReviewCount());
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals(1L, 수정된_맛집.getReviewCount());
   }
 
   Review 리뷰_생성하기(Member member, Restaurant restaurant, String reviewContent, Integer rating){

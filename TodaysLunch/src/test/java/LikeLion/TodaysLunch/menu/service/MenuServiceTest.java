@@ -96,8 +96,12 @@ class MenuServiceTest extends ServiceTest {
     menuService.update(수정_요청2, 정식맛집.getRestaurant().getId(), 등록된_메뉴2.getId(), 유저.getMember());
 
     // then
-    assertEquals(null, 등록된_메뉴1.getSaleExplain());
-    assertEquals("8월첫째주만합니다", 등록된_메뉴2.getSaleExplain());
+    Menu 수정된_메뉴1 = menuRepository.findByName("사케동")
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+    Menu 수정된_메뉴2 = menuRepository.findByName("명란크림우동")
+        .orElseThrow(() -> new NotFoundException("메뉴"));
+    assertEquals(null, 수정된_메뉴1.getSaleExplain());
+    assertEquals("8월첫째주만합니다", 수정된_메뉴2.getSaleExplain());
   }
 
   @Test
@@ -197,7 +201,9 @@ class MenuServiceTest extends ServiceTest {
 
     // when
     menuService.create(새로운_메뉴, 정식맛집.getRestaurant().getId(), 유저.getMember());
-    LocalDateTime 수정시간 = 정식맛집.getRestaurant().getUpdatedDate();
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    LocalDateTime 수정시간 = 수정된_맛집.getUpdatedDate();
 
     //then
     assertThat(수정시간).isAfter(비교시간);
@@ -218,7 +224,9 @@ class MenuServiceTest extends ServiceTest {
 
     // when
     메뉴_생성하기("가츠동", 15000L, 10000L, "서강대학생전용입니다", 정식맛집.getRestaurant().getId(), 유저.getMember());
-    LocalDateTime 수정시간 = 정식맛집.getRestaurant().getUpdatedDate();
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    LocalDateTime 수정시간 = 수정된_맛집.getUpdatedDate();
 
     //then
     assertThat(수정시간).isAfter(비교시간);
@@ -239,7 +247,9 @@ class MenuServiceTest extends ServiceTest {
 
     // when
     menuService.createImage(이미지, 등록된_메뉴.getId(), 유저.getMember());
-    LocalDateTime 수정시간 = 정식맛집.getRestaurant().getUpdatedDate();
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    LocalDateTime 수정시간 = 수정된_맛집.getUpdatedDate();
 
     // then
     assertThat(수정시간).isAfter(비교시간);
@@ -327,7 +337,9 @@ class MenuServiceTest extends ServiceTest {
     Menu 등록된_메뉴3 = 메뉴_생성하기("에비동", 6000L, null, null, 정식맛집.getRestaurant().getId(), 유저.getMember());
 
     // then
-    assertEquals(6000L, 정식맛집.getRestaurant().getLowestPrice());
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals(6000L, 수정된_맛집.getLowestPrice());
   }
 
   @Test
@@ -342,7 +354,9 @@ class MenuServiceTest extends ServiceTest {
     menuService.delete(정식맛집.getRestaurant().getId(), 등록된_메뉴2.getId());
 
     // then
-    assertEquals(10000L, 정식맛집.getRestaurant().getLowestPrice());
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals(10000L, 수정된_맛집.getLowestPrice());
   }
 
   @Test
@@ -357,7 +371,9 @@ class MenuServiceTest extends ServiceTest {
     menuService.update(수정_요청, 정식맛집.getRestaurant().getId(), 등록된_메뉴1.getId(), 유저.getMember());
 
     // then
-    assertEquals(15000L, 정식맛집.getRestaurant().getLowestPrice());
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals(15000L, 수정된_맛집.getLowestPrice());
   }
 
 

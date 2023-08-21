@@ -12,13 +12,11 @@ import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import java.util.ArrayList;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-@Transactional
 public abstract class ServiceTest {
 
   protected final String 추천카테고리이름1 = "혼밥하기 좋으니 가게 🍚";
@@ -36,9 +34,12 @@ public abstract class ServiceTest {
   protected TestUserEnviron testUserEnviron;
   @Autowired
   protected TestRestaurantEnviron testRestaurantEnviron;
+  @Autowired
+  private DatabaseCleaner databaseCleaner;
 
   @BeforeEach
   void beforeEach() {
+    databaseCleaner.clear();
     카테고리_등록하기();
   }
 
