@@ -11,6 +11,7 @@ import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.service.TestRestaurant;
+import LikeLion.TodaysLunch.skeleton.service.TestUser;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +32,8 @@ class CategoryServiceTest extends ServiceTest {
   @Test
   void 추천카테고리_수정() {
     // given
-    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
     List<RecommendCategory> 이미_존재하는_카테고리들 = restRecmdRelRepository.findAllByRestaurant(맛집.getRestaurant())
         .stream().map(r->r.getRecommendCategory()).collect(Collectors.toList());
 
@@ -56,7 +58,8 @@ class CategoryServiceTest extends ServiceTest {
   @Transactional
   void 추천카테고리_수정을_맛집속성에_반영하기(){
     // given
-    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
 
     // when
     RecommendCategoryDto.Edit 수정_요청 = RecommendCategoryDto.Edit.builder().recommendCategoryIds(new ArrayList<>(Arrays.asList(추천카테고리_반환하기(추천카테고리이름1), 추천카테고리_반환하기(추천카테고리이름2)))).build();
@@ -71,7 +74,8 @@ class CategoryServiceTest extends ServiceTest {
   @Test
   void 추천카테고리수정을_맛집_수정시간에_반영하기(){
     // given
-    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
     LocalDateTime 생성시간 = LocalDateTime.now();
 
     // when
