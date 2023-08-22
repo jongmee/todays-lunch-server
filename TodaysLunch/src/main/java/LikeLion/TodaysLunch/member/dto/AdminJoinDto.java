@@ -4,8 +4,10 @@ import LikeLion.TodaysLunch.member.domain.Member;
 import java.util.Collections;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class AdminJoinDto extends JoinDto{
 
   @Builder
