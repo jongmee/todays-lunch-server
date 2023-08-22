@@ -18,7 +18,6 @@ public class MyPageDto {
   private Long id;
   private String nickname;
   private String icon;
-  private Boolean verified;
   private List<FoodCategoryDto> foodCategoryList;
   private List<LocationCategoryDto> locationCategoryList;
   private Integer myJudgeCount;
