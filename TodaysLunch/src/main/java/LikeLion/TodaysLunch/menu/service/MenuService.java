@@ -70,7 +70,6 @@ public class MenuService {
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
-    restaurantRepository.save(restaurant);
 
     Menu menu = menuDto.toEntity();
     menu.setRestaurant(restaurant);
@@ -90,8 +89,7 @@ public class MenuService {
 
     // 최저 메뉴 가격 설정
     Long originalLowestPrice = restaurant.getLowestPrice();
-
-    if(originalLowestPrice == menu.getPrice() || originalLowestPrice == menu.getSalePrice())
+    if (originalLowestPrice.equals(menu.getPrice()) || originalLowestPrice.equals(menu.getSalePrice()))
       originalLowestPrice = null;
     if (originalLowestPrice == null || originalLowestPrice > price)
       restaurant.setLowestPrice(price);
@@ -99,10 +97,8 @@ public class MenuService {
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
-    restaurantRepository.save(restaurant);
 
     menu = menuDto.updateMenu(menu);
-    menuRepository.save(menu);
   }
 
   public Menu delete(Long restaurantId, Long menuId){
@@ -130,13 +126,13 @@ public class MenuService {
         .orElseThrow(() -> new NotFoundException("맛집"));
 
     Long originalPrice = menu.getPrice() > menu.getSalePrice() ? menu.getSalePrice() : menu.getPrice();
-    if(originalPrice == restaurant.getLowestPrice()){
+    if(originalPrice.equals(restaurant.getLowestPrice())){
       Long price = null;
       Long lowestPrice = 10000000L;
 
       List<Menu> menuList = menuRepository.findAllByRestaurant(restaurant);
       for(Menu m: menuList){
-        if(m.getId() != menu.getId()) {
+        if(!m.getId().equals(menu.getId())) {
           if (m.getSalePrice() != null)
             price = m.getPrice() > m.getSalePrice() ? m.getSalePrice() : m.getPrice();
           else
@@ -151,8 +147,6 @@ public class MenuService {
         restaurant.setLowestPrice(lowestPrice);
       else
         restaurant.setLowestPrice(null);
-
-      restaurantRepository.save(restaurant);
     }
 
     menuRepository.delete(menu);
@@ -169,7 +163,6 @@ public class MenuService {
       menu.setImageCount(++count);
       menu.getRestaurant().setUpdatedDate(LocalDateTime.now());
       restaurantRepository.save(menu.getRestaurant());
-      menuRepository.save(menu);
 
       // s3에 이미지 저장
       String savedUrl = s3UploadService.upload(image, "menu");
@@ -225,7 +218,6 @@ public class MenuService {
 
     Long count = menu.getImageCount();
     menu.setImageCount(--count);
-    menuRepository.save(menu);
 
     s3UploadService.delete(imageUrl.getImageUrl());
     imageUrlRepository.delete(imageUrl);
@@ -262,14 +254,11 @@ public class MenuService {
         .orElseThrow(() -> new NotFoundException("메뉴와 이미지의 관계"));
 
     menuImage.setBest(true);
-    menuImageRepository.save(menuImage);
 
     List<MenuImage> menuImages = menuImageRepository.findAllByMenu(menuImage.getMenu());
     for(MenuImage m: menuImages){
-      if(m.getImagePk() != imageId && m.getIsBest()){
+      if(!(m.getImagePk().equals(imageId)) && m.getIsBest())
         m.setBest(false);
-        menuImageRepository.save(m);
-      }
     }
   }
 

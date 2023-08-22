@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class MemberJoinDto extends JoinDto{
 
   private List<String> foodCategoryList;

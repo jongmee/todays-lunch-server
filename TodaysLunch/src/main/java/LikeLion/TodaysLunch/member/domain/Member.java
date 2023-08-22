@@ -33,10 +33,10 @@ public class Member implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String nickname;
 
     @Column(nullable = false)
@@ -45,8 +45,8 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private Long myStoreCount;
 
-    @OneToOne
     @JoinColumn
+    @OneToOne(fetch = FetchType.LAZY)
     private ImageUrl icon;
 
     @Column(nullable = false)

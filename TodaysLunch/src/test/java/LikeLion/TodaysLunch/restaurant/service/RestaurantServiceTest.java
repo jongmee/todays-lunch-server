@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 class RestaurantServiceTest extends ServiceTest {
 
@@ -36,6 +37,7 @@ class RestaurantServiceTest extends ServiceTest {
   private MenuRepository menuRepository;
 
   @Test
+  @Transactional
   void 맛집_심사_등록하기() throws IOException {
     // given
     JudgeRestaurantCreateDto 등록_요청 = JudgeRestaurantCreateDto
@@ -71,7 +73,9 @@ class RestaurantServiceTest extends ServiceTest {
     restaurantService.addOrCancelAgreement(유저.getMember(), 맛집.getRestaurant().getId());
 
     // then
-    assertEquals(1L, 맛집.getRestaurant().getAgreementCount());
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals(1L, 수정된_맛집.getAgreementCount());
   }
 
   @Test
@@ -88,17 +92,18 @@ class RestaurantServiceTest extends ServiceTest {
     Boolean 이전_심사_상태 = 맛집.getRestaurant().getJudgement();
 
     // when
-    Restaurant restaurantForTest = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
-        .orElseThrow(() -> new NotFoundException("맛집"));
-    restaurantService.addOrCancelAgreement(유저1.getMember(), restaurantForTest.getId());
-    restaurantService.addOrCancelAgreement(유저2.getMember(), restaurantForTest.getId());
-    restaurantService.addOrCancelAgreement(유저3.getMember(), restaurantForTest.getId());
-    restaurantService.addOrCancelAgreement(유저4.getMember(), restaurantForTest.getId());
-    restaurantService.addOrCancelAgreement(유저5.getMember(), restaurantForTest.getId());
+    Long 맛집ID = 맛집.getRestaurant().getId();
+    restaurantService.addOrCancelAgreement(유저1.getMember(), 맛집ID);
+    restaurantService.addOrCancelAgreement(유저2.getMember(), 맛집ID);
+    restaurantService.addOrCancelAgreement(유저3.getMember(), 맛집ID);
+    restaurantService.addOrCancelAgreement(유저4.getMember(), 맛집ID);
+    restaurantService.addOrCancelAgreement(유저5.getMember(), 맛집ID);
 
     // then
+    Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
     assertEquals(true, 이전_심사_상태);
-    assertEquals(false, restaurantForTest.getJudgement());
+    assertEquals(false, 수정된_맛집.getJudgement());
   }
 
   @Test
@@ -140,8 +145,9 @@ class RestaurantServiceTest extends ServiceTest {
   @Test
   void 로그아웃시_찜한여부_false로_포함하기(){
     // given
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
     TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
-        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
 
     // when
     HashMap 응답 = restaurantService.restaurantList(null, null, null, null, null, 0, 2, "rating", "descending", null);
@@ -171,7 +177,8 @@ class RestaurantServiceTest extends ServiceTest {
   @Test
   void 로그아웃시_동의여부_false로_포함하기(){
     // given
-    makeTestJudgeRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, null);
+    TestUser 유저 = makeTestUser("qwer@naver.com", "1234", "유저", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    makeTestJudgeRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저.getMember());
 
     // when
     HashMap 응답 = restaurantService.judgeRestaurantList(null, null, null, null, 0, 3, "rating", "descending", null, null);
@@ -269,7 +276,7 @@ class RestaurantServiceTest extends ServiceTest {
     TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
     TestUser 유저2 = makeTestUser("qwer1@naver.com", "1234", "유저2", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
     TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
-        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, null);
+        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저1.getMember());
 
     // when
     메뉴_생성하기("사케동", 15000L, 정식맛집.getRestaurant().getId(), 유저1.getMember());

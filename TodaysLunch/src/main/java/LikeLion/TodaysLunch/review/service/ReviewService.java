@@ -121,7 +121,7 @@ public class ReviewService {
     List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
     Double sum = 0.0;
     for(Review r: reviews){
-      if(r.getId() != reviewId)
+      if(!r.getId().equals(reviewId))
         sum += r.getRating();
     }
     sum += reviewDto.getRating();
@@ -146,7 +146,7 @@ public class ReviewService {
     List<Review> reviews= reviewRepository.findAllByRestaurant(restaurant);
     Double sum = 0.0;
     for(Review r: reviews){
-      if(r.getId() != reviewId)
+      if(!r.getId().equals(reviewId))
         sum += r.getRating();
     }
     restaurant.setRating((double)sum/count);

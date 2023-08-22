@@ -3,6 +3,7 @@ package LikeLion.TodaysLunch.image.domain;
 import LikeLion.TodaysLunch.menu.domain.Menu;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,8 +19,8 @@ public class MenuImage {
   @Id
   private Long imagePk;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Menu menu;
 
   @Column(nullable = false)

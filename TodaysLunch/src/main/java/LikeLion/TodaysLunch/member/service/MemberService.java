@@ -245,7 +245,6 @@ public class MemberService {
             ImageUrl del = imageUrlRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("유저의 아이콘"));
             member.updateIcon(null);
-            memberRepository.save(member);
             imageUrlRepository.delete(del);
         }
 
@@ -264,8 +263,8 @@ public class MemberService {
             imageUrlRepository.save(userImage);
             // 멤버에 저장
             member.updateIcon(userImage);
-            memberRepository.save(member);
         }
+        memberRepository.save(member);
     }
 
     public Member checkExistingEmail(String email){

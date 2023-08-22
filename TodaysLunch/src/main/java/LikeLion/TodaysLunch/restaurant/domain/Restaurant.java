@@ -29,26 +29,26 @@ public class Restaurant {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = 20)
   private String restaurantName;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private FoodCategory foodCategory;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private LocationCategory locationCategory;
 
-  @ManyToOne
   @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   private LocationTag locationTag;
 
-  @OneToMany(mappedBy="restaurant", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy="restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Set<RestaurantRecommendCategoryRelation> recommendCategoryRelations = new HashSet<>();
 
-  @OneToOne
   @JoinColumn
+  @OneToOne(fetch = FetchType.LAZY)
   private ImageUrl imageUrl;
 
   @Column(nullable = false)
@@ -57,9 +57,10 @@ public class Restaurant {
   @Column(nullable = false)
   private Double longitude;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = 150)
   private String address;
 
+  @Column(length = 300)
   private String introduction;
 
   private Double rating;
@@ -86,8 +87,8 @@ public class Restaurant {
   @Column(nullable = false)
   private LocalDateTime updatedDate;
 
-  @OneToOne
-  @JoinColumn
+  @JoinColumn(nullable = false)
+  @OneToOne(fetch = FetchType.LAZY)
   private Member registrant;
 
   // 맛집 심사를 위한 등록에서 쓰임

@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 class MemberServiceTest extends ServiceTest {
 
@@ -114,6 +115,7 @@ class MemberServiceTest extends ServiceTest {
   }
 
   @Test
+  @Transactional
   void 유저의_위치카테고리_수정하기() {
     // given
     MemberJoinDto 회원가입_요청 = MemberJoinDto.builder()
@@ -139,6 +141,7 @@ class MemberServiceTest extends ServiceTest {
   }
 
   @Test
+  @Transactional
   void 유저의_음식카테고리_수정하기() {
     // given
     MemberJoinDto 회원가입_요청 = MemberJoinDto.builder()

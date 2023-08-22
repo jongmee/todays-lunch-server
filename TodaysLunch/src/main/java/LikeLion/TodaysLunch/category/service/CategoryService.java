@@ -63,36 +63,43 @@ public class CategoryService {
 
   public void recommendCategoryEdit(Long restaurantId, RecommendCategoryDto.Edit editDto){
     Map<RecommendCategory, RestaurantRecommendCategoryRelation> pair = new HashMap<>();
+
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
+
     List<RestaurantRecommendCategoryRelation> existingRelations = restRecmdRelRepository.findAllByRestaurant(restaurant);
+
     List<RecommendCategory> existingCategories = new ArrayList<>();
     for(RestaurantRecommendCategoryRelation relation : existingRelations){
       RecommendCategory category = relation.getRecommendCategory();
       pair.put(category, relation);
       existingCategories.add(category);
     }
+
     List<RecommendCategory> newCategories = new ArrayList<>();
     for(Long id: editDto.getRecommendCategoryIds()){
       newCategories.add(recommendCategoryRepository.findById(id)
           .orElseThrow(() -> new NotFoundException("추천 카테고리")));
     }
+
     List<RecommendCategory> objCategories = new ArrayList<>(newCategories);
     objCategories.removeAll(existingCategories); // 새로 추가할 category들
     existingCategories.removeAll(newCategories); // 삭제할 category들
+
     for(RecommendCategory category: existingCategories){
       restRecmdRelRepository.delete(pair.get(category));
       restaurant.deleteRecommendCategoryRelation(pair.get(category));
     }
+
     for(RecommendCategory category: objCategories){
       RestaurantRecommendCategoryRelation relation = new RestaurantRecommendCategoryRelation(restaurant, category);
       restRecmdRelRepository.save(relation);
       restaurant.addRecommendCategoryRelation(relation);
     }
-    if(objCategories.size()>0 || existingCategories.size()>0){
+
+    if(objCategories.size()>0 || existingCategories.size()>0)
       restaurant.setUpdatedDate(LocalDateTime.now());
-      restaurantRepository.save(restaurant);
-    }
+
   }
 
   public void createFoodCategory(String foodCategoryName){
@@ -114,25 +121,25 @@ public class CategoryService {
   public void updateFoodCategory(Long id, String foodCategoryName){
     FoodCategory foodCategory = foodCategoryRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("음식 카테고리"));
-    foodCategoryRepository.save(foodCategory.update(foodCategoryName));
+    foodCategory.update(foodCategoryName);
   }
 
   public void updateLocationCategory(Long id, LocationCategoryDto locationCategoryDto){
     LocationCategory locationCategory = locationCategoryRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("위치 카테고리"));
-    locationCategoryRepository.save(locationCategory.update(locationCategoryDto));
+    locationCategory.update(locationCategoryDto);
   }
 
   public void updateLocationTag(Long id, LocationTagDto locationTagDto){
     LocationTag locationTag = locationTagRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("위치 태그"));
-    locationTagRepository.save(locationTag.update(locationTagDto));
+    locationTag.update(locationTagDto);
   }
 
   public  void updateRecommendCategory(Long id, RecommendCategoryDto.CategoryList categoryDto){
     RecommendCategory recommendCategory = recommendCategoryRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("추천 카테고리"));
-    recommendCategoryRepository.save(recommendCategory.update(categoryDto));
+    recommendCategory.update(categoryDto);
   }
 
   public void deleteFoodCategory(Long id){
