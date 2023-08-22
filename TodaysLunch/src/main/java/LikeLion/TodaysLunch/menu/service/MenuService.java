@@ -70,7 +70,6 @@ public class MenuService {
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
-    restaurantRepository.save(restaurant);
 
     Menu menu = menuDto.toEntity();
     menu.setRestaurant(restaurant);
@@ -98,10 +97,8 @@ public class MenuService {
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
-    restaurantRepository.save(restaurant);
 
     menu = menuDto.updateMenu(menu);
-    menuRepository.save(menu);
   }
 
   public Menu delete(Long restaurantId, Long menuId){
@@ -150,8 +147,6 @@ public class MenuService {
         restaurant.setLowestPrice(lowestPrice);
       else
         restaurant.setLowestPrice(null);
-
-      restaurantRepository.save(restaurant);
     }
 
     menuRepository.delete(menu);
@@ -168,7 +163,6 @@ public class MenuService {
       menu.setImageCount(++count);
       menu.getRestaurant().setUpdatedDate(LocalDateTime.now());
       restaurantRepository.save(menu.getRestaurant());
-      menuRepository.save(menu);
 
       // s3에 이미지 저장
       String savedUrl = s3UploadService.upload(image, "menu");
@@ -224,7 +218,6 @@ public class MenuService {
 
     Long count = menu.getImageCount();
     menu.setImageCount(--count);
-    menuRepository.save(menu);
 
     s3UploadService.delete(imageUrl.getImageUrl());
     imageUrlRepository.delete(imageUrl);
@@ -261,14 +254,11 @@ public class MenuService {
         .orElseThrow(() -> new NotFoundException("메뉴와 이미지의 관계"));
 
     menuImage.setBest(true);
-    menuImageRepository.save(menuImage);
 
     List<MenuImage> menuImages = menuImageRepository.findAllByMenu(menuImage.getMenu());
     for(MenuImage m: menuImages){
-      if(!(m.getImagePk().equals(imageId)) && m.getIsBest()){
+      if(!(m.getImagePk().equals(imageId)) && m.getIsBest())
         m.setBest(false);
-        menuImageRepository.save(m);
-      }
     }
   }
 
