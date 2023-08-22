@@ -82,17 +82,26 @@ public class MenuService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
-    Long price = menuDto.getPrice();
-    Long salePrice = menuDto.getSalePrice();
-    if(salePrice != null && salePrice < price)
-      price = salePrice;
-
     // 최저 메뉴 가격 설정
-    Long originalLowestPrice = restaurant.getLowestPrice();
-    if (originalLowestPrice.equals(menu.getPrice()) || originalLowestPrice.equals(menu.getSalePrice()))
-      originalLowestPrice = null;
-    if (originalLowestPrice == null || originalLowestPrice > price)
-      restaurant.setLowestPrice(price);
+    Long lowestPrice = 1000000L;
+    List<Menu> allMenus = menuRepository.findAllByRestaurant(restaurant);
+    for (Menu m : allMenus) {
+      Long s = m.getSalePrice();
+      Long p = m.getPrice();
+      if (!m.getId().equals(menuId) && s != null && s < lowestPrice) {
+        lowestPrice = s;
+      } else if (!m.getId().equals(menuId) && p < lowestPrice) {
+        lowestPrice = p;
+      }
+    }
+    if(lowestPrice > menuDto.getPrice()) {
+      lowestPrice = menuDto.getPrice();
+      if(menuDto.getSalePrice() != null)
+        lowestPrice = menuDto.getSalePrice();
+    }
+
+    if(lowestPrice == 1000000L) lowestPrice = null;
+    restaurant.setLowestPrice(lowestPrice);
 
     createRestaurantContributor(restaurant, member);
 
@@ -125,28 +134,22 @@ public class MenuService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
-    Long originalPrice = menu.getPrice() > menu.getSalePrice() ? menu.getSalePrice() : menu.getPrice();
-    if(originalPrice.equals(restaurant.getLowestPrice())){
-      Long price = null;
-      Long lowestPrice = 10000000L;
+    if(restaurant.getLowestPrice().equals(menu.getPrice()) || restaurant.getLowestPrice().equals(menu.getSalePrice())) {
+      List<Menu> allMenus = menuRepository.findAllByRestaurant(restaurant);
 
-      List<Menu> menuList = menuRepository.findAllByRestaurant(restaurant);
-      for(Menu m: menuList){
-        if(!m.getId().equals(menu.getId())) {
+      Long lowestPrice = 1000000L;
+      for (Menu m : allMenus) {
+        if (!m.getId().equals(menuId)) {
+          Long p = m.getPrice();
           if (m.getSalePrice() != null)
-            price = m.getPrice() > m.getSalePrice() ? m.getSalePrice() : m.getPrice();
-          else
-            price = m.getPrice();
+            p = m.getSalePrice();
 
-          if (lowestPrice > price)
-            lowestPrice = price;
+          if (p < lowestPrice)
+            lowestPrice = p;
         }
       }
-
-      if(lowestPrice != 10000000L)
-        restaurant.setLowestPrice(lowestPrice);
-      else
-        restaurant.setLowestPrice(null);
+      if(lowestPrice == 1000000L) lowestPrice = null;
+      restaurant.setLowestPrice(lowestPrice);
     }
 
     menuRepository.delete(menu);
