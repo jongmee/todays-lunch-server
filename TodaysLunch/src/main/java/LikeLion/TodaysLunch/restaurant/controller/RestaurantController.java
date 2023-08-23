@@ -118,7 +118,7 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.myStoreList(page, size, member));
   }
 
-  @GetMapping("/participate-restaurant")
+  @GetMapping("/participate")
   public ResponseEntity<HashMap<String, Object>> participateRestaurantList (
       @AuthenticationPrincipal Member member,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
@@ -126,7 +126,7 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.participateRestaurantList(member, page, size));
   }
 
-  @GetMapping("/contribute-restaurant")
+  @GetMapping("/contribute")
   public ResponseEntity<HashMap<String, Object>> contributeRestaurantList (
       @AuthenticationPrincipal Member member,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
