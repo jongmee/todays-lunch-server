@@ -46,7 +46,7 @@ public class Member implements UserDetails {
     private Long myStoreCount;
 
     @JoinColumn
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private ImageUrl icon;
 
     @Column(nullable = false)

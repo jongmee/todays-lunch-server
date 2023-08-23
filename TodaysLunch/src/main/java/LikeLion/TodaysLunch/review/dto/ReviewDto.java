@@ -3,6 +3,7 @@ package LikeLion.TodaysLunch.review.dto;
 import LikeLion.TodaysLunch.review.domain.Review;
 import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class ReviewDto {
   private ReviewProfileDto member;
   @NotBlank(message = "리뷰 내용은 Null과 공백일 수 없습니다!")
   private String reviewContent;
-  @NotBlank(message = "별점은 Null과 공백일 수 없습니다!")
+  @NotNull(message = "별점은 Null과 공백일 수 없습니다!")
   private Integer rating;
   private LocalDate createdDate;
   private Long likeCount;

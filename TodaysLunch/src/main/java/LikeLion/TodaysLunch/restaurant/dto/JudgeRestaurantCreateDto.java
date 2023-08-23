@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.restaurant.dto;
 
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,9 +22,9 @@ public class JudgeRestaurantCreateDto {
   @NotBlank(message = "음식 카테고리 이름은 Null, 공백일 수 없습니다.")
   private String foodCategoryName;
   private List<Long> recommendCategoryIds;
-  @NotBlank(message = "위도는 Null, 공백일 수 없습니다.")
+  @NotNull(message = "위도는 Null, 공백일 수 없습니다.")
   private Double latitude;
-  @NotBlank(message = "경도는 Null, 공백일 수 없습니다.")
+  @NotNull(message = "경도는 Null, 공백일 수 없습니다.")
   private Double longitude;
 
 }

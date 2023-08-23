@@ -367,13 +367,14 @@ class MenuServiceTest extends ServiceTest {
 
     // when
     Menu 등록된_메뉴1 = 메뉴_생성하기("사케동", 15000L, 10000L, "서강대학생전용입니다", 정식맛집.getRestaurant().getId(), 유저.getMember());
-    MenuDto 수정_요청 = MenuDto.builder().name("사케동").price(15000L).build();
-    menuService.update(수정_요청, 정식맛집.getRestaurant().getId(), 등록된_메뉴1.getId(), 유저.getMember());
+    Menu 등록된_메뉴2 = 메뉴_생성하기("우동", 6000L, 4000L, "서강대학생전용입니다", 정식맛집.getRestaurant().getId(), 유저.getMember());
+    MenuDto 수정_요청 = MenuDto.builder().name("우동").price(16000L).build();
+    menuService.update(수정_요청, 정식맛집.getRestaurant().getId(), 등록된_메뉴2.getId(), 유저.getMember());
 
     // then
     Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("정든그릇")
         .orElseThrow(() -> new NotFoundException("맛집"));
-    assertEquals(15000L, 수정된_맛집.getLowestPrice());
+    assertEquals(10000L, 수정된_맛집.getLowestPrice());
   }
 
 

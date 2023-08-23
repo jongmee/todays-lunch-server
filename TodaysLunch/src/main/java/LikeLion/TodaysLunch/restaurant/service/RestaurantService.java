@@ -171,6 +171,9 @@ public class RestaurantService {
 
     restaurantRepository.save(restaurant);
 
+    if("ROLE_ADMIN".equals(member.getRoles().get(0)))
+      restaurant.setJudgement(false);
+
     List<Long> recommendCategoryIds= createDto.getRecommendCategoryIds();
     for(Long id: recommendCategoryIds){
       RecommendCategory recommendCategory = recommendCategoryRepository.findById(id)

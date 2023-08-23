@@ -31,7 +31,7 @@ public class ImageUrl {
   private String imageUrl;
 
   // 이미지 등록자
-  @JoinColumn(nullable = false)
+  @JoinColumn
   @OneToOne(fetch = FetchType.LAZY)
   private Member member;
 

@@ -58,7 +58,7 @@ public class CategoryController {
   }
 
   @PostMapping("/food-category")
-  ResponseEntity<Void> createFoodCategory(@RequestParam String foodCategoryName){
+  ResponseEntity<Void> createFoodCategory(@RequestParam(value = "name") String foodCategoryName){
     categoryService.createFoodCategory(foodCategoryName);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -84,7 +84,7 @@ public class CategoryController {
   @PatchMapping("/food-category/{foodCategoryId}")
   ResponseEntity<Void> updateFoodCategory(
       @PathVariable Long foodCategoryId,
-      @RequestParam String foodCategoryName){
+      @RequestParam(value = "name") String foodCategoryName){
     categoryService.updateFoodCategory(foodCategoryId, foodCategoryName);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -92,7 +92,7 @@ public class CategoryController {
   @PatchMapping("/location-category/{locationCategoryId}")
   ResponseEntity<Void> updateLocationCategory(
       @PathVariable Long locationCategoryId,
-      @RequestParam LocationCategoryDto locationCategoryDto){
+      @RequestBody LocationCategoryDto locationCategoryDto){
     categoryService.updateLocationCategory(locationCategoryId, locationCategoryDto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -100,7 +100,7 @@ public class CategoryController {
   @PatchMapping("/location-tag/{locationTagId}")
   ResponseEntity<Void> updateLocationTag(
       @PathVariable Long locationTagId,
-      @RequestParam LocationTagDto locationTagDto){
+      @RequestBody LocationTagDto locationTagDto){
     categoryService.updateLocationTag(locationTagId, locationTagDto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -108,7 +108,7 @@ public class CategoryController {
   @PatchMapping("/recommend-category/{recommendCategoryId}")
   ResponseEntity<Void> updateRecommendCategory(
       @PathVariable Long recommendCategoryId,
-      @RequestParam RecommendCategoryDto.CategoryList categoryDto){
+      @RequestBody RecommendCategoryDto.CategoryList categoryDto){
     categoryService.updateRecommendCategory(recommendCategoryId, categoryDto);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
