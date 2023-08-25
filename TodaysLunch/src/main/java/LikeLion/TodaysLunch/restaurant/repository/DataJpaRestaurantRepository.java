@@ -17,4 +17,5 @@ public interface DataJpaRestaurantRepository extends JpaRepository <Restaurant, 
   List<Restaurant> findAllByRegistrantAndJudgement(Member registrant, Boolean judgement);
   Page<Restaurant> findAllByRegistrantAndJudgement(Member registrant, Boolean judgement, Pageable pageable);
   Optional<Restaurant> findByRestaurantName(String restaurantName);
+  List<Restaurant> findAllByRegistrant(Member registrant);
 }
