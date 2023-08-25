@@ -5,6 +5,7 @@ import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.customized.domain.MemberFoodCategory;
 import LikeLion.TodaysLunch.customized.domain.MemberLocationCategory;
+import java.util.Collections;
 import java.util.List;
 
 public class TestUser {
@@ -14,9 +15,14 @@ public class TestUser {
     this.environ = environ;
   }
   public TestUser 유저_등록하기(String email, String password, String nickname) {
-    Member member = Member.builder().email(email).password(environ.passwordEncoder().encode(password)).nickname(nickname).build();
-    member.setMyStoreCount(0L);
-    member.setTemporaryPw(false);
+    Member member = Member.builder()
+        .email(email)
+        .password(environ.passwordEncoder().encode(password))
+        .nickname(nickname)
+        .roles(Collections.singletonList("ROLE_USER"))
+        .myStoreCount(0L)
+        .temporaryPw(false)
+        .build();
     this.member = environ.memberRepository().save(member);
     return this;
   }
