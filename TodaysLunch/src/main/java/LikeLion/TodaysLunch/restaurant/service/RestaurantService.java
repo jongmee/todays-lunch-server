@@ -392,6 +392,16 @@ public class RestaurantService {
     return pageable;
   }
 
+  public void deleteRestaurant(Long restaurantId){
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        .orElseThrow(() -> new NotFoundException("맛집"));
+
+    if(restaurant.getImageUrl() != null)
+      imageUrlRepository.delete(restaurant.getImageUrl());
+
+    restaurantRepository.delete(restaurant);
+  }
+
   private Specification<Restaurant> determineSpecification(String foodCategory, String locationCategory,
       String locationTag, Long recommendCategoryId, String keyword, Boolean judgement, Member member){
     FoodCategory foodCategoryObj;

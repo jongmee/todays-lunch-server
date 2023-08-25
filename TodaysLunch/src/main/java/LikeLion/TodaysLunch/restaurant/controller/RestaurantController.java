@@ -133,4 +133,10 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_SIZE) int size){
     return ResponseEntity.status(HttpStatus.OK).body(restaurantService.contributeRestaurantList(member, page, size));
   }
+
+  @DeleteMapping("/{restaurantId}")
+  public ResponseEntity<Void> deleteRestaurant(@PathVariable Long restaurantId){
+    restaurantService.deleteRestaurant(restaurantId);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
 }
