@@ -4,6 +4,7 @@ import LikeLion.TodaysLunch.common.BaseTimeEntity;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.review.dto.ReviewDto;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +17,8 @@ import javax.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @NoArgsConstructor
@@ -37,10 +40,12 @@ public class Review extends BaseTimeEntity {
 
   @JoinColumn(nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Restaurant restaurant;
 
   @JoinColumn(nullable = false)
   @OneToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   Member member;
 
   @Builder

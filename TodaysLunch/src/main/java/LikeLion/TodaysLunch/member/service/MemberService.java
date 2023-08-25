@@ -17,6 +17,7 @@ import LikeLion.TodaysLunch.member.dto.TokenDto;
 import LikeLion.TodaysLunch.exception.DuplicationException;
 import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.exception.UnauthorizedException;
+import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.image.repository.ImageUrlRepository;
@@ -26,6 +27,7 @@ import LikeLion.TodaysLunch.customized.repository.MemberLocationCategoryReposito
 import LikeLion.TodaysLunch.member.repository.MemberRepository;
 import LikeLion.TodaysLunch.customized.repository.MyStoreRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepository;
+import LikeLion.TodaysLunch.review.domain.Review;
 import LikeLion.TodaysLunch.review.repository.ReviewRepository;
 import LikeLion.TodaysLunch.external.S3UploadService;
 import LikeLion.TodaysLunch.external.JwtTokenProvider;
@@ -296,6 +298,21 @@ public class MemberService {
         Member member = joinDto.toEntity(passwordEncoder.encode(joinDto.getPassword()));
 
         memberRepository.save(member);
+    }
+
+    public void deleteAccount(Member member){
+        List<Restaurant> restaurants = restaurantRepository.findAllByRegistrant(member);
+        for(Restaurant restaurant: restaurants)
+            restaurant.setNullRegistrant();
+
+        List<ImageUrl> images = imageUrlRepository.findAllByMember(member);
+        for(ImageUrl image: images)
+            image.setMember(null);
+
+        if(member.getIcon() != null)
+            imageUrlRepository.delete(member.getIcon());
+
+        memberRepository.delete(member);
     }
 
     private void validateDuplication(JoinDto memberDto) {
