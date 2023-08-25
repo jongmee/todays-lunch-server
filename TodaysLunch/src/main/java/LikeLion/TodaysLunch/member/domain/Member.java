@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -52,7 +55,14 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private Boolean temporaryPw;
 
-    @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(joinColumns = {
+        @JoinColumn(name = "member_id"
+            , referencedColumnName = "id"
+            ,foreignKey=@ForeignKey(name="MEMBER_ROLES_FK"
+            , foreignKeyDefinition = "FOREIGN KEY (member_id) references public.member (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE"))
+    }
+    )
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 

@@ -13,6 +13,8 @@ import javax.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @NoArgsConstructor
@@ -34,14 +36,17 @@ public class Restaurant {
 
   @JoinColumn(nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private FoodCategory foodCategory;
 
   @JoinColumn(nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private LocationCategory locationCategory;
 
   @JoinColumn(nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private LocationTag locationTag;
 
   @OneToMany(mappedBy="restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -87,7 +92,7 @@ public class Restaurant {
   @Column(nullable = false)
   private LocalDateTime updatedDate;
 
-  @JoinColumn(nullable = false)
+  @JoinColumn
   @OneToOne(fetch = FetchType.LAZY)
   private Member registrant;
 
@@ -139,4 +144,5 @@ public class Restaurant {
   }
 
   public void setUpdatedDate(LocalDateTime date) { this.updatedDate = date; }
+  public void setNullRegistrant() { this.registrant = null; }
 }
