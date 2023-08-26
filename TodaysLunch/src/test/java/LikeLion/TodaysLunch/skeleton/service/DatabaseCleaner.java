@@ -1,10 +1,16 @@
 package LikeLion.TodaysLunch.skeleton.service;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Table;
+import javax.persistence.metamodel.Type;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +21,8 @@ public class DatabaseCleaner implements InitializingBean {
 
   @Value("${test-constraint}")
   private String constraint;
+  @Value("${test-db}")
+  private String testDb;
   private final List<String> tableNames = new ArrayList<>();
 
   @PersistenceContext
@@ -22,10 +30,14 @@ public class DatabaseCleaner implements InitializingBean {
 
   @PostConstruct
   public void findDatabaseTableNames() {
-    List<Object[]> tableInfos = entityManager.createNativeQuery("SHOW TABLES").getResultList();
-    for (Object[] tableInfo : tableInfos) {
-      String tableName = (String) tableInfo[0];
-      tableNames.add(tableName);
+    if(testDb.equals("mysql"))
+      entityManager.createNativeQuery("SHOW TABLES").getResultList().stream().forEach(name->tableNames.add(String.valueOf(name)));
+    else if(testDb.equals("h2")){
+      List<Object[]> tableInfos = entityManager.createNativeQuery("SHOW TABLES").getResultList();
+      for (Object[] tableInfo : tableInfos) {
+        String tableName = String.valueOf(tableInfo[0]);
+        tableNames.add(tableName);
+      }
     }
   }
 
