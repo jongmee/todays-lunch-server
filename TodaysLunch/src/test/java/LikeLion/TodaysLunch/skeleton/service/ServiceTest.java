@@ -15,8 +15,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@ActiveProfiles(profiles = "prod")
 public abstract class ServiceTest {
 
   protected final String 추천카테고리이름1 = "혼밥하기 좋으니 가게 🍚";
