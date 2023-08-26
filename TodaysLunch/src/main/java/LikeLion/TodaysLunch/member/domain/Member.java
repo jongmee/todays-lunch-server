@@ -60,7 +60,7 @@ public class Member implements UserDetails {
         @JoinColumn(name = "member_id"
             , referencedColumnName = "id"
             ,foreignKey=@ForeignKey(name="MEMBER_ROLES_FK"
-            , foreignKeyDefinition = "FOREIGN KEY (member_id) references public.member (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE"))
+            , foreignKeyDefinition = "FOREIGN KEY (member_id) references member (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE"))
     }
     )
     @Builder.Default
