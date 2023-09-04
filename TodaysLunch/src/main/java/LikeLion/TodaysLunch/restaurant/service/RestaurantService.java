@@ -299,6 +299,9 @@ public class RestaurantService {
       member.setMyStoreCount(++count);
       memberRepository.save(member);
 
+      Long storeCount = restaurant.getLikeCount();
+      restaurant.setLikeCount(++storeCount);
+
       myStoreRepository.save(new MyStore(member, restaurant));
     } else {
       MyStore myStore = myStoreRepository.findByMemberAndRestaurant(member, restaurant).get();
@@ -307,6 +310,9 @@ public class RestaurantService {
       Long count = member.getMyStoreCount();
       member.setMyStoreCount(--count);
       memberRepository.save(member);
+
+      Long storeCount = restaurant.getLikeCount();
+      restaurant.setLikeCount(--storeCount);
     }
   }
 

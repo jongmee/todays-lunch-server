@@ -85,6 +85,9 @@ public class Restaurant {
   @Column(nullable = false)
   private Long reviewCount;
 
+  @Column(nullable = false)
+  private Long likeCount;
+
   private Long lowestPrice;
 
   private String bestReview;
@@ -117,6 +120,7 @@ public class Restaurant {
     this.agreementCount = 0L;
     this.reviewCount = 0L;
     this.updatedDate = LocalDateTime.now();
+    this.likeCount = 0L;
   }
 
   public void setId(Long id) {
@@ -135,6 +139,7 @@ public class Restaurant {
   public void setAgreementCount(Long agreementCount) { this.agreementCount = agreementCount; }
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
   public void setBestReview(String bestReview) { this.bestReview = bestReview; }
+  public void setLikeCount(Long likeCount) { this.likeCount = likeCount; }
 
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);
