@@ -69,12 +69,12 @@ public class ReviewService {
     Page<Review> reviews = reviewRepository.findAllByRestaurant(restaurant, pageable);
 
     List<ReviewDto> reviewDtos = new ArrayList<>((int)reviews.getTotalElements());
-    String liked;
+    Boolean liked;
     for(Review review: reviews){
       if(isNotAlreadyLike(member, review))
-        liked = "false";
+        liked = false;
       else
-        liked = "true";
+        liked = true;
       reviewDtos.add(ReviewDto.fromEntity(review, liked));
     }
 
@@ -94,12 +94,12 @@ public class ReviewService {
     Page<Review> reviews = reviewRepository.findAllByMember(reviewer, pageable);
 
     List<MyReviewDto> reviewDtos = new ArrayList<>((int)reviews.getTotalElements());
-    String liked;
+    Boolean liked;
     for(Review review: reviews){
       if(isNotAlreadyLike(reviewer, review))
-        liked = "false";
+        liked = false;
       else
-        liked = "true";
+        liked = true;
       reviewDtos.add(MyReviewDto.fromEntity(review, liked));
     }
 

@@ -23,7 +23,7 @@ public class ReviewDto {
   private Integer rating;
   private LocalDate createdDate;
   private Long likeCount;
-  private String liked;
+  private Boolean liked;
 
   public Review toEntity(){
     return Review.builder()
@@ -32,7 +32,7 @@ public class ReviewDto {
         .build();
   }
 
-  public static ReviewDto fromEntity(Review review, String liked){
+  public static ReviewDto fromEntity(Review review, Boolean liked){
     return ReviewDto.builder()
         .id(review.getId())
         .rating(review.getRating())
