@@ -22,9 +22,9 @@ public class MyReviewDto {
   private Integer rating;
   private LocalDate createdDate;
   private Long likeCount;
-  private String liked;
+  private Boolean liked;
 
-  public static MyReviewDto fromEntity(Review review, String liked) {
+  public static MyReviewDto fromEntity(Review review, Boolean liked) {
     String image = null;
     if(review.getRestaurant().getImageUrl() != null)
       image = review.getRestaurant().getImageUrl().getImageUrl();
