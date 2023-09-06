@@ -132,9 +132,7 @@ public class Restaurant {
   public void setRating(Double rating) {
     this.rating = rating;
   }
-  public void setReviewCount(Long reviewCount) {
-    this.reviewCount = reviewCount;
-  }
+  public void setReviewCount(Long reviewCount) { this.reviewCount = reviewCount; }
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
   public void setAgreementCount(Long agreementCount) { this.agreementCount = agreementCount; }
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
