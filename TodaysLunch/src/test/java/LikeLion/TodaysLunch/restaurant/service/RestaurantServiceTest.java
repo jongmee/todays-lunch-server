@@ -242,17 +242,15 @@ class RestaurantServiceTest extends ServiceTest {
     TestRestaurant 정식맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
         "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
     TestRestaurant 정식맛집2 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
-        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
-    TestRestaurant 정식맛집3 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
-        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
-    TestRestaurant 정식맛집4 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구",
-        "정든그릇", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
+        "가츠벤또", "정말 맛있는 집!", 37.546924, 126.940155, 유저.getMember());
 
     // when
     List<RestaurantRecommendDto> 추천된_맛집들 = restaurantService.recommendation(null);
 
     // then
-    assertEquals(4, 추천된_맛집들.size());
+    assertEquals(2, 추천된_맛집들.size());
+    assertEquals("가츠벤또", 추천된_맛집들.get(0).getRestaurantName());
+    assertEquals("정든그릇", 추천된_맛집들.get(1).getRestaurantName());
   }
 
   @Test

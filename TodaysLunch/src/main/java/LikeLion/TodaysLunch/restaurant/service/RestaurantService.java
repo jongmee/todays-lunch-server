@@ -268,8 +268,9 @@ public class RestaurantService {
     List<Restaurant> recommend = new ArrayList<>();
 
     int today = LocalDate.now().getDayOfMonth();
-
     int size = 5 > poolSize ? poolSize:5;
+    if(today % poolSize == 0) today++;
+
     while(size>0){
       index = (index + today) % poolSize;
       recommend.add(pool.get(index));
