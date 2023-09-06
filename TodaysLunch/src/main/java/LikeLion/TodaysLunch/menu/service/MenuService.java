@@ -236,8 +236,12 @@ public class MenuService {
     for(Menu menu: saleMenuList){
         image = null;
         MenuImage imageUrl = menuImageRepository.findByMenuAndIsBest(menu, true)
-            .orElseGet(()->menuImageRepository.findByMenu(menu)
-                .orElseGet(()->null));
+            .orElseGet(()->null);
+        if (imageUrl == null) {
+          List<MenuImage> images = menuImageRepository.findAllByMenu(menu);
+          if(images.size() != 0)
+            imageUrl = images.get(0);
+        }
         if (imageUrl != null) {
           image = imageUrlRepository.findById(imageUrl.getImagePk())
               .orElseThrow(() -> new NotFoundException("이미지")).getImageUrl();
