@@ -14,14 +14,13 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class EmailService {
+
   @Autowired
   JavaMailSender emailSender;
   @Value("${AdminMail.id}")
   private String senderEmail;
-  public static final String code = createEmailKey();
-  public static final String temporaryPassword = createTemporaryPw();
 
-  private MimeMessage createEmailVerifyMessage(String to)throws Exception{
+  private MimeMessage createEmailVerifyMessage(String to, String code)throws Exception{
     MimeMessage  message = emailSender.createMimeMessage();
 
     message.addRecipients(RecipientType.TO, to);
@@ -47,7 +46,7 @@ public class EmailService {
     return message;
   }
 
-  private MimeMessage createTempPwMesssage(String to)throws Exception{
+  private MimeMessage createTempPwMesssage(String to, String temporaryPassword)throws Exception{
     MimeMessage  message = emailSender.createMimeMessage();
 
     message.addRecipients(RecipientType.TO, to);
@@ -73,7 +72,7 @@ public class EmailService {
     return message;
   }
 
-  public static String createEmailKey() {
+  private String createEmailKey() {
     StringBuffer key = new StringBuffer();
     Random rnd = new Random();
 
@@ -96,12 +95,12 @@ public class EmailService {
     return key.toString();
   }
 
-  public static String createTemporaryPw() {
+  private String createTemporaryPw() {
     StringBuffer key = new StringBuffer();
     Random rnd = new Random();
 
     for (int i = 0; i < 16; i++) {
-      int index = rnd.nextInt(4);
+      int index = rnd.nextInt(3);
 
       switch (index) {
         case 0:
@@ -113,9 +112,6 @@ public class EmailService {
         case 2:
           key.append((rnd.nextInt(10)));
           break;
-        case 3:
-          key.append((char) (rnd.nextInt(4) + 35));
-          break;
       }
     }
 
@@ -123,7 +119,8 @@ public class EmailService {
   }
 
   public String sendEmailVerifyMessage(String to)throws Exception {
-    MimeMessage message = createEmailVerifyMessage(to);
+    String code = createEmailKey();
+    MimeMessage message = createEmailVerifyMessage(to, code);
     try{
       emailSender.send(message);
     }catch(MailException es){
@@ -134,7 +131,8 @@ public class EmailService {
   }
 
   public String sendTemporaryPassword(String to)throws Exception {
-    MimeMessage message = createTempPwMesssage(to);
+    String temporaryPassword = createTemporaryPw();
+    MimeMessage message = createTempPwMesssage(to, temporaryPassword);
     try{
       emailSender.send(message);
     }catch(MailException es){
