@@ -16,13 +16,15 @@ public class LocationTagDto {
   private String name;
   private Double latitude;
   private Double longitude;
+  private Long locationCategoryId;
 
-  public static LocationTagDto fromEntity(LocationTag locationTag){
+  public static LocationTagDto fromEntity(LocationTag locationTag, Long locationCategoryId){
     return LocationTagDto.builder()
         .id(locationTag.getId())
         .name(locationTag.getName())
         .latitude(locationTag.getLatitude())
         .longitude(locationTag.getLongitude())
+        .locationCategoryId(locationCategoryId)
         .build();
   }
 
