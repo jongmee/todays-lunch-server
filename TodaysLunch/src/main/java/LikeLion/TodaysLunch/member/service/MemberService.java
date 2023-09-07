@@ -106,7 +106,7 @@ public class MemberService {
 
     public TokenDto.LoginToken login(MemberLoginDto memberDto) {
         Member member = memberRepository.findByEmail(memberDto.getEmail())
-            .orElseThrow(() -> new NotFoundException("이메일"));
+            .orElseThrow(() -> new UnauthorizedException("이메일을 찾을 수 없습니다."));
 
         if (!passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {
             throw new UnauthorizedException("회원정보의 비밀번호와 일치하지 않습니다.");
