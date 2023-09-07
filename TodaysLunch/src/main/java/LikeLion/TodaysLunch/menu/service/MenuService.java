@@ -82,32 +82,22 @@ public class MenuService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
+    menuDto.updateMenu(menu);
+
     // 최저 메뉴 가격 설정
+    Long lower;
     Long lowestPrice = 1000000L;
     List<Menu> allMenus = menuRepository.findAllByRestaurant(restaurant);
     for (Menu m : allMenus) {
-      Long s = m.getSalePrice();
-      Long p = m.getPrice();
-      if (!m.getId().equals(menuId) && s != null && s < lowestPrice) {
-        lowestPrice = s;
-      } else if (!m.getId().equals(menuId) && p < lowestPrice) {
-        lowestPrice = p;
-      }
+      lower = m.getSalePrice() == null ? m.getPrice() : m.getSalePrice();
+      if (lower < lowestPrice)
+        lowestPrice = lower;
     }
-    if(lowestPrice > menuDto.getPrice()) {
-      lowestPrice = menuDto.getPrice();
-      if(menuDto.getSalePrice() != null)
-        lowestPrice = menuDto.getSalePrice();
-    }
-
-    if(lowestPrice == 1000000L) lowestPrice = null;
     restaurant.setLowestPrice(lowestPrice);
 
     createRestaurantContributor(restaurant, member);
 
     restaurant.setUpdatedDate(LocalDateTime.now());
-
-    menu = menuDto.updateMenu(menu);
   }
 
   public Menu delete(Long restaurantId, Long menuId){
