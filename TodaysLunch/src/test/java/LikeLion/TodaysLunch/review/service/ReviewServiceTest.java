@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 class ReviewServiceTest extends ServiceTest {
 
@@ -305,6 +306,25 @@ class ReviewServiceTest extends ServiceTest {
     Restaurant 수정된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
         .orElseThrow(() -> new NotFoundException("맛집"));
     assertEquals(1L, 수정된_맛집.getReviewCount());
+  }
+
+  @Test
+  @Transactional
+  void 베스트리뷰_수정하고_맛집에_반영하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저1.getMember());
+    Review 리뷰 = 리뷰_생성하기(유저1.getMember(), 맛집.getRestaurant(), "정말 맛있는 집이예요!", 1);
+    reviewService.addOrCancelLike(맛집.getRestaurant().getId(), 리뷰.getId(), 유저1.getMember());
+
+    // when
+    ReviewDto 수정한_리뷰 = ReviewDto.builder().reviewContent("생각해보니까 별로인듯").rating(1).build();
+    reviewService.update(리뷰.getId(), 맛집.getRestaurant().getId(), 수정한_리뷰);
+
+    // then
+    Restaurant 변경된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals("생각해보니까 별로인듯", 변경된_맛집.getBestReview().getReviewContent());
   }
 
   Review 리뷰_생성하기(Member member, Restaurant restaurant, String reviewContent, Integer rating){

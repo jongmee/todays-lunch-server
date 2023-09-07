@@ -115,7 +115,11 @@ public class RestaurantService {
     else
       liked = true;
 
-    return RestaurantDto.fromEntity(restaurant, contributors, liked);
+    String bestReview = null;
+    if(restaurant.getBestReview() != null)
+      bestReview = restaurant.getBestReview().getReviewContent();
+
+    return RestaurantDto.fromEntity(restaurant, contributors, liked, bestReview);
   }
 
   public void createJudgeRestaurant(JudgeRestaurantCreateDto createDto, MultipartFile restaurantImage, Member member) throws IOException {
@@ -280,12 +284,18 @@ public class RestaurantService {
     List<RestaurantRecommendDto> recommendDtos = new ArrayList<>(recommend.size());
 
     Boolean liked;
+    String bestReview;
     for(Restaurant restaurant: recommend){
+      bestReview = null;
+      if(restaurant.getBestReview() != null)
+        bestReview = restaurant.getBestReview().getReviewContent();
+
       if(isNotAlreadyMyStore(member, restaurant))
         liked = false;
       else
         liked = true;
-      recommendDtos.add(RestaurantRecommendDto.fromEntity(restaurant, liked));
+
+      recommendDtos.add(RestaurantRecommendDto.fromEntity(restaurant, liked, bestReview));
     }
 
     return recommendDtos;

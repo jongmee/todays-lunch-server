@@ -182,7 +182,7 @@ public class ReviewService {
     Pageable pageable = PageRequest.of(0, (int)reviewRepository.count(), Sort.by("likeCount").descending());
     Review bestReview = reviewRepository.findAllByRestaurant(restaurant, pageable).getContent().get(0);
     if(bestReview.getLikeCount() <= review.getLikeCount()){
-      restaurant.setBestReview(review.getReviewContent());
+      restaurant.setBestReview(review);
       restaurantRepository.save(restaurant);
     }
   }

@@ -5,6 +5,7 @@ import LikeLion.TodaysLunch.image.domain.ImageUrl;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.review.domain.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -90,7 +91,9 @@ public class Restaurant {
 
   private Long lowestPrice;
 
-  private String bestReview;
+  @JoinColumn
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  private Review bestReview;
 
   @Column(nullable = false)
   private LocalDateTime updatedDate;
@@ -136,7 +139,7 @@ public class Restaurant {
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
   public void setAgreementCount(Long agreementCount) { this.agreementCount = agreementCount; }
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
-  public void setBestReview(String bestReview) { this.bestReview = bestReview; }
+  public void setBestReview(Review review) { this.bestReview = review; }
   public void setLikeCount(Long likeCount) { this.likeCount = likeCount; }
 
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
