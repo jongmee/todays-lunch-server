@@ -20,14 +20,21 @@
 <h4 align="center">서강대생을 위한 맛집 위키백과, 점메추</h4>
 <br><br>
 
-## DataBase Schema
+<div align=center>
+<h2 align="center">
+  Database Schema
+  <br>
+</h2>
 
-* ERDCloud 주소: 
-https://www.erdcloud.com/d/YtCy9kivFahzYbdNL
+<h4>🍳 ERDCloud 주소:
+https://www.erdcloud.com/d/YtCy9kivFahzYbdNL</h4>
 <img width="1247" alt="스크린샷 2023-04-25 오후 7 48 19" src="https://user-images.githubusercontent.com/101439796/234258412-be18a115-4f89-4464-8201-70d003f6021c.png">
 
-## Site URL
-* 아직 배포 전입니다
-
+<h2 align="center">
+  Site Url
+  <br>
+</h2>
+<h4> 🍳 https://todays-lunch.me/ </h4>
 
 ---
+</div>
