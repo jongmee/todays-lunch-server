@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 class ReviewServiceTest extends ServiceTest {
 
@@ -96,6 +97,24 @@ class ReviewServiceTest extends ServiceTest {
         .orElseThrow(() -> new NotFoundException("맛집"));
     Long 맛집의_리뷰_수 = 수정된_맛집.getReviewCount();
     assertEquals(2L, 맛집의_리뷰_수);
+  }
+
+  @Test
+  void 좋아요있는_리뷰_삭제하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저1.getMember());
+
+    Review 리뷰1 = 리뷰_생성하기(유저1.getMember(), 맛집.getRestaurant(), "아주맛잇군", 2);
+    reviewService.addOrCancelLike(맛집.getRestaurant().getId(), 리뷰1.getId(), 유저1.getMember());
+
+    // when
+    reviewService.delete(리뷰1.getId(), 맛집.getRestaurant().getId());
+
+    // then
+    Restaurant 리뷰삭제된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals(0L, 리뷰삭제된_맛집.getReviewCount());
   }
 
   @Test
@@ -223,8 +242,8 @@ class ReviewServiceTest extends ServiceTest {
     ReviewDto 조회한_리뷰2 = 전체_리뷰들.get(1);
     assertEquals(리뷰1.getId(), 조회한_리뷰2.getId());
     assertEquals(리뷰2.getId(), 조회한_리뷰1.getId());
-    assertEquals("false", 조회한_리뷰1.getLiked());
-    assertEquals("true", 조회한_리뷰2.getLiked());
+    assertEquals(false, 조회한_리뷰1.getLiked());
+    assertEquals(true, 조회한_리뷰2.getLiked());
   }
 
   @Test
@@ -246,8 +265,8 @@ class ReviewServiceTest extends ServiceTest {
     // then
     ReviewDto 조회한_리뷰1 = 전체_리뷰들.get(0);
     ReviewDto 조회한_리뷰2 = 전체_리뷰들.get(1);
-    assertEquals("false", 조회한_리뷰1.getLiked());
-    assertEquals("false", 조회한_리뷰2.getLiked());
+    assertEquals(false, 조회한_리뷰1.getLiked());
+    assertEquals(false, 조회한_리뷰2.getLiked());
   }
 
   @Test
@@ -289,10 +308,27 @@ class ReviewServiceTest extends ServiceTest {
     assertEquals(1L, 수정된_맛집.getReviewCount());
   }
 
+  @Test
+  @Transactional
+  void 베스트리뷰_수정하고_맛집에_반영하기(){
+    // given
+    TestUser 유저1 = makeTestUser("qwer@naver.com", "1234", "유저1", new ArrayList<>(Arrays.asList("한식")), new ArrayList<>(Arrays.asList("서강대")));
+    TestRestaurant 맛집 = makeTestRestaurant("한식", "서강대", "정문", "서울시 마포구", "가츠벤또","정말 맛있다", 126.940155, 37.546924, 유저1.getMember());
+    Review 리뷰 = 리뷰_생성하기(유저1.getMember(), 맛집.getRestaurant(), "정말 맛있는 집이예요!", 1);
+    reviewService.addOrCancelLike(맛집.getRestaurant().getId(), 리뷰.getId(), 유저1.getMember());
+
+    // when
+    ReviewDto 수정한_리뷰 = ReviewDto.builder().reviewContent("생각해보니까 별로인듯").rating(1).build();
+    reviewService.update(리뷰.getId(), 맛집.getRestaurant().getId(), 수정한_리뷰);
+
+    // then
+    Restaurant 변경된_맛집 = testRestaurantEnviron.restaurantRepository().findByRestaurantName("가츠벤또")
+        .orElseThrow(() -> new NotFoundException("맛집"));
+    assertEquals("생각해보니까 별로인듯", 변경된_맛집.getBestReview().getReviewContent());
+  }
+
   Review 리뷰_생성하기(Member member, Restaurant restaurant, String reviewContent, Integer rating){
-    Review review = new Review(reviewContent, rating);
-    review.setMember(member);
-    review.setRestaurant(restaurant);
-    return reviewRepository.save(review);
+    ReviewDto 작성한_리뷰 = ReviewDto.builder().reviewContent(reviewContent).rating(rating).build();
+    return reviewService.create(restaurant.getId(), 작성한_리뷰, member);
   }
 }

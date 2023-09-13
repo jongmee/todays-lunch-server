@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles(profiles = "prod")
+@ActiveProfiles(profiles = "test")
 public abstract class ServiceTest {
 
   protected final String 추천카테고리이름1 = "혼밥하기 좋으니 가게 🍚";

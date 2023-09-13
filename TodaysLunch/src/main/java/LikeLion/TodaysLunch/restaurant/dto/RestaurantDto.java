@@ -35,8 +35,9 @@ public class RestaurantDto {
   private String bestReview;
   private Boolean liked;
   private LocalDate updatedDate;
+  private Long likeCount;
 
-  public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors, Boolean liked){
+  public static RestaurantDto fromEntity(Restaurant restaurant, List<ContributorDto> contributors, Boolean liked, String bestReview){
     String image = null;
     if (restaurant.getImageUrl() != null)
       image = restaurant.getImageUrl().getImageUrl();
@@ -63,9 +64,10 @@ public class RestaurantDto {
         .reviewCount(restaurant.getReviewCount())
         .registrant(registrant)
         .contributors(contributors)
-        .bestReview(restaurant.getBestReview())
+        .bestReview(bestReview)
         .liked(liked)
         .updatedDate(restaurant.getUpdatedDate().toLocalDate())
+        .likeCount(restaurant.getLikeCount())
         .build();
   }
 }

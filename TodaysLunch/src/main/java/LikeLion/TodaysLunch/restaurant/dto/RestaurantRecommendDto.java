@@ -22,14 +22,16 @@ public class RestaurantRecommendDto {
   private Long lowestPrice;
   private Long reviewCount;
   private Boolean liked;
+  private String bestReview;
 
-  public static RestaurantRecommendDto fromEntity(Restaurant restaurant, Boolean liked){
+  public static RestaurantRecommendDto fromEntity(Restaurant restaurant, Boolean liked, String bestReview){
     String image = null;
     if (restaurant.getImageUrl() != null)
       image = restaurant.getImageUrl().getImageUrl();
 
     return RestaurantRecommendDto.builder()
         .id(restaurant.getId())
+        .restaurantName(restaurant.getRestaurantName())
         .foodCategory(restaurant.getFoodCategory().getName())
         .locationCategory(restaurant.getLocationCategory().getName())
         .locationTag(restaurant.getLocationTag().getName())
@@ -38,6 +40,7 @@ public class RestaurantRecommendDto {
         .lowestPrice(restaurant.getLowestPrice())
         .reviewCount(restaurant.getReviewCount())
         .liked(liked)
+        .bestReview(bestReview)
         .build();
   }
 }

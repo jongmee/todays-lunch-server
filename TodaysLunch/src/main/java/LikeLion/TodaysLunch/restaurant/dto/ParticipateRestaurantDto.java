@@ -18,7 +18,7 @@ public class ParticipateRestaurantDto {
   private String foodCategory;
   private String locationCategory;
   private Double rating;
-  private String bestReview;
+  private Long reviewCount;
   private Boolean liked;
 
   public static ParticipateRestaurantDto fromEntity(Restaurant restaurant, Boolean liked){
@@ -33,7 +33,7 @@ public class ParticipateRestaurantDto {
         .foodCategory(restaurant.getFoodCategory().getName())
         .locationCategory(restaurant.getLocationCategory().getName())
         .rating(restaurant.getRating())
-        .bestReview(restaurant.getBestReview())
+        .reviewCount(restaurant.getReviewCount())
         .liked(liked)
         .build();
   }

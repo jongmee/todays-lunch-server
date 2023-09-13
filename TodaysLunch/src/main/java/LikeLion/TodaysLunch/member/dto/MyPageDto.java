@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class MyPageDto {
 
   private Long id;
+  private String email;
   private String nickname;
   private String icon;
   private List<FoodCategoryDto> foodCategoryList;
@@ -41,6 +42,7 @@ public class MyPageDto {
 
     return MyPageDto.builder()
         .id(member.getId())
+        .email(member.getEmail())
         .nickname(member.getNickname())
         .icon(image)
         .foodCategoryList(foodCategoryList)

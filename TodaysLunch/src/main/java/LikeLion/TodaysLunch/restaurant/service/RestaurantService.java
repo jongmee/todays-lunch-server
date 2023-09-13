@@ -115,7 +115,11 @@ public class RestaurantService {
     else
       liked = true;
 
-    return RestaurantDto.fromEntity(restaurant, contributors, liked);
+    String bestReview = null;
+    if(restaurant.getBestReview() != null)
+      bestReview = restaurant.getBestReview().getReviewContent();
+
+    return RestaurantDto.fromEntity(restaurant, contributors, liked, bestReview);
   }
 
   public void createJudgeRestaurant(JudgeRestaurantCreateDto createDto, MultipartFile restaurantImage, Member member) throws IOException {
@@ -268,8 +272,9 @@ public class RestaurantService {
     List<Restaurant> recommend = new ArrayList<>();
 
     int today = LocalDate.now().getDayOfMonth();
-
     int size = 5 > poolSize ? poolSize:5;
+    if(today % poolSize == 0) today++;
+
     while(size>0){
       index = (index + today) % poolSize;
       recommend.add(pool.get(index));
@@ -279,12 +284,18 @@ public class RestaurantService {
     List<RestaurantRecommendDto> recommendDtos = new ArrayList<>(recommend.size());
 
     Boolean liked;
+    String bestReview;
     for(Restaurant restaurant: recommend){
+      bestReview = null;
+      if(restaurant.getBestReview() != null)
+        bestReview = restaurant.getBestReview().getReviewContent();
+
       if(isNotAlreadyMyStore(member, restaurant))
         liked = false;
       else
         liked = true;
-      recommendDtos.add(RestaurantRecommendDto.fromEntity(restaurant, liked));
+
+      recommendDtos.add(RestaurantRecommendDto.fromEntity(restaurant, liked, bestReview));
     }
 
     return recommendDtos;
@@ -299,6 +310,9 @@ public class RestaurantService {
       member.setMyStoreCount(++count);
       memberRepository.save(member);
 
+      Long storeCount = restaurant.getLikeCount();
+      restaurant.setLikeCount(++storeCount);
+
       myStoreRepository.save(new MyStore(member, restaurant));
     } else {
       MyStore myStore = myStoreRepository.findByMemberAndRestaurant(member, restaurant).get();
@@ -307,6 +321,9 @@ public class RestaurantService {
       Long count = member.getMyStoreCount();
       member.setMyStoreCount(--count);
       memberRepository.save(member);
+
+      Long storeCount = restaurant.getLikeCount();
+      restaurant.setLikeCount(--storeCount);
     }
   }
 

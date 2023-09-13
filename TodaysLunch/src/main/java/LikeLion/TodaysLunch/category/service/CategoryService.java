@@ -2,11 +2,13 @@ package LikeLion.TodaysLunch.category.service;
 
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
+import LikeLion.TodaysLunch.category.domain.LocationRelation;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.category.dto.FoodCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationCategoryDto;
 import LikeLion.TodaysLunch.category.dto.LocationTagDto;
+import LikeLion.TodaysLunch.category.repository.LocationRelationRepository;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.restaurant.domain.RestaurantRecommendCategoryRelation;
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
@@ -36,6 +38,7 @@ public class CategoryService {
   private final RecommendCategoryRepository recommendCategoryRepository;
   private final RestRecmdRelRepository restRecmdRelRepository;
   private final DataJpaRestaurantRepository restaurantRepository;
+  private final LocationRelationRepository locationRelationRepository;
 
   public List<FoodCategoryDto> foodCategoryList(){
     return foodCategoryRepository.findAll()
@@ -50,9 +53,17 @@ public class CategoryService {
   }
 
   public List<LocationTagDto> locationTagList(){
-    return locationTagRepository.findAll()
-        .stream().map(c->LocationTagDto.fromEntity(c))
-        .collect(Collectors.toList());
+    List<LocationTag> tagList = locationTagRepository.findAll();
+    List<LocationTagDto> dtoList = new ArrayList<>(tagList.size());
+
+    Long categoryId;
+    for(LocationTag tag: tagList){
+      categoryId = locationRelationRepository.findByLocationTag(tag)
+          .orElseThrow(() -> new NotFoundException("음식 카테고리")).getLocationCategory().getId();
+      dtoList.add(LocationTagDto.fromEntity(tag, categoryId));
+    }
+
+    return dtoList;
   }
 
   public List<RecommendCategoryDto.CategoryList> recommendCategoryList(){

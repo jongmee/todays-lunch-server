@@ -5,6 +5,7 @@ import LikeLion.TodaysLunch.image.domain.ImageUrl;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
 import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.member.domain.Member;
+import LikeLion.TodaysLunch.review.domain.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -85,9 +86,14 @@ public class Restaurant {
   @Column(nullable = false)
   private Long reviewCount;
 
+  @Column(nullable = false)
+  private Long likeCount;
+
   private Long lowestPrice;
 
-  private String bestReview;
+  @JoinColumn
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  private Review bestReview;
 
   @Column(nullable = false)
   private LocalDateTime updatedDate;
@@ -117,6 +123,7 @@ public class Restaurant {
     this.agreementCount = 0L;
     this.reviewCount = 0L;
     this.updatedDate = LocalDateTime.now();
+    this.likeCount = 0L;
   }
 
   public void setId(Long id) {
@@ -128,13 +135,12 @@ public class Restaurant {
   public void setRating(Double rating) {
     this.rating = rating;
   }
-  public void setReviewCount(Long reviewCount) {
-    this.reviewCount = reviewCount;
-  }
+  public void setReviewCount(Long reviewCount) { this.reviewCount = reviewCount; }
   public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
   public void setAgreementCount(Long agreementCount) { this.agreementCount = agreementCount; }
   public void setJudgement(Boolean judgement) { this.judgement = judgement; }
-  public void setBestReview(String bestReview) { this.bestReview = bestReview; }
+  public void setBestReview(Review review) { this.bestReview = review; }
+  public void setLikeCount(Long likeCount) { this.likeCount = likeCount; }
 
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);

@@ -2,6 +2,7 @@ package LikeLion.TodaysLunch.common;
 
 import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
+import LikeLion.TodaysLunch.category.repository.LocationRelationRepository;
 import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import LikeLion.TodaysLunch.category.service.CategoryService;
@@ -44,6 +45,7 @@ public class TodaysLunchConfig {
     private final MemberFoodCategoryRepository memberFoodCategoryRepository;
     private final MemberLocationCategoryRepository memberLocationCategoryRepository;
     private final MenuImageRepository menuImageRepository;
+    private final LocationRelationRepository locationRelationRepository;
 
     @Autowired
     public TodaysLunchConfig(DataJpaRestaurantRepository restaurantRepository,
@@ -61,7 +63,8 @@ public class TodaysLunchConfig {
                             MyStoreRepository myStoreRepository,
                             MemberFoodCategoryRepository memberFoodCategoryRepository,
                             MemberLocationCategoryRepository memberLocationCategoryRepository,
-                            MenuImageRepository menuImageRepository) {
+                            MenuImageRepository menuImageRepository,
+                            LocationRelationRepository locationRelationRepository) {
         this.restaurantRepository = restaurantRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.locationCategoryRepository = locationCategoryRepository;
@@ -79,6 +82,7 @@ public class TodaysLunchConfig {
         this.memberFoodCategoryRepository = memberFoodCategoryRepository;
         this.memberLocationCategoryRepository = memberLocationCategoryRepository;
         this.menuImageRepository = menuImageRepository;
+        this.locationRelationRepository = locationRelationRepository;
     }
 
     @Bean
@@ -109,7 +113,7 @@ public class TodaysLunchConfig {
         return new CategoryService(foodCategoryRepository,
             locationCategoryRepository, locationTagRepository,
             recommendCategoryRepository, restRecmdRelRepository,
-            restaurantRepository);
+            restaurantRepository, locationRelationRepository);
     }
 
 }

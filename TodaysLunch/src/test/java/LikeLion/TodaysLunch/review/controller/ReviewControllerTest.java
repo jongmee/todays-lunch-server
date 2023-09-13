@@ -39,7 +39,7 @@ public class ReviewControllerTest extends ControllerTest {
         .rating(1)
         .createdDate(LocalDate.of(2023, 2, 3))
         .likeCount(1L)
-        .liked("false").build();
+        .liked(false).build();
     응답.put("data", new ArrayList<>(Arrays.asList(리뷰)));
     응답.put("totalPages", 1);
     BDDMockito.given(reviewService.myReviewList(anyLong(), anyInt(), anyInt(), any(), any())).willReturn(응답);
