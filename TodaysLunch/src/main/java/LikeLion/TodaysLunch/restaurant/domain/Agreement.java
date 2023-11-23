@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -32,6 +33,7 @@ public class Agreement {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private Restaurant restaurant;
 
+  @Builder
   public Agreement(Member member, Restaurant restaurant) {
     this.member = member;
     this.restaurant = restaurant;
