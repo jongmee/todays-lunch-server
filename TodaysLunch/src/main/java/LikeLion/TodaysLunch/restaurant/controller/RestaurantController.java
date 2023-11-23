@@ -6,12 +6,13 @@ import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
+import LikeLion.TodaysLunch.restaurant.service.JudgeRestaurantService;
 import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/restaurants")
+@RequiredArgsConstructor
 public class RestaurantController {
 
   static final String PAGE_VALUE = "0";
@@ -28,11 +30,7 @@ public class RestaurantController {
   static final String ORDER = "descending";
 
   private final RestaurantService restaurantService;
-
-  @Autowired
-  public RestaurantController(RestaurantService restaurantService) {
-    this.restaurantService = restaurantService;
-  }
+  private final JudgeRestaurantService judgeRestaurantService;
 
   @GetMapping("")
   public ResponseEntity<HashMap<String, Object>> allRestaurantList(
@@ -63,7 +61,7 @@ public class RestaurantController {
       @Valid @RequestPart JudgeRestaurantCreateDto createDto,
       @AuthenticationPrincipal Member member
   ) throws IOException {
-    restaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
+    judgeRestaurantService.createJudgeRestaurant(createDto, restaurantImage, member);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
@@ -79,21 +77,21 @@ public class RestaurantController {
       @RequestParam(defaultValue = ORDER) String order,
       @RequestParam(value = "registrant-id", required = false) Long registrantId,
       @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, recommendCategoryId, page, size, sort, order, registrantId, member));
+    return ResponseEntity.status(HttpStatus.OK).body(judgeRestaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, recommendCategoryId, page, size, sort, order, registrantId, member));
   }
 
   @GetMapping("/judges/{restaurantId}")
   public ResponseEntity<JudgeRestaurantDto> judgeRestaurantDetail(
       @PathVariable Long restaurantId,
       @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.judgeRestaurantDetail(restaurantId, member));
+    return ResponseEntity.status(HttpStatus.OK).body(judgeRestaurantService.judgeRestaurantDetail(restaurantId, member));
   }
 
   @PostMapping("/judges/{restaurantId}/agree")
   public ResponseEntity<Void> addAgreement(
       @PathVariable Long restaurantId,
       @AuthenticationPrincipal Member member){
-    restaurantService.addOrCancelAgreement(member, restaurantId);
+    judgeRestaurantService.addOrCancelAgreement(member, restaurantId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
