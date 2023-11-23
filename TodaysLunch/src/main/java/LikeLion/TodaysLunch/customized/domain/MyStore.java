@@ -2,7 +2,6 @@ package LikeLion.TodaysLunch.customized.domain;
 
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -10,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -34,6 +34,7 @@ public class MyStore {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Restaurant restaurant;
 
+    @Builder
     public MyStore(Member member, Restaurant restaurant){
         this.member = member;
         this.restaurant = restaurant;

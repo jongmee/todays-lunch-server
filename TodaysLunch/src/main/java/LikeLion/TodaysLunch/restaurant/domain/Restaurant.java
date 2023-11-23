@@ -21,6 +21,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 @Entity
 public class Restaurant {
+  private static final Long EVALUATION_CRITERIA = 4L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -158,5 +159,27 @@ public class Restaurant {
   }
   public void deleteRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.remove(recommendCategoryRelation);
+  }
+
+  public void increaseAgreementCount() {
+    this.agreementCount += 1;
+  }
+
+  public void decreaseAgreementCount() {
+    this.agreementCount -= 1;
+  }
+
+  public void evaluateRestaurant() {
+    if(this.agreementCount.compareTo(EVALUATION_CRITERIA) > 0) {
+      this.judgement = false;
+    }
+  }
+
+  public void increaseLikeCount() {
+    this.likeCount += 1;
+  }
+
+  public void decreaseLikeCount() {
+    this.likeCount -= 1;
   }
 }
