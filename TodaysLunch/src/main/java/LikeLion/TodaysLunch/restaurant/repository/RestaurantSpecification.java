@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.restaurant.service;
+package LikeLion.TodaysLunch.restaurant.repository;
 
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;

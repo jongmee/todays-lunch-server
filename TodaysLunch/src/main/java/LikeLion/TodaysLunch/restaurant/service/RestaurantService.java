@@ -34,6 +34,7 @@ import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.external.S3UploadService;
+import LikeLion.TodaysLunch.restaurant.repository.RestaurantSpecification;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
