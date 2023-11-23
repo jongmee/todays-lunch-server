@@ -24,10 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class RestaurantController {
 
-  static final String PAGE_VALUE = "0";
-  static final String PAGE_SIZE = "100";
-  static final String SORT = "rating";
-  static final String ORDER = "descending";
+  private static final String PAGE_VALUE = "0";
+  private static final String PAGE_SIZE = "100";
+  private static final String SORT = "rating";
+  private static final String ORDER = "descending";
 
   private final RestaurantService restaurantService;
   private final JudgeRestaurantService judgeRestaurantService;
