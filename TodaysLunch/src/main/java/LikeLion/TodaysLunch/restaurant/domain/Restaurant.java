@@ -21,12 +21,6 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 @Entity
 public class Restaurant {
-  @PrePersist
-  public void prePersist() {
-    this.rating = this.rating == null? 0.0:this.rating;
-    this.judgement = this.judgement == null? false:this.judgement;
-    this.reviewCount = this.reviewCount == null? 0L:this.reviewCount;
-  }
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,7 +96,6 @@ public class Restaurant {
   @OneToOne(fetch = FetchType.LAZY)
   private Member registrant;
 
-  // 맛집 심사를 위한 등록에서 쓰임
   @Builder
   public Restaurant(String restaurantName, FoodCategory foodCategory,
       LocationCategory locationCategory, LocationTag locationTag,
@@ -114,16 +107,17 @@ public class Restaurant {
     this.locationTag = locationTag;
     this.address = address;
     this.introduction = introduction;
-    this.judgement = true;
-    this.startDate = LocalDate.now();
-    this.endDate = LocalDate.now().plusDays(7);
     this.longitude = longitude;
     this.latitude = latitude;
     this.registrant = registrant;
+    this.judgement = true;
+    this.startDate = LocalDate.now();
+    this.endDate = LocalDate.now().plusDays(7);
     this.agreementCount = 0L;
     this.reviewCount = 0L;
     this.updatedDate = LocalDateTime.now();
     this.likeCount = 0L;
+    this.rating = 0.0;
   }
 
   public void setId(Long id) {
@@ -135,20 +129,34 @@ public class Restaurant {
   public void setRating(Double rating) {
     this.rating = rating;
   }
-  public void setReviewCount(Long reviewCount) { this.reviewCount = reviewCount; }
-  public void setLowestPrice(Long lowestPrice) { this.lowestPrice = lowestPrice; }
-  public void setAgreementCount(Long agreementCount) { this.agreementCount = agreementCount; }
-  public void setJudgement(Boolean judgement) { this.judgement = judgement; }
-  public void setBestReview(Review review) { this.bestReview = review; }
-  public void setLikeCount(Long likeCount) { this.likeCount = likeCount; }
-
+  public void setReviewCount(Long reviewCount) {
+    this.reviewCount = reviewCount;
+  }
+  public void setLowestPrice(Long lowestPrice) {
+    this.lowestPrice = lowestPrice;
+  }
+  public void setAgreementCount(Long agreementCount) {
+    this.agreementCount = agreementCount;
+  }
+  public void setJudgement(Boolean judgement) {
+    this.judgement = judgement;
+  }
+  public void setBestReview(Review review) {
+    this.bestReview = review;
+  }
+  public void setUpdatedDate(LocalDateTime date) {
+    this.updatedDate = date;
+  }
+  public void setNullRegistrant() {
+    this.registrant = null;
+  }
+  public void setLikeCount(Long likeCount) {
+    this.likeCount = likeCount;
+  }
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);
   }
   public void deleteRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.remove(recommendCategoryRelation);
   }
-
-  public void setUpdatedDate(LocalDateTime date) { this.updatedDate = date; }
-  public void setNullRegistrant() { this.registrant = null; }
 }
