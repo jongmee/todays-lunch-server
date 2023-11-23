@@ -60,7 +60,7 @@ public class Member implements UserDetails {
         @JoinColumn(name = "member_id"
             , referencedColumnName = "id"
             ,foreignKey=@ForeignKey(name="MEMBER_ROLES_FK"
-            , foreignKeyDefinition = "FOREIGN KEY (member_id) references member (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE"))
+            , foreignKeyDefinition = "FOREIGN KEY (member_id) references public.member ON DELETE CASCADE"))
     }
     )
     @Builder.Default
@@ -113,4 +113,10 @@ public class Member implements UserDetails {
         return true;
     }
 
+    public void increaseMyStoreCount() {
+        this.myStoreCount += 1;
+    }
+    public void decreaseMyStoreCount() {
+        this.myStoreCount -= 1;
+    }
 }
