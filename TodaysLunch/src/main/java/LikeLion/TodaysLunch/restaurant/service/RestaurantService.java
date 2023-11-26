@@ -160,9 +160,7 @@ public class RestaurantService {
     }
   }
 
-  public RestaurantPageResponse myStoreList(int page, int size, Member member) {
-    Pageable pageable = PageRequest.of(page, size);
-
+  public RestaurantPageResponse myStoreList(Pageable pageable, Member member) {
     Page<MyStore> myStores = myStoreRepository.findAllByMember(member,pageable);
     List<Restaurant> restaurantList = myStores.stream().map(MyStore::getRestaurant).collect(Collectors.toList());
 
@@ -175,9 +173,7 @@ public class RestaurantService {
     return RestaurantPageResponse.create(myStores.getTotalPages(), restaurantDtos);
   }
 
-  public HashMap<String, Object> participateRestaurantList(Member member, int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
-
+  public HashMap<String, Object> participateRestaurantList(Pageable pageable, Member member) {
     Page<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false, pageable);
     long participationCount = participateRestaurant.getTotalElements();
 
@@ -194,9 +190,7 @@ public class RestaurantService {
     return response;
   }
 
-  public HashMap<String, Object> contributeRestaurantList(Member member, int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
-
+  public HashMap<String, Object> contributeRestaurantList(Pageable pageable, Member member) {
     Page<RestaurantContributor> relations = restaurantContributorRepository.findAllByMember(member, pageable);
     List<Restaurant> contributionRestaurant = relations.stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
     long contributionCount = relations.getTotalElements();

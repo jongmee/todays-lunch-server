@@ -120,7 +120,7 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.myStoreList(page, size, member));
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.myStoreList(PageRequest.of(page, size), member));
   }
 
   @GetMapping("/participate")
@@ -128,7 +128,7 @@ public class RestaurantController {
       @AuthenticationPrincipal Member member,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.participateRestaurantList(member, page, size));
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.participateRestaurantList(PageRequest.of(page, size), member));
   }
 
   @GetMapping("/contribute")
@@ -136,7 +136,7 @@ public class RestaurantController {
       @AuthenticationPrincipal Member member,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size){
-    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.contributeRestaurantList(member, page, size));
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.contributeRestaurantList(PageRequest.of(page, size), member));
   }
 
   @DeleteMapping("/{restaurantId}")
