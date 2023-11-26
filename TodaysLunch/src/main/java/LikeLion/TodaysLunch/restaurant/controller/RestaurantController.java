@@ -3,7 +3,9 @@ package LikeLion.TodaysLunch.restaurant.controller;
 
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.dto.request.JudgeRestaurantCreateDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.ContributeRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.response.JudgeRestaurantDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.ParticipateRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.response.common.RestaurantPageResponse;
 import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantRecommendDto;
@@ -124,7 +126,7 @@ public class RestaurantController {
   }
 
   @GetMapping("/participate")
-  public ResponseEntity<HashMap<String, Object>> participateRestaurantList (
+  public ResponseEntity<ParticipateRestaurantDto> participateRestaurantList (
       @AuthenticationPrincipal Member member,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size){
@@ -132,7 +134,7 @@ public class RestaurantController {
   }
 
   @GetMapping("/contribute")
-  public ResponseEntity<HashMap<String, Object>> contributeRestaurantList (
+  public ResponseEntity<ContributeRestaurantDto> contributeRestaurantList (
       @AuthenticationPrincipal Member member,
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size){

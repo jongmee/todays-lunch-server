@@ -7,7 +7,9 @@ import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.customized.domain.MyStore;
 import LikeLion.TodaysLunch.restaurant.domain.RestaurantContributor;
+import LikeLion.TodaysLunch.restaurant.dto.response.ContributeRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.response.ContributorDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.common.EngagedRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.response.ParticipateRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantListDto;
@@ -21,7 +23,6 @@ import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepositor
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantSpecification;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -151,39 +152,29 @@ public class RestaurantService {
     return RestaurantPageResponse.create(myStores.getTotalPages(), restaurantDtos);
   }
 
-  public HashMap<String, Object> participateRestaurantList(Pageable pageable, Member member) {
+  public ParticipateRestaurantDto participateRestaurantList(Pageable pageable, Member member) {
     Page<Restaurant> participateRestaurant = restaurantRepository.findAllByRegistrantAndJudgement(member, false, pageable);
     long participationCount = participateRestaurant.getTotalElements();
 
-    List<ParticipateRestaurantDto> participation = new ArrayList<>((int)participationCount);
+    List<EngagedRestaurantDto> participation = new ArrayList<>((int)participationCount);
     for(Restaurant restaurant: participateRestaurant){
       Boolean liked = isMyStore(member, restaurant);
-      participation.add(ParticipateRestaurantDto.fromEntity(restaurant, liked));
+      participation.add(EngagedRestaurantDto.fromEntity(restaurant, liked));
     }
-
-    HashMap response = new HashMap<>();
-    response.put("participation", participation);
-    response.put("participationCount", participationCount);
-    response.put("totalPages", participateRestaurant.getTotalPages());
-    return response;
+    return ParticipateRestaurantDto.create(participation, participationCount, participateRestaurant.getTotalPages());
   }
 
-  public HashMap<String, Object> contributeRestaurantList(Pageable pageable, Member member) {
+  public ContributeRestaurantDto contributeRestaurantList(Pageable pageable, Member member) {
     Page<RestaurantContributor> relations = restaurantContributorRepository.findAllByMember(member, pageable);
     List<Restaurant> contributionRestaurant = relations.stream().map(RestaurantContributor::getRestaurant).collect(Collectors.toList());
     long contributionCount = relations.getTotalElements();
 
-    List<ParticipateRestaurantDto> contribution = new ArrayList<>((int)contributionCount);
+    List<EngagedRestaurantDto> contribution = new ArrayList<>((int)contributionCount);
     for(Restaurant restaurant: contributionRestaurant){
       Boolean liked = isMyStore(member, restaurant);
-      contribution.add(ParticipateRestaurantDto.fromEntity(restaurant, liked));
+      contribution.add(EngagedRestaurantDto.fromEntity(restaurant, liked));
     }
-
-    HashMap response = new HashMap<>();
-    response.put("contribution", contribution);
-    response.put("contributionCount", contributionCount);
-    response.put("totalPages", relations.getTotalPages());
-    return response;
+    return ContributeRestaurantDto.create(contribution, contributionCount, relations.getTotalPages());
   }
 
   public void deleteRestaurant(Long restaurantId){
