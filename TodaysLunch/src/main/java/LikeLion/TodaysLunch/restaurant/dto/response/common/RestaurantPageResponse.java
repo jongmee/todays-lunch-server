@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.restaurant.dto;
+package LikeLion.TodaysLunch.restaurant.dto.response.common;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

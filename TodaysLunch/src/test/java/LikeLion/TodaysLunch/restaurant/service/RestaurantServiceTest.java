@@ -1,6 +1,5 @@
 package LikeLion.TodaysLunch.restaurant.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import LikeLion.TodaysLunch.member.domain.Member;
@@ -9,12 +8,12 @@ import LikeLion.TodaysLunch.menu.dto.MenuDto;
 import LikeLion.TodaysLunch.menu.repository.MenuRepository;
 import LikeLion.TodaysLunch.menu.service.MenuService;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
-import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
+import LikeLion.TodaysLunch.restaurant.dto.request.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
-import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
-import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
-import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
-import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.JudgeRestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
 import LikeLion.TodaysLunch.skeleton.service.TestRestaurant;
 import LikeLion.TodaysLunch.skeleton.service.TestUser;

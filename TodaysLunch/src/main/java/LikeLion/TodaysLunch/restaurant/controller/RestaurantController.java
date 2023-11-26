@@ -2,11 +2,11 @@ package LikeLion.TodaysLunch.restaurant.controller;
 
 
 import LikeLion.TodaysLunch.member.domain.Member;
-import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
-import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantDto;
-import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
-import LikeLion.TodaysLunch.restaurant.dto.RestaurantPageResponse;
-import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
+import LikeLion.TodaysLunch.restaurant.dto.request.JudgeRestaurantCreateDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.JudgeRestaurantDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantDto;
+import LikeLion.TodaysLunch.restaurant.dto.response.common.RestaurantPageResponse;
+import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.restaurant.service.JudgeRestaurantService;
 import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
 import java.io.IOException;

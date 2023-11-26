@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.restaurant.dto;
+package LikeLion.TodaysLunch.restaurant.dto.response;
 
 import LikeLion.TodaysLunch.member.domain.Member;
 import lombok.AllArgsConstructor;

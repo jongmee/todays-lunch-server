@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.restaurant.dto;
+package LikeLion.TodaysLunch.restaurant.dto.response;
 
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto;
 import LikeLion.TodaysLunch.category.dto.RecommendCategoryDto.CategoryList;
