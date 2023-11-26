@@ -9,6 +9,7 @@ import LikeLion.TodaysLunch.review.domain.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 import lombok.Builder;
@@ -133,12 +134,6 @@ public class Restaurant {
   public void setReviewCount(Long reviewCount) {
     this.reviewCount = reviewCount;
   }
-  public void setLowestPrice(Long lowestPrice) {
-    this.lowestPrice = lowestPrice;
-  }
-  public void setAgreementCount(Long agreementCount) {
-    this.agreementCount = agreementCount;
-  }
   public void setJudgement(Boolean judgement) {
     this.judgement = judgement;
   }
@@ -150,9 +145,6 @@ public class Restaurant {
   }
   public void setNullRegistrant() {
     this.registrant = null;
-  }
-  public void setLikeCount(Long likeCount) {
-    this.likeCount = likeCount;
   }
   public void addRecommendCategoryRelation(RestaurantRecommendCategoryRelation recommendCategoryRelation){
     recommendCategoryRelations.add(recommendCategoryRelation);
@@ -181,5 +173,21 @@ public class Restaurant {
 
   public void decreaseLikeCount() {
     this.likeCount -= 1;
+  }
+
+  public void updateLowestPrice(Long price) {
+    if(this.lowestPrice == null ||  this.lowestPrice.compareTo(price) > 0) {
+      this.lowestPrice = price;
+    }
+  }
+
+  public void updateLowestPrice(List<Long> price) {
+    Long lowest = price.get(0);
+    for(Long p: price) {
+      if(lowest.compareTo(p) > 0) {
+        lowest = p;
+      }
+    }
+    this.lowestPrice = lowest;
   }
 }

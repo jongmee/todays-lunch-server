@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -59,15 +60,13 @@ public class MenuService {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
+    // 최저 메뉴 가격 설정
     Long price = menuDto.getPrice();
     Long salePrice = menuDto.getSalePrice();
-    if(salePrice != null && salePrice < price)
+    if(salePrice != null && salePrice < price) {
       price = salePrice;
-
-    // 최저 메뉴 가격 설정
-    Long originalLowestPrice = restaurant.getLowestPrice();
-    if (originalLowestPrice == null || originalLowestPrice > price)
-      restaurant.setLowestPrice(price);
+    }
+    restaurant.updateLowestPrice(price);
 
     createRestaurantContributor(restaurant, member);
 
@@ -87,15 +86,10 @@ public class MenuService {
     menuDto.updateMenu(menu);
 
     // 최저 메뉴 가격 설정
-    Long lower;
-    Long lowestPrice = 1000000L;
-    List<Menu> allMenus = menuRepository.findAllByRestaurant(restaurant);
-    for (Menu m : allMenus) {
-      lower = m.getSalePrice() == null ? m.getPrice() : m.getSalePrice();
-      if (lower < lowestPrice)
-        lowestPrice = lower;
-    }
-    restaurant.setLowestPrice(lowestPrice);
+    List<Long> allPrice = menuRepository.findAllByRestaurant(restaurant).stream()
+            .map(m -> Optional.ofNullable(m.getSalePrice()).orElse(m.getPrice()))
+            .collect(Collectors.toList());
+    restaurant.updateLowestPrice(allPrice);
 
     createRestaurantContributor(restaurant, member);
 
@@ -121,30 +115,19 @@ public class MenuService {
       s3UploadService.delete(deleteImage.getImageUrl());
       imageUrlRepository.delete(deleteImage);
     }
+    menuRepository.delete(menu);
 
     // 최저 메뉴 가격 재설정
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
         .orElseThrow(() -> new NotFoundException("맛집"));
 
     if(restaurant.getLowestPrice().equals(menu.getPrice()) || restaurant.getLowestPrice().equals(menu.getSalePrice())) {
-      List<Menu> allMenus = menuRepository.findAllByRestaurant(restaurant);
-
-      Long lowestPrice = 1000000L;
-      for (Menu m : allMenus) {
-        if (!m.getId().equals(menuId)) {
-          Long p = m.getPrice();
-          if (m.getSalePrice() != null)
-            p = m.getSalePrice();
-
-          if (p < lowestPrice)
-            lowestPrice = p;
-        }
-      }
-      if(lowestPrice == 1000000L) lowestPrice = null;
-      restaurant.setLowestPrice(lowestPrice);
+      List<Long> allPrice = menuRepository.findAllByRestaurant(restaurant).stream()
+              .map(m -> Optional.ofNullable(m.getSalePrice()).orElse(m.getPrice()))
+              .collect(Collectors.toList());
+      restaurant.updateLowestPrice(allPrice);
     }
 
-    menuRepository.delete(menu);
     return menu;
   }
 
