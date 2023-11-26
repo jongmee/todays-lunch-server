@@ -59,10 +59,8 @@ public class RestaurantService {
 
   public RestaurantPageResponse restaurantList(
       String foodCategoryName, String locationCategoryName,
-      String locationTagName, Long recommendCategoryId, String keyword,
-      int page, int size, String sort, String order, Member member) {
+      String locationTagName, Long recommendCategoryId, String keyword, Pageable pageable, Member member) {
 
-    Pageable pageable = determineSort(page, size, sort, order);
     Specification<Restaurant> spec = determineFilterCondition(foodCategoryName, locationCategoryName, locationTagName, recommendCategoryId, keyword);
 
     Page<Restaurant> restaurantList = restaurantRepository.findAll(spec, pageable);
@@ -214,16 +212,6 @@ public class RestaurantService {
     response.put("contributionCount", contributionCount);
     response.put("totalPages", relations.getTotalPages());
     return response;
-  }
-
-  private Pageable determineSort(int page, int size, String sort, String order){
-    Pageable pageable = PageRequest.of(page, size);
-    if(order.equals("ascending")){
-      pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
-    } else if(order.equals("descending")){
-      pageable = PageRequest.of(page, size, Sort.by(sort).descending());
-    }
-    return pageable;
   }
 
   public void deleteRestaurant(Long restaurantId){

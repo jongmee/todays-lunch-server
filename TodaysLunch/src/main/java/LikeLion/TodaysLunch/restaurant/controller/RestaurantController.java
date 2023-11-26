@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +31,8 @@ public class RestaurantController {
   private static final String PAGE_VALUE = "0";
   private static final String PAGE_SIZE = "100";
   private static final String SORT = "rating";
-  private static final String ORDER = "descending";
+  private static final String ASCENDING = "ascending";
+  private static final String DESCENDING = "descending";
 
   private final RestaurantService restaurantService;
   private final JudgeRestaurantService judgeRestaurantService;
@@ -43,10 +47,11 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
-      @RequestParam(defaultValue = ORDER) String order,
+      @RequestParam(defaultValue = DESCENDING) String order,
       @AuthenticationPrincipal Member member) {
-      return ResponseEntity.status(HttpStatus.OK).body(restaurantService.restaurantList(foodCategory, locationCategory,
-        locationTag, recommendCategoryId, keyword, page, size, sort, order, member));
+    Pageable pageable = determinePageAndSort(page, size, sort, order);
+    return ResponseEntity.status(HttpStatus.OK).body(restaurantService.restaurantList(foodCategory, locationCategory,
+        locationTag, recommendCategoryId, keyword, pageable, member));
   }
 
   @GetMapping("/{restaurantId}")
@@ -75,10 +80,11 @@ public class RestaurantController {
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @RequestParam(defaultValue = SORT) String sort,
-      @RequestParam(defaultValue = ORDER) String order,
+      @RequestParam(defaultValue = DESCENDING) String order,
       @RequestParam(value = "registrant-id", required = false) Long registrantId,
       @AuthenticationPrincipal Member member){
-    return ResponseEntity.status(HttpStatus.OK).body(judgeRestaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, recommendCategoryId, page, size, sort, order, registrantId, member));
+    Pageable pageable = determinePageAndSort(page, size, sort, order);
+    return ResponseEntity.status(HttpStatus.OK).body(judgeRestaurantService.judgeRestaurantList(foodCategory, locationCategory, locationTag, recommendCategoryId, pageable, registrantId, member));
   }
 
   @GetMapping("/judges/{restaurantId}")
@@ -137,5 +143,12 @@ public class RestaurantController {
   public ResponseEntity<Void> deleteRestaurant(@PathVariable Long restaurantId){
     restaurantService.deleteRestaurant(restaurantId);
     return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  private Pageable determinePageAndSort(int page, int size, String sort, String order){
+    if(order.equals(ASCENDING)){
+      return PageRequest.of(page, size, Sort.by(sort).ascending());
+    }
+    return PageRequest.of(page, size, Sort.by(sort).descending());
   }
 }

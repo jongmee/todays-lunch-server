@@ -31,9 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,9 +129,7 @@ public class JudgeRestaurantService {
     }
 
     public RestaurantPageResponse judgeRestaurantList(
-            String foodCategoryName, String locationCategoryName, String locationTagName, Long recommendCategoryId,
-            int page, int size, String sort, String order, Long registrantId, Member member) {
-        Pageable pageable = determineSort(page, size, sort, order);
+            String foodCategoryName, String locationCategoryName, String locationTagName, Long recommendCategoryId, Pageable pageable, Long registrantId, Member member) {
         Specification<Restaurant> spec = determineFilterCondition(foodCategoryName, locationCategoryName, locationTagName, recommendCategoryId, registrantId);
 
         Page<Restaurant> restaurantList = restaurantRepository.findAll(spec, pageable);
@@ -157,16 +153,6 @@ public class JudgeRestaurantService {
             registrant = memberRepository.findById(registrantId).orElseThrow(() -> new NotFoundException("유저"));
         }
         return buildSpecification(foodCategory, locationCategory, locationTag, recommendCategory, null, true, registrant);
-    }
-
-    private Pageable determineSort(int page, int size, String sort, String order) {
-        Pageable pageable = PageRequest.of(page, size);
-        if(order.equals("ascending")) {
-            return PageRequest.of(page, size, Sort.by(sort).ascending());
-        } else if(order.equals("descending")) {
-            return PageRequest.of(page, size, Sort.by(sort).descending());
-        }
-        return pageable;
     }
 
     public JudgeRestaurantDto judgeRestaurantDetail(Long id, Member member) {
