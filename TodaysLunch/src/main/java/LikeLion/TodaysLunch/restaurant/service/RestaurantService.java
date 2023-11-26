@@ -1,14 +1,9 @@
 package LikeLion.TodaysLunch.restaurant.service;
 
-import static LikeLion.TodaysLunch.restaurant.repository.SpecificationBuilder.buildSpecification;
-
 import LikeLion.TodaysLunch.customized.domain.MemberLocationCategory;
 import LikeLion.TodaysLunch.customized.repository.MemberLocationCategoryRepository;
-import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
-import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.member.domain.Member;
-import LikeLion.TodaysLunch.category.domain.RecommendCategory;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.customized.domain.MyStore;
 import LikeLion.TodaysLunch.restaurant.domain.RestaurantContributor;
@@ -20,12 +15,8 @@ import LikeLion.TodaysLunch.exception.NotFoundException;
 import LikeLion.TodaysLunch.restaurant.dto.response.common.RestaurantPageResponse;
 import LikeLion.TodaysLunch.restaurant.dto.response.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
-import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.image.repository.ImageUrlRepository;
-import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
-import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.customized.repository.MyStoreRepository;
-import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantContributorRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestaurantSpecification;
 import java.time.LocalDate;
@@ -35,9 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,20 +37,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class RestaurantService {
 
   private final DataJpaRestaurantRepository restaurantRepository;
-  private final FoodCategoryRepository foodCategoryRepository;
-  private final LocationTagRepository locationTagRepository;
-  private final LocationCategoryRepository locationCategoryRepository;
   private final ImageUrlRepository imageUrlRepository;
-  private final RecommendCategoryRepository recommendCategoryRepository;
   private final RestaurantContributorRepository restaurantContributorRepository;
   private final MyStoreRepository myStoreRepository;
   private final MemberLocationCategoryRepository memberLocationCategoryRepository;
+  private final RestaurantRelatedService restaurantRelatedService;
 
   public RestaurantPageResponse restaurantList(
       String foodCategoryName, String locationCategoryName,
       String locationTagName, Long recommendCategoryId, String keyword, Pageable pageable, Member member) {
 
-    Specification<Restaurant> spec = determineFilterCondition(foodCategoryName, locationCategoryName, locationTagName, recommendCategoryId, keyword);
+    Specification<Restaurant> spec = restaurantRelatedService.determineFilterCondition(
+            foodCategoryName, locationCategoryName, locationTagName, recommendCategoryId, null, keyword, false);
 
     Page<Restaurant> restaurantList = restaurantRepository.findAll(spec, pageable);
     /* Todo: 하나의 쿼리로 조회하기 */
@@ -72,15 +59,6 @@ public class RestaurantService {
     }
 
     return RestaurantPageResponse.create(restaurantList.getTotalPages(), restaurantDtos);
-  }
-
-  private Specification<Restaurant> determineFilterCondition(
-          String foodCategoryName, String locationCategoryName, String locationTagName, Long recommendCategoryId, String keyword) {
-    FoodCategory foodCategory = foodCategoryRepository.findByName(foodCategoryName).orElseGet(null);
-    LocationCategory locationCategory = locationCategoryRepository.findByName(locationCategoryName).orElseGet(null);
-    LocationTag locationTag = locationTagRepository.findByName(locationTagName).orElseGet(null);
-    RecommendCategory recommendCategory = recommendCategoryRepository.findById(recommendCategoryId).orElseGet(null);
-    return buildSpecification(foodCategory, locationCategory, locationTag, recommendCategory, keyword, false, null);
   }
 
   public RestaurantDto restaurantDetail(Long id, Member member){
