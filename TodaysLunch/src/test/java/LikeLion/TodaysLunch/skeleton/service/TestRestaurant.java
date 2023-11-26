@@ -6,13 +6,17 @@ import LikeLion.TodaysLunch.category.domain.LocationTag;
 import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.menu.domain.Menu;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
+import LikeLion.TodaysLunch.restaurant.domain.RestaurantContributor;
 
 public class TestRestaurant {
+
   private final TestRestaurantEnviron environ;
   private Restaurant restaurant;
+
   public TestRestaurant(TestRestaurantEnviron testRestaurantEnviron) {
     this.environ = testRestaurantEnviron;
   }
+
   public TestRestaurant 정식맛집_등록하기(FoodCategory foodCategory,
       LocationCategory locationCategory, LocationTag locationTag,
       String address, String restaurantName, String introduction,
@@ -32,6 +36,7 @@ public class TestRestaurant {
     this.restaurant = environ.restaurantRepository().save(restaurant);
     return this;
   }
+
   public TestRestaurant 심사맛집_등록하기(FoodCategory foodCategory,
       LocationCategory locationCategory, LocationTag locationTag,
       String address, String restaurantName, String introduction,
@@ -50,14 +55,40 @@ public class TestRestaurant {
     this.restaurant = environ.restaurantRepository().save(restaurant);
     return this;
   }
-  public TestRestaurant 메뉴_등록하기(String name, Long price) {
-    Menu menu = Menu.builder().name(name).price(price).build();
-    Long originalPrice = this.restaurant.getLowestPrice();
-    if (originalPrice == null || originalPrice > price) this.restaurant.setLowestPrice(price);
-    environ.restaurantRepository().save(this.restaurant);
+
+  public Menu 메뉴_등록하기(String name, Long price, Long salePrice, String saleExplain, Member member) {
+    Menu menu = Menu.builder()
+            .name(name)
+            .price(price)
+            .salePrice(salePrice)
+            .saleExplain(saleExplain)
+            .build();
+    최저메뉴가격_등록하기(price, salePrice);
+    맛집기여자_등록하기(member);
     menu.setRestaurant(this.restaurant);
-    environ.menuRepository().save(menu);
-    return this;
+    return environ.menuRepository().save(menu);
   }
-  public Restaurant getRestaurant() { return this.restaurant; }
+
+  private void 최저메뉴가격_등록하기(Long price, Long salePrice) {
+    Long lowestPrice = salePrice;
+    if(lowestPrice == null) {
+      lowestPrice = price;
+    }
+    this.restaurant.updateLowestPrice(lowestPrice);
+    environ.restaurantRepository().save(this.restaurant);
+  }
+
+  private void 맛집기여자_등록하기(Member member){
+    if(environ.restaurantContributorRepository().findByRestaurantAndMember(this.restaurant, member).isEmpty()){
+      RestaurantContributor contributor = RestaurantContributor.builder()
+              .member(member)
+              .restaurant(this.restaurant)
+              .build();
+      environ.restaurantContributorRepository().save(contributor);
+    }
+  }
+
+  public Restaurant getRestaurant() {
+    return this.restaurant;
+  }
 }

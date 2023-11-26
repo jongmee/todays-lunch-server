@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TestUserEnviron {
+
   @Autowired
   private MemberRepository memberRepository;
   @Autowired
@@ -17,13 +18,19 @@ public class TestUserEnviron {
   private MemberFoodCategoryRepository memberFoodCategoryRepository;
   @Autowired
   private MemberLocationCategoryRepository memberLocationCategoryRepository;
+
   public MemberRepository memberRepository() {
     return memberRepository;
   }
-  public PasswordEncoder passwordEncoder() { return passwordEncoder;}
+
+  public PasswordEncoder passwordEncoder() {
+    return passwordEncoder;
+  }
+
   public MemberFoodCategoryRepository memberFoodCategoryRepository() {
     return memberFoodCategoryRepository;
   }
+
   public MemberLocationCategoryRepository memberLocationCategoryRepository() {
     return memberLocationCategoryRepository;
   }

@@ -10,6 +10,7 @@ import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
+import LikeLion.TodaysLunch.menu.domain.Menu;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +22,8 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles(profiles = "test")
 public abstract class ServiceTest {
 
-  protected final String 추천카테고리이름1 = "혼밥하기 좋으니 가게 🍚";
-  protected final String 추천카테고리이름2 = "술자리 저격이니 가게 🍺";
+  protected static final String 추천카테고리이름1 = "혼밥하기 좋으니 가게 🍚";
+  protected static final String 추천카테고리이름2 = "술자리 저격이니 가게 🍺";
 
   @Autowired
   protected FoodCategoryRepository foodCategoryRepository;
@@ -104,60 +105,41 @@ public abstract class ServiceTest {
   }
 
   private void 카테고리_등록하기() {
-    LocationCategory locationCategory1 = 위치카테고리_생성하기("서강대",37.550940, 126.941136);
-    LocationCategory locationCategory2 = 위치카테고리_생성하기("연세대",37.565750, 126.938744);
-    LocationCategory locationCategory3 = 위치카테고리_생성하기("서울대",37.459992, 126.951466);
-    LocationTag locationTag1 = 위치태그_생성하기("정문", 37.551691, 126.937659);
-    LocationTag locationTag2 = 위치태그_생성하기("남문", 37.549549, 126.938950);
-    LocationTag locationTag3 = 위치태그_생성하기("후문", 37.550793, 126.944010);
-    LocationTag locationTag4 = 위치태그_생성하기("대흥", 37.547896, 126.941879);
-    LocationTag locationTag5 = 위치태그_생성하기("신촌", 37.555482, 126.936850);
-    LocationTag locationTag6 = 위치태그_생성하기("이대", 37.556776, 126.945947);
-    FoodCategory foodCategory1 = 음식카테고리_생성하기("한식");
-    FoodCategory foodCategory2 = 음식카테고리_생성하기("중식");
-    RecommendCategory recommendCategory1 = 추천카테고리_생성하기(추천카테고리이름1);
-    RecommendCategory recommendCategory2 = 추천카테고리_생성하기(추천카테고리이름2);
+    위치카테고리_생성하기("서강대",37.550940, 126.941136);
+    위치카테고리_생성하기("연세대",37.565750, 126.938744);
+    위치카테고리_생성하기("서울대",37.459992, 126.951466);
+    위치태그_생성하기("정문", 37.551691, 126.937659);
+    위치태그_생성하기("남문", 37.549549, 126.938950);
+    위치태그_생성하기("후문", 37.550793, 126.944010);
+    위치태그_생성하기("대흥", 37.547896, 126.941879);
+    위치태그_생성하기("신촌", 37.555482, 126.936850);
+    위치태그_생성하기("이대", 37.556776, 126.945947);
+    음식카테고리_생성하기("한식");
+    음식카테고리_생성하기("중식");
+    추천카테고리_생성하기(추천카테고리이름1);
+    추천카테고리_생성하기(추천카테고리이름2);
   }
 
   private FoodCategory 음식카테고리_생성하기(String name) {
-    FoodCategory foodCategory =
-        FoodCategory
-            .builder()
-            .name(name)
-            .build();
+    FoodCategory foodCategory = FoodCategory.builder().name(name).build();
     return foodCategoryRepository.save(foodCategory);
   }
 
   private LocationCategory 위치카테고리_생성하기(String name, Double latitude, Double longitude) {
-    LocationCategory locationCategory =
-        LocationCategory
-            .builder()
-            .name(name)
-            .longitude(longitude)
-            .latitude(latitude)
-            .build();
+    LocationCategory locationCategory = LocationCategory.builder().name(name).longitude(longitude).latitude(latitude).build();
     return locationCategoryRepository.save(locationCategory);
   }
 
   private LocationTag 위치태그_생성하기(String name, Double latitude, Double longitude) {
-    LocationTag locationTag = LocationTag.builder()
-        .name(name)
-        .latitude(latitude)
-        .longitude(longitude)
-        .build();
+    LocationTag locationTag = LocationTag.builder().name(name).latitude(latitude).longitude(longitude).build();
     return locationTagRepository.save(locationTag);
   }
 
   private RecommendCategory 추천카테고리_생성하기(String name) {
-    return recommendCategoryRepository.save(RecommendCategory
-        .builder()
-        .color("#0100FF")
-        .name(name)
-        .build());
+    return recommendCategoryRepository.save(RecommendCategory.builder().color("#0100FF").name(name).build());
   }
 
   protected Long 추천카테고리_반환하기(String name){
-    return recommendCategoryRepository.findByName(name)
-        .orElseThrow(() -> new NotFoundException("추천 카테고리")).getId();
+    return recommendCategoryRepository.findByName(name).orElseThrow(() -> new NotFoundException("추천 카테고리")).getId();
   }
 }
