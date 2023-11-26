@@ -22,12 +22,12 @@ import LikeLion.TodaysLunch.restaurant.domain.RestaurantRecommendCategoryRelatio
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantListDto;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantPageResponse;
 import LikeLion.TodaysLunch.restaurant.repository.AgreementRepository;
 import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.restaurant.repository.RestRecmdRelRepository;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -130,7 +130,7 @@ public class JudgeRestaurantService {
                 .build();
     }
 
-    public HashMap<String, Object> judgeRestaurantList(
+    public RestaurantPageResponse judgeRestaurantList(
             String foodCategoryName, String locationCategoryName, String locationTagName, Long recommendCategoryId,
             int page, int size, String sort, String order, Long registrantId, Member member) {
         Pageable pageable = determineSort(page, size, sort, order);
@@ -143,10 +143,7 @@ public class JudgeRestaurantService {
             restaurantDtos.add(JudgeRestaurantListDto.fromEntity(restaurant, agreed));
         }
 
-        HashMap<String, Object> responseMap = new HashMap<>();
-        responseMap.put("data", restaurantDtos);
-        responseMap.put("totalPages", restaurantList.getTotalPages());
-        return responseMap;
+        return RestaurantPageResponse.create(restaurantList.getTotalPages(), restaurantDtos);
     }
 
     private Specification<Restaurant> determineFilterCondition(

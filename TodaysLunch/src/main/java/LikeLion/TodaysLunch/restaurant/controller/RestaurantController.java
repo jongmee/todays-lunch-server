@@ -5,6 +5,7 @@ import LikeLion.TodaysLunch.member.domain.Member;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantCreateDto;
 import LikeLion.TodaysLunch.restaurant.dto.JudgeRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantPageResponse;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.restaurant.service.JudgeRestaurantService;
 import LikeLion.TodaysLunch.restaurant.service.RestaurantService;
@@ -33,7 +34,7 @@ public class RestaurantController {
   private final JudgeRestaurantService judgeRestaurantService;
 
   @GetMapping("")
-  public ResponseEntity<HashMap<String, Object>> allRestaurantList(
+  public ResponseEntity<RestaurantPageResponse> allRestaurantList(
       @RequestParam(value = "food-category", required = false) String foodCategory,
       @RequestParam(value = "location-category", required = false) String locationCategory,
       @RequestParam(value = "location-tag", required = false) String locationTag,
@@ -66,7 +67,7 @@ public class RestaurantController {
   }
 
   @GetMapping("/judges")
-  public ResponseEntity<HashMap<String, Object>> AllJudgeRestaurantList(
+  public ResponseEntity<RestaurantPageResponse> AllJudgeRestaurantList(
       @RequestParam(value = "food-category", required = false) String foodCategory,
       @RequestParam(value = "location-category", required = false) String locationCategory,
       @RequestParam(value = "location-tag", required = false) String locationTag,
@@ -109,7 +110,7 @@ public class RestaurantController {
   }
 
   @GetMapping("/mystore")
-  public ResponseEntity<HashMap<String, Object>> myStore(
+  public ResponseEntity<RestaurantPageResponse> myStore(
       @RequestParam(defaultValue = PAGE_VALUE) int page,
       @RequestParam(defaultValue = PAGE_SIZE) int size,
       @AuthenticationPrincipal Member member){

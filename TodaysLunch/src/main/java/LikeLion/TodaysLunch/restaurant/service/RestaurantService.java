@@ -17,6 +17,7 @@ import LikeLion.TodaysLunch.restaurant.dto.ParticipateRestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantDto;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantListDto;
 import LikeLion.TodaysLunch.exception.NotFoundException;
+import LikeLion.TodaysLunch.restaurant.dto.RestaurantPageResponse;
 import LikeLion.TodaysLunch.restaurant.dto.RestaurantRecommendDto;
 import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
@@ -56,7 +57,7 @@ public class RestaurantService {
   private final MyStoreRepository myStoreRepository;
   private final MemberLocationCategoryRepository memberLocationCategoryRepository;
 
-  public HashMap<String, Object> restaurantList(
+  public RestaurantPageResponse restaurantList(
       String foodCategoryName, String locationCategoryName,
       String locationTagName, Long recommendCategoryId, String keyword,
       int page, int size, String sort, String order, Member member) {
@@ -72,10 +73,7 @@ public class RestaurantService {
       restaurantDtos.add(RestaurantListDto.fromEntity(restaurant, liked));
     }
 
-    HashMap<String, Object> responseMap = new HashMap<>();
-    responseMap.put("data", restaurantDtos);
-    responseMap.put("totalPages", restaurantList.getTotalPages());
-    return responseMap;
+    return RestaurantPageResponse.create(restaurantList.getTotalPages(), restaurantDtos);
   }
 
   private Specification<Restaurant> determineFilterCondition(
@@ -164,7 +162,7 @@ public class RestaurantService {
     }
   }
 
-  public HashMap<String, Object> myStoreList(int page, int size, Member member) {
+  public RestaurantPageResponse myStoreList(int page, int size, Member member) {
     Pageable pageable = PageRequest.of(page, size);
 
     Page<MyStore> myStores = myStoreRepository.findAllByMember(member,pageable);
@@ -176,10 +174,7 @@ public class RestaurantService {
       restaurantDtos.add(RestaurantListDto.fromEntity(restaurant, liked));
     }
 
-    HashMap<String, Object> responseMap = new HashMap<>();
-    responseMap.put("data", restaurantDtos);
-    responseMap.put("totalPages", myStores.getTotalPages());
-    return responseMap;
+    return RestaurantPageResponse.create(myStores.getTotalPages(), restaurantDtos);
   }
 
   public HashMap<String, Object> participateRestaurantList(Member member, int page, int size) {
