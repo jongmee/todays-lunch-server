@@ -30,7 +30,7 @@ public class TestUser {
     return this;
   }
 
-  public TestUser 유저의_음식카테고리_등록하기(List<FoodCategory> foodCategoryList) {
+  public void 유저의_음식카테고리_등록하기(List<FoodCategory> foodCategoryList) {
     for(FoodCategory category: foodCategoryList) {
       MemberFoodCategory memberFoodCategory = MemberFoodCategory.builder()
           .foodCategory(category)
@@ -38,10 +38,9 @@ public class TestUser {
           .build();
       environ.memberFoodCategoryRepository().save(memberFoodCategory);
     }
-    return this;
   }
 
-  public TestUser 유저의_위치카테고리_등록하기(List<LocationCategory> locationCategoryList) {
+  public void 유저의_위치카테고리_등록하기(List<LocationCategory> locationCategoryList) {
     for (LocationCategory category : locationCategoryList) {
       MemberLocationCategory memberLocationCategory = MemberLocationCategory.builder()
           .locationCategory(category)
@@ -49,7 +48,6 @@ public class TestUser {
           .build();
       environ.memberLocationCategoryRepository().save(memberLocationCategory);
     }
-    return this;
   }
 
   public Member getMember() {
