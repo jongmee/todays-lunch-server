@@ -27,8 +27,16 @@
 </h2>
 
 <h4>🍳 ERDCloud 주소:
-https://www.erdcloud.com/d/YtCy9kivFahzYbdNL</h4>
+https://www.erdcloud.com/d/YtCy9kivFahzYbdNL </h4>
 <img width="1247" alt="스크린샷 2023-04-25 오후 7 48 19" src="https://user-images.githubusercontent.com/101439796/234258412-be18a115-4f89-4464-8201-70d003f6021c.png">
+
+<h2 align="center">
+  Test Environment
+  <br>
+</h2>
+
+<h4>✅ Service Layer Test</h4>
+![_todays-lunch-service-test-environment](https://github.com/jongmee/todays-lunch-server/assets/101439796/4c2ec500-0a12-4262-8940-292c08b24db4)
 
 <h2 align="center">
   Site Url
