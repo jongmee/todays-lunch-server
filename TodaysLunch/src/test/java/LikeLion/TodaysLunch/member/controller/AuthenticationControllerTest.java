@@ -16,7 +16,7 @@ import LikeLion.TodaysLunch.member.dto.MemberLoginDto;
 import LikeLion.TodaysLunch.member.dto.MyPageDto;
 import LikeLion.TodaysLunch.member.dto.TokenDto;
 import LikeLion.TodaysLunch.member.service.MemberService;
-import LikeLion.TodaysLunch.skeleton.controller.WithMockCustomMember;
+import LikeLion.TodaysLunch.environment.controller.WithMockCustomMember;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;

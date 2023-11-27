@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.skeleton.service;
+package LikeLion.TodaysLunch.environment.service;
 
 import LikeLion.TodaysLunch.customized.repository.MemberFoodCategoryRepository;
 import LikeLion.TodaysLunch.customized.repository.MemberLocationCategoryRepository;

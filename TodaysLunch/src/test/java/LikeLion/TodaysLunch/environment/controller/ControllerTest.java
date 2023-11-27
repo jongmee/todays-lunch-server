@@ -1,7 +1,6 @@
-package LikeLion.TodaysLunch.skeleton.controller;
+package LikeLion.TodaysLunch.environment.controller;
 
 
-import LikeLion.TodaysLunch.external.JwtTokenProvider;
 import LikeLion.TodaysLunch.member.config.WebSecurityConfig;
 import LikeLion.TodaysLunch.category.controller.CategoryController;
 import LikeLion.TodaysLunch.category.service.CategoryService;

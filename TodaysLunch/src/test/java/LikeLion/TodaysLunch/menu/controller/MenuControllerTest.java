@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import LikeLion.TodaysLunch.menu.dto.MenuDto;
-import LikeLion.TodaysLunch.skeleton.controller.ControllerTest;
+import LikeLion.TodaysLunch.environment.controller.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;

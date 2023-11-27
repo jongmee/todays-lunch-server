@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.skeleton.service;
+package LikeLion.TodaysLunch.environment.service;
 
 import LikeLion.TodaysLunch.restaurant.repository.DataJpaRestaurantRepository;
 import LikeLion.TodaysLunch.menu.repository.MenuRepository;

@@ -1,7 +1,6 @@
 package LikeLion.TodaysLunch.menu.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import LikeLion.TodaysLunch.exception.NotFoundException;
@@ -16,9 +15,9 @@ import LikeLion.TodaysLunch.menu.dto.MenuImageDto;
 import LikeLion.TodaysLunch.menu.dto.SaleMenuDto;
 import LikeLion.TodaysLunch.menu.repository.MenuRepository;
 import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
-import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
-import LikeLion.TodaysLunch.skeleton.service.TestRestaurant;
-import LikeLion.TodaysLunch.skeleton.service.TestUser;
+import LikeLion.TodaysLunch.environment.service.ServiceTest;
+import LikeLion.TodaysLunch.environment.service.TestRestaurant;
+import LikeLion.TodaysLunch.environment.service.TestUser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

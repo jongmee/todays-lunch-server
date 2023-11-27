@@ -1,6 +1,5 @@
 package LikeLion.TodaysLunch.review.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import LikeLion.TodaysLunch.exception.NotFoundException;
@@ -9,9 +8,9 @@ import LikeLion.TodaysLunch.restaurant.domain.Restaurant;
 import LikeLion.TodaysLunch.review.domain.Review;
 import LikeLion.TodaysLunch.review.dto.ReviewDto;
 import LikeLion.TodaysLunch.review.repository.ReviewRepository;
-import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
-import LikeLion.TodaysLunch.skeleton.service.TestRestaurant;
-import LikeLion.TodaysLunch.skeleton.service.TestUser;
+import LikeLion.TodaysLunch.environment.service.ServiceTest;
+import LikeLion.TodaysLunch.environment.service.TestRestaurant;
+import LikeLion.TodaysLunch.environment.service.TestUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

@@ -2,8 +2,7 @@ package LikeLion.TodaysLunch.member.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import LikeLion.TodaysLunch.skeleton.service.ServiceTest;
-import java.io.IOException;
+import LikeLion.TodaysLunch.environment.service.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

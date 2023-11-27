@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import LikeLion.TodaysLunch.review.dto.MyReviewDto;
-import LikeLion.TodaysLunch.skeleton.controller.ControllerTest;
+import LikeLion.TodaysLunch.environment.controller.ControllerTest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;

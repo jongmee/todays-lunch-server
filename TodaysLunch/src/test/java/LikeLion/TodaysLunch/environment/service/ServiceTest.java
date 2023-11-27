@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.skeleton.service;
+package LikeLion.TodaysLunch.environment.service;
 
 import LikeLion.TodaysLunch.category.domain.FoodCategory;
 import LikeLion.TodaysLunch.category.domain.LocationCategory;
@@ -10,7 +10,6 @@ import LikeLion.TodaysLunch.category.repository.FoodCategoryRepository;
 import LikeLion.TodaysLunch.category.repository.LocationCategoryRepository;
 import LikeLion.TodaysLunch.category.repository.LocationTagRepository;
 import LikeLion.TodaysLunch.category.repository.RecommendCategoryRepository;
-import LikeLion.TodaysLunch.menu.domain.Menu;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

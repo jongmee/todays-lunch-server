@@ -1,4 +1,4 @@
-package LikeLion.TodaysLunch.skeleton.controller;
+package LikeLion.TodaysLunch.environment.controller;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
