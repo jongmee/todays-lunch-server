@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+gradlew
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -33,6 +34,8 @@ out/
 /nbdist/
 /.nb-gradle/
 
+### IOS ###
+*.DS_Store
 
 ### secret key ###
 src/main/resources/application-secret.properties
